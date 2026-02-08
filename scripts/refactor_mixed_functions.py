@@ -12,12 +12,6 @@ from typing import List, Dict, Tuple
 def parse_mixed_content(content: str) -> Dict[str, any]:
     """
     解析混合內容，提取語法、說明、範例等區塊
-
-    Args:
-        content: 包含 \\n 的混合內容字串
-
-    Returns:
-        結構化的字典，包含 syntax, description, examples, notes 等欄位
     """
     result = {
         "category": "",
@@ -29,34 +23,89 @@ def parse_mixed_content(content: str) -> Dict[str, any]:
         "notes": [],
     }
 
-    # 先將 \\n 替換為真正的換行
-    lines = content.replace("\\n", "\n").split("\n")
+    # 處理字串轉義問題：有些內容可能是已經轉義過的 \\n
+    content = content.replace("\\\\n", "\n").replace("\\n", "\n")
+    lines = content.split("\n")
 
-    current_block = "description"
+    current_block = "description"  # 開放：description, examples, notes
     code_buffer = []
     text_buffer = []
+
+    # 擴展程式碼特徵
+    xs_keywords = [
+        "Var:",
+        "Array:",
+        "Variable:",
+        "input:",
+        "Value\\d+",
+        "arr[A-Z]",
+        "If ",
+        "Then",
+        "Else",
+        "Begin",
+        "End",
+        "For ",
+        "To ",
+        "While ",
+        "Plot\\d+",
+        "SetPosition",
+        "Buy",
+        "Sell",
+        "Short",
+        "Cover",
+        "Print\\(",
+        "Average\\(",
+        "Highest\\(",
+        "Lowest\\(",
+        "GetField",
+        "Ret =",
+        "Return",
+        "Break",
+        "Continu",
+        "Condition\\d+",
+        "//",
+        "{",
+        "}",
+    ]
+    code_pattern = re.compile(f"({'|'.join(xs_keywords)})", re.IGNORECASE)
 
     for line in lines:
         line = line.strip()
         if not line:
             continue
 
-        # 識別類別（如「陣列函數」、「交易函數」）
-        if re.match(r"^(陣列|交易|欄位|數學|字串|日期|一般)函數$", line):
+        # 識別類別
+        if re.match(
+            r"^(陣列|交易|欄位|數學|字串|日期|一般|系統|報價|選股|資料)函數$", line
+        ):
             result["category"] = line
             continue
 
-        # 識別程式碼行（包含特定關鍵字或模式）
+        # 識別範例/舉例標籤
+        if "範例" in line or "舉例" in line or "例如" in line:
+            if code_buffer:
+                if not result["syntax"]:
+                    result["syntax"] = code_buffer.copy()
+                else:
+                    result["examples"].extend(code_buffer)
+                code_buffer = []
+            current_block = "examples"
+            if len(line) > 10:  # 如果這行不只是標籤，也包含內容
+                text_buffer.append(line)
+            continue
+
+        # 識別注意事項
+        if "注意" in line or "備註" in line or "限制" in line:
+            current_block = "notes"
+            text_buffer.append(line)
+            continue
+
+        # 判斷是否為程式碼
         is_code = (
-            re.search(
-                r"(Array:|Var:|Value\d+|arr[A-Z]|For |Begin|End;|Print\(|SetPosition|if |then)",
-                line,
-                re.IGNORECASE,
-            )
-            or line.startswith("//")
-            or "=" in line
-            and not line.startswith("如果")
-            and not line.startswith("回傳")
+            code_pattern.search(line)
+            or (line.endswith(";") and not line.endswith("。"))
+            or (line.count("(") > 0 and line.count(")") > 0 and ";" in line)
+            or re.match(r"^[a-zA-Z0-9_]+\s*=", line)  # 賦值語句
         )
 
         # 識別純數字行（通常是行號殘留）
@@ -66,28 +115,29 @@ def parse_mixed_content(content: str) -> Dict[str, any]:
         if is_code:
             code_buffer.append(line)
         else:
-            # 如果有累積的程式碼，先處理
             if code_buffer:
-                if current_block == "description":
-                    # 第一段程式碼通常是語法
-                    if not result["syntax"]:
-                        result["syntax"] = code_buffer.copy()
-                    else:
-                        result["examples"].extend(code_buffer)
+                if current_block == "description" and not result["syntax"]:
+                    result["syntax"] = code_buffer.copy()
                 else:
                     result["examples"].extend(code_buffer)
                 code_buffer = []
 
-            # 處理文字說明
-            text_buffer.append(line)
+            # 將文字根據當前區塊分類
+            if current_block == "examples":
+                # 即使在範例區塊，如果不是程式碼，也當作範例的說明
+                result["examples"].append(f"// {line}")
+            elif current_block == "notes":
+                result["notes"].append(line)
+            else:
+                text_buffer.append(line)
 
-    # 處理剩餘的程式碼
     if code_buffer:
-        result["examples"].extend(code_buffer)
+        if current_block == "description" and not result["syntax"]:
+            result["syntax"] = code_buffer.copy()
+        else:
+            result["examples"].extend(code_buffer)
 
-    # 合併文字說明
-    if text_buffer:
-        result["description"] = text_buffer
+    result["description"] = text_buffer
 
     return result
 
@@ -95,37 +145,45 @@ def parse_mixed_content(content: str) -> Dict[str, any]:
 def format_function_doc(func_name: str, parsed_data: Dict) -> str:
     """
     將解析後的資料格式化為標準 Markdown
-
-    Args:
-        func_name: 函數名稱
-        parsed_data: 解析後的結構化資料
-
-    Returns:
-        格式化的 Markdown 字串
     """
     lines = [f"### {func_name}", ""]
 
-    # 語法區塊
-    if parsed_data.get("syntax"):
-        # 檢查是否有已經包含函數名稱的語法
-        syntax_lines = parsed_data["syntax"]
-        if not any(func_name in line for line in syntax_lines):
-            lines.append("**語法:**")
-            lines.append("")
+    # 語法區塊 (嘗試從 description 抽出第一行可能是語法的內容 if syntax empty)
+    syntax = parsed_data.get("syntax", [])
+    if not syntax and parsed_data["description"]:
+        # 有些語法塊被判定為 description 第一行
+        first_line = parsed_data["description"][0]
+        if "(" in first_line and ")" in first_line:
+            syntax = [first_line]
+            parsed_data["description"] = parsed_data["description"][1:]
 
-    # 說明區塊
-    if parsed_data.get("description"):
-        lines.append("**說明:**")
+    if syntax:
+        lines.append("**語法:**")
+        lines.append("")
+        lines.append("```xs")
+        for s in syntax:
+            # 移除可能存在的標記
+            s = s.replace("```xs", "").replace("```", "").strip()
+            if s:
+                lines.append(s)
+        lines.append("```")
         lines.append("")
 
-        # 分離出類別
-        desc_lines = []
-        for line in parsed_data["description"]:
-            if line != parsed_data.get("category", ""):
-                desc_lines.append(line)
-
-        if desc_lines:
-            lines.extend(desc_lines)
+    # 說明區塊
+    desc_lines = [
+        l for l in parsed_data["description"] if l != parsed_data.get("category", "")
+    ]
+    if desc_lines:
+        lines.append("**說明:**")
+        lines.append("")
+        # 處理字串轉義問題：非常強勢地清理各種形式的 \n
+        for l in desc_lines:
+            # 處理可能存在的標記
+            l = l.replace("```xs", "").replace("```", "").strip()
+            if l:
+                lines.append(
+                    l.replace("\\\\n", "\n").replace("\\n", "\n").replace("\\ n", "\n")
+                )
         lines.append("")
 
     # 範例區塊
@@ -133,17 +191,24 @@ def format_function_doc(func_name: str, parsed_data: Dict) -> str:
         lines.append("**範例:**")
         lines.append("")
         lines.append("```xs")
-
-        # 清理範例程式碼
         for line in parsed_data["examples"]:
-            # 移除行號
+            # 移除行號殘留與重複標記
             cleaned = re.sub(r"^\d+\s+", "", line)
-            lines.append(cleaned)
-
+            cleaned = cleaned.replace("```xs", "").replace("```", "").strip()
+            if cleaned:
+                lines.append(cleaned)
         lines.append("```")
         lines.append("")
 
-    return "\r\n".join(lines)
+    # 注意事項
+    if parsed_data.get("notes"):
+        lines.append("**注意事項:**")
+        lines.append("")
+        for n in parsed_data["notes"]:
+            lines.append(f"> {n}")
+        lines.append("")
+
+    return "\n".join(lines)
 
 
 def find_mixed_content_sections(filepath: str) -> List[Tuple[int, int, str]]:
