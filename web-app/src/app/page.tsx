@@ -20,6 +20,47 @@ export default function Home() {
 
   // 登入頁面 - 符合 UI/UX Pro Max 設計原則
   if (!user) {
+    // ⚠️ 開發模式：暫時跳過登入檢查以預覽 UI
+    const isDevelopmentMode = true; // 設為 false 可恢復登入檢查
+    
+    if (isDevelopmentMode) {
+      // 直接顯示聊天介面（訪客模式）
+      return (
+        <div className="flex flex-col h-screen bg-gray-50 dark:bg-gray-900">
+          {/* 頂部導航欄 - 開發模式提示 */}
+          <header className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
+            <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
+              <div className="flex items-center gap-3">
+                {/* Logo - SVG Icon */}
+                <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center shadow-md">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                  </svg>
+                </div>
+                <div>
+                  <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
+                    XQ Chatbot
+                  </h1>
+                  <p className="text-xs text-orange-600 dark:text-orange-400 font-medium">
+                    訪客模式（預覽 UI）
+                  </p>
+                </div>
+              </div>
+              <div className="text-sm text-slate-600 dark:text-slate-400">
+                ⚠️ AI 功能需配置 API Key
+              </div>
+            </div>
+          </header>
+
+          {/* 對話區域 - 確保不會被 navigation 遮擋 */}
+          <main className="flex-1 overflow-hidden">
+            <ChatContainer />
+          </main>
+        </div>
+      );
+    }
+
+    // 正式登入頁面
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 p-4">
         {/* 背景裝飾元素 */}

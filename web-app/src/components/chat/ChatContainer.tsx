@@ -4,11 +4,13 @@
 import { useState } from 'react';
 import { Message } from '@/types/message';
 import { Timestamp } from 'firebase/firestore';
+import { useAuth } from '@/contexts/AuthContext';
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
 import TypingIndicator from './TypingIndicator';
 
 export default function ChatContainer() {
+  const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -25,7 +27,7 @@ export default function ChatContainer() {
     setIsLoading(true);
 
     try {
-      // 呼叫 Chat API
+      // 呼叫 Chat API（加入 userId）
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -35,11 +37,13 @@ export default function ChatContainer() {
             content: msg.content,
           })),
           skillName: '交易腳本專家', // 預設使用交易腳本專家（之後可改為選單）
+          userId: user?.uid || null, // 加入 userId 以讀取個人 API Key
         }),
       });
 
       if (!response.ok) {
-        throw new Error('API 請求失敗');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'API 請求失敗');
       }
 
       // 處理串流回應
@@ -81,9 +85,17 @@ export default function ChatContainer() {
           }
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('傳送訊息失敗:', error);
-      alert('傳送失敗，請稍後再試');
+      
+      // 顯示錯誤訊息給用戶
+      const errorMessage: Message = {
+        id: (Date.now() + 2).toString(),
+        role: 'assistant',
+        content: `❌ 錯誤：${error.message}\n\n提示：請在個人設定中配置您的 Gemini API Key。`,
+        timestamp: Timestamp.now(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
     }

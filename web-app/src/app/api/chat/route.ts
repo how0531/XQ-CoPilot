@@ -1,11 +1,13 @@
 // Chat API Route - 處理 AI 對話請求
 import { NextRequest, NextResponse } from 'next/server';
-import { model, buildSystemPrompt } from '@/lib/gemini';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import { buildSystemPrompt } from '@/lib/gemini';
 import { loadSkillContent, loadXSGuide, loadAPIIndex } from '@/lib/skillLoader';
+import { getUserApiKey } from '@/lib/userSettings';
 
 export async function POST(req: NextRequest) {
   try {
-    const { messages, skillName } = await req.json();
+    const { messages, skillName, userId } = await req.json();
 
     // 驗證請求
     if (!messages || !Array.isArray(messages)) {
@@ -14,6 +16,29 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+
+    // 1. 優先使用用戶的 API Key
+    let apiKey: string | null = null;
+    if (userId) {
+      apiKey = await getUserApiKey(userId);
+    }
+
+    // 2. 否則使用伺服器的 API Key
+    if (!apiKey) {
+      apiKey = process.env.GEMINI_API_KEY || null;
+    }
+
+    // 3. 如果都沒有，回傳錯誤
+    if (!apiKey) {
+      return NextResponse.json(
+        { error: '請在個人設定中配置 Gemini API Key，或聯繫管理員' },
+        { status: 401 }
+      );
+    }
+
+    // 動態初始化 Gemini（使用對應的 API Key）
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });
 
     // 載入選擇的 Skill
     let skillContent = '';
