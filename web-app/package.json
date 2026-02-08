@@ -3,14 +3,21 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "npm run sync-knowledge",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed:knowledge": "tsx scripts/seed-knowledge.ts",
+    "test:api": "tsx scripts/test-api-key.ts",
+    "sync-knowledge": "tsx scripts/sync-knowledge.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
+    "dotenv": "^17.2.4",
     "firebase": "^12.9.0",
+    "firebase-admin": "^13.6.1",
+    "glob": "^13.0.1",
     "gray-matter": "^4.0.3",
     "next": "16.1.6",
     "react": "19.2.3",
@@ -24,6 +31,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }

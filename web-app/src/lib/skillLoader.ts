@@ -73,14 +73,53 @@ export async function loadSkillContent(skillName: string): Promise<Skill | null>
 }
 
 /**
- * 載入 XS 完整指引
+ * 載入核心 XS 文件 (取代原本不存在的 XS_完整指引.md)
+ * 包含：內建函數、系統函數、XS語法運用 (Rank等)
  */
-export async function loadXSGuide(): Promise<string> {
+export async function loadCoreDocs(): Promise<string> {
   try {
-    const guidePath = path.join(process.cwd(), '..', 'XS_完整指引.md');
-    return await fs.readFile(guidePath, 'utf-8');
+    // 嘗試多種可能的路徑 (適應 Dev 與 Production 環境)
+    const potentialPaths = [
+      path.join(process.cwd(), '..', '說明'), // Dev: web-app/../說明
+      path.join(process.cwd(), '說明'),       // Root: 說明
+      path.join(__dirname, '..', '..', '..', '..', '說明') // Built: .next/server/app/api/...
+    ];
+
+    let docsDir = '';
+    for (const p of potentialPaths) {
+      try {
+        await fs.access(p);
+        docsDir = p;
+        break;
+      } catch {
+        continue;
+      }
+    }
+
+    if (!docsDir) {
+       console.warn(`[loadCoreDocs] 找不到說明資料夾。CWD: ${process.cwd()}`);
+       return '';
+    }
+
+    const filesToLoad = ['1_XS_語法教科書.md', '內建.md', '系統.md', '2_XS_函數字典.md'];
+    
+    let combinedContent = '';
+
+    for (const file of filesToLoad) {
+      const filePath = path.join(docsDir, file);
+      try {
+        const content = await fs.readFile(filePath, 'utf-8');
+        combinedContent += `\n\n# 文件: ${file}\n\n${content}`;
+        console.log(`[loadCoreDocs] 已載入: ${filePath}`); // Debug log (optional)
+      } catch (err) {
+        console.warn(`[loadCoreDocs] 無法載入文件 (Skipping): ${file}`, err);
+        // Skip this file and continue
+      }
+    }
+
+    return combinedContent;
   } catch (error) {
-    console.error('載入 XS_完整指引.md 失敗:', error);
+    console.error('載入核心文件失敗:', error);
     return '';
   }
 }
