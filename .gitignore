@@ -1,0 +1,29 @@
+# Python 虛擬環境
+venv/
+.venv/
+env/
+.env
+
+# Dependencies
+node_modules/
+
+# Python 快取與編譯檔
+__pycache__/
+*.pyc
+*.pyo
+
+# 系統垃圾檔
+.DS_Store
+Thumbs.db
+
+# IDE 設定檔
+.vscode/
+.idea/
+
+# Next.js / Web App
+.next/
+build/
+dist/
+out/
+.vercel
+web-app/.agent/external_cache/

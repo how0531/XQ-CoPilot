@@ -1,6 +1,0 @@
-{
-  "MarkdownPaste.path": "${currentFileDir}/images",
-  "pasteImage.path": "${currentFileDir}/images",
-  "pasteImage.basePath": "${currentFileDir}",
-  "pasteImage.prefix": "./"
-}
