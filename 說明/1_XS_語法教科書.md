@@ -36,7 +36,6 @@
 ### 基礎範例
 
 ```xs
-
 rank myRank begin
 
 Value1 = Average(Close, 10);
@@ -45,12 +44,9 @@ retval = (Close - Value1);
 
 end;
 
-
-
 if myRank.pos <= 100 then ret = 1;
 
 OutputField1(myRank.value);
-
 ```
 
 上面範例中，使用了 rank 宣告了 myRank 的物件，並將收盤價和移動平均線的差距來當作排行的條件。 接著透過呼叫 myRank 物件的 pos 屬性，將前一百名的商品篩選出，並使用 OutputField 將符合條件商品的收盤價和移動平均線差距輸出。
@@ -62,21 +58,13 @@ rank 語法只支援選股腳本，其他的腳本都無法使用。
 以下為 rank 物件支援的屬性：
 
 | 屬性名稱 | 說明 |
-
 | :------- | :-------------------------------------------------------------------------------------------------------------------------------------------------- |
-
 | pos | 排行名次，整數，從 1 開始，1 是第一名。 |
-
 | range | 排行 %，等於 pos / <參與排行商品數> \* 100。這是一個實數 (有小數點)，數值範圍介於 0 ~ 100 之間，越小排名越前面。 |
-
 | pr | Percentile Rank %。PR = (N - pos) / (N - 1) \* 100。這是一個實數，數值範圍介於 100 ~ 0 之間，第一名是 100，PR95 表示是 95% 之前。 |
-
 | count | 參與排行的商品個數。這個數值對任何一檔商品而言都是固定的。 |
-
 | value | rank object 的回傳數值，也就是 retval 的回傳數值。 |
-
 | avgvalue | 所有商品 rank.value 的平均值。可以使用這個數值來決定目前商品是否是在平均值以上或是平均值以下。這個數值對任何一檔商品而言都是固定的。 |
-
 | medvalue | 所有商品 rank.value 的中位數 (median value)。可以使用這個數值來決定目前商品是否是在中位數以上或是中位數以下。這個數值對任何一檔商品而言都是固定的。 |
 
 ## rank 語法的注意點
@@ -86,7 +74,6 @@ rank 語法只支援選股腳本，其他的腳本都無法使用。
 (X) 錯誤的案例：
 
 ```xs
-
 var: myRank(0);
 
 rank myRank begin
@@ -97,11 +84,7 @@ retval = (Close - Value1);
 
 end;
 
-
-
 (O) 正確的案例：
-
-
 
 rank myRank1 begin
 
@@ -114,9 +97,6 @@ rank myRank2 begin
 retval = Volume;
 
 end;
-
-
-
 ```
 
 二、rank 物件不能夠放在任何的條件或是 begin … end 之間，需要放在最上面一層。
@@ -124,7 +104,6 @@ end;
 (X) 錯誤的案例：
 
 ```xs
-
 if close > open then begin
 
 rank myRank begin
@@ -136,15 +115,11 @@ retval = (Close - Value1);
 end;
 
 end;
-
-
-
 ```
 
 排行的結果是一個序列。
 
 ```xs
-
 rank myRank begin
 
 retval = Close;
@@ -154,15 +129,11 @@ end;
 if myRank.pos[1] <> myRank.pos then ret = 1;
 
 //篩選出前期排行與當期排行不同的商品
-
-
-
 ```
 
 三、rank 排行預設為大到小，但可以透過 desc 和 asc 來設定是大到小還是小到大。
 
 ```xs
-
 //大到小
 
 rank myRank1 desc begin
@@ -171,8 +142,6 @@ retval = Close;
 
 end;
 
-
-
 //小到大
 
 rank myRank2 asc begin
@@ -180,9 +149,6 @@ rank myRank2 asc begin
 retval = Close;
 
 end;
-
-
-
 ```
 
 四、rank 物件內是獨立空間，無法傳入腳本他處的參數和變數。
@@ -190,7 +156,6 @@ end;
 rank 物件使用的變數需另行在 rank 區間內宣告 (亦可使用內建的 Value1 等變數)。 變數即使有相同的名字，但不會互相影響 (內建變數亦相同)。(X) 錯誤的案例：
 
 ```xs
-
 //錯誤訊息要特別註明
 
 Input: len(10);
@@ -202,8 +167,6 @@ Value1 = Average(Close, len);
 retval = (Close - Value1);
 
 end;
-
-
 
 (O) 正確的案例：
 
@@ -224,9 +187,6 @@ retval = (Close - _price);
 end;
 
 // rank 物件內 _price 會是 10 期收盤價移動平均值，物件外的 _price 會是開盤價
-
-
-
 ```
 
 五、rank 內雖然不能夠使用外部的參數變數，但可以使用前面其他 rank 運算出來的結果。
@@ -236,10 +196,7 @@ end;
 首先統計過去 5 日每一日 close 在母體內排名以及每一日 volume 在母體內的排名。 如果這 5 日的排名正相關的話 (>1)，那就賣出這檔股票，如果是負相關的話 (<-1)，那就買進這檔股票。注意到這個因子必須針對過去 5 日的排行數值的運算結果 (covariance) 再做一次排行。以下是模擬 Alpha 13 的腳本範例：
 
 ```xs
-
 //收盤價排行
-
-
 
 rank rank_close begin
 
@@ -247,11 +204,7 @@ retval = close;
 
 end;
 
-
-
 //成交量排行
-
-
 
 rank rank_volume begin
 
@@ -259,11 +212,7 @@ retval = volume;
 
 end;
 
-
-
 //上述兩個排行的相關性
-
-
 
 rank rank_alpha_13 begin
 
@@ -273,10 +222,7 @@ end;
 
 ret = 1;
 
-
-
 OutputField1(rank_alpha_13.value, "相關性"); |
-
 ```
 
 ---
@@ -294,19 +240,13 @@ OutputField1(rank_alpha_13.value, "相關性"); |
 透過 Input 宣告清單
 
 ```xs
-
 Input: myGroup(Group);
 
 Var: _TF(False);
 
-
-
 Value1 = GetSymbolField(myGroup[1], "Close", "D");
 
 _TF = GetSymbolInfo(myGroup[1], "可放空");
-
-
-
 ```
 
 上述範例使用 Input 語法宣告了一個清單 myGroup ，允許在指標或策略中設定所需的商品清單 。 myGroup 是一個陣列，存放清單中的商品代號，並可透過 [N] 來取得陣列中第 N 個商品代號 。 GetSymbolField 和 GetSymbolInfo 在這次修改中增加支援 Group 清單的功能 （ 需注意還是無法使用變數指定商品代碼 ） 。
@@ -330,23 +270,15 @@ _TF = GetSymbolInfo(myGroup[1], "可放空");
 透過 Group 宣告清單
 
 ```xs
-
 Group: myGroup();
 
 Var: _TF(False);
 
-
-
 myGroup = GetSymbolGroup("TSE23.TW", "成分股");
-
-
 
 Value1 = GetSymbolField(myGroup[1], "Close", "D");
 
 _TF = GetSymbolInfo(myGroup[1], "可放空");
-
-
-
 ```
 
 上述範例使用 Group 語法宣告了一個清單 myGroup ，接著再透過 GetSymbolGroup 來取得指定商品的成分股 。
@@ -374,7 +306,6 @@ GetSymbolGroup 可用來取得系統內建的商品清單 。
 指標腳本的清單選單
 
 ```xs
-
 Input:cb_id("", inputKind:=SymbolGroup("CB"), quickedit:=true);
 
 value1 = GetSymbolField(cb_id, "Close");
@@ -384,9 +315,6 @@ value2 = GetSymbolField(cb_id, "Volume");
 plot1(value1, "CB走勢");
 
 plot2(value2, "CB成交量");
-
-
-
 ```
 
 在指標腳本中，若希望使用者能在介面上直接選擇所需的清單商品，可以在 Input 宣告時一併傳入清單類型 。
@@ -396,11 +324,7 @@ plot2(value2, "CB成交量");
 搭配清單使用的函數
 
 ```xs
-
 Value1 = GroupSize(myGroup);
-
-
-
 ```
 
 GroupSize 會回傳商品清單包含的數量 。 可以此數值避免取用到超出陣列範圍的資料而導致錯誤 。
@@ -410,22 +334,15 @@ GroupSize 會回傳商品清單包含的數量 。 可以此數值避免取用�
 盤中漲幅排行 [警示腳本]
 
 ```xs
-
 input: _S(group, "排行股票");
 
 Array: rankRT[2000, 2](-9999);
-
-
 
 SetTotalBar(10);
 
 value1 = GroupSize(_S);
 
-
-
 //將清單的 商品代碼 以及 漲跌幅 的數值放入陣列中
-
-
 
 for value2 = 1 to value1 begin
 
@@ -440,8 +357,6 @@ rankRT[value2, 1] = strtonum(leftStr(_S[value2], 4));
 rankRT[value2, 2] = value3;
 
 end;
-
-
 
 //將陣列依據漲跌幅排序後印出
 
@@ -461,14 +376,9 @@ text(numtostr(rankRT[value2, 1], 0), ".TW"),
 
 end;
 
-
-
 print("==============================");
 
 if symbol = text(numtostr(rankRT[1, 1], 0), ".TW") then ret = 1;
-
-
-
 ```
 
 上述腳本中宣告了一個清單 （ 設定為需要盤中即時排序的商品 ） 和陣列，並將清單內的商品代號和漲跌幅存入陣列後進行排序 。
@@ -476,18 +386,13 @@ if symbol = text(numtostr(rankRT[1, 1], 0), ".TW") then ret = 1;
 指數成分股的營收加總 [指標腳本]
 
 ```xs
-
 group: _symbolGroup();
 
 var: _sum(0), _num(0);
 
-
-
 _symbolGroup = GetSymbolGroup("成分股");
 
 value1 = GroupSize(_symbolGroup);
-
-
 
 _sum = 0;
 
@@ -505,8 +410,6 @@ end;
 
 end;
 
-
-
 plot1(_sum);
 
 SetPlotLabel(1, "成分股月營收");
@@ -518,9 +421,6 @@ SetPlotLabel(2, "有月營收家數");
 plot3(value1);
 
 SetPlotLabel(3, "成分股家數");
-
-
-
 ```
 
 使用者可將執行商品設為指數商品 （ 如 TSE23.TW ） ，並透過 \_symbolGroup 取得該指數對應的成分股清單 。
@@ -530,16 +430,11 @@ SetPlotLabel(3, "成分股家數");
 對應選擇權的成交金額加總 [指標腳本]
 
 ```xs
-
 group: _list();
 
 var: _uSum(0), _dSum(0), _count(0), _cp("");
 
-
-
 _list = getsymbolgroup("選擇權");
-
-
 
 _uSum = 0; //買權加總
 
@@ -561,14 +456,9 @@ end;
 
 end;
 
-
-
 plot1(_uSum, "近一筆買權權利金加總金額");
 
 plot2(_dSum, "近一筆賣權權利金加總金額");
-
-
-
 ```
 
 這個腳本會加總執行商品該日最近一筆買進權利金的交易金額 （ 買權賣權分開加總 ） ，並將這些總額繪製出來 。 透過觀察這個總額的變化，可以推測市場對該執行商品價格漲跌的看法，就像「以權追股」的功能一樣 。
@@ -588,11 +478,9 @@ plot2(_dSum, "近一筆賣權權利金加總金額");
 ### default 參數
 
 ```xs
-
 Value1 = GetField("大戶持股比例", "W", default := 0);
 
 Value2 = GetSymbolField("2330.TW", "大戶持股比例", "W", default := Value2[1]);
-
 ```
 
 GetField / GetSymbolField 在傳入參數時，現在可額外加上 default 參數。 此參數可以是固定數值 （ 如上方範例 0 ） 或是變數 （ 如上方範例 Value2[1] ）。
@@ -606,13 +494,9 @@ GetField / GetSymbolField 在傳入參數時，現在可額外加上 default 參
 ### CheckField
 
 ```xs
-
 CheckField("外盤量", "D");
 
 CheckSymbolField("TSE.TW", "外盤量");
-
-
-
 ```
 
 CheckField / CheckSymbolField 會依據傳入的商品代碼、欄位和頻率來判斷該資料是否能夠取用，回傳 True / False。
@@ -620,13 +504,9 @@ CheckField / CheckSymbolField 會依據傳入的商品代碼、欄位和頻率�
 ### IsSupportField
 
 ```xs
-
 IsSupportField("月營收", "M");
 
 IsSupportSymbolField("TSE.TW", "月營收");
-
-
-
 ```
 
 IsSupportField / IsSupportSymbolField 可根據傳入的商品代碼、欄位和頻率，判斷指定的欄位是否存在，回傳 True / False。
@@ -666,43 +546,26 @@ IsSupportField / IsSupportSymbolField 可根據傳入的商品代碼、欄位和
 支援美國市場的資料欄位，此次有 9 個如下表：
 
 | 欄位分類 | 資料欄位名稱 | 可用頻率 | 支援商品 |
-
 | :------- | :------------- | :--------- | :---------------------------- |
-
 | 量能 | 總成交次數 | 分鐘、日 | 美(股票) |
-
 | 籌碼 | 機構持股 | 季 | 美(股票) |
-
 | 籌碼 | 內部人持股異動 | 日、週、月 | 美(股票) |
-
 | 籌碼 | 內部人持股 | 日、週、月 | 美(股票) |
-
 | 籌碼 | 機構持股比重 | 季 | 美(股票) |
-
 | 基本 | 本益比 | 日 | 美(股票) |
-
 | 基本 | 殖利率 | 日 | 美(股票)、美(特別股)、美(ETF) |
-
 | 基本 | 投資建議評級 | 最新 | 美(股票) |
 
 支援美國市場的商品資訊欄位，此次有 7 個如下表：
 
 | 商品資訊欄位名稱 | 可用頻率 | 支援商品 |
-
 | :--------------- | :------- | :--------- |
-
 | 交易所 | 最新 | 美(股票) |
-
 | ETF分類 | 最新 | 美(ETF) |
-
 | 到期日 | 最新 | 美(特別股) |
-
 | 票面利率 | 最新 | 美(特別股) |
-
 | 面額 | 最新 | 美(特別股) |
-
 | ETD | 最新 | 美(特別股) |
-
 | 第一個回購日 | 最新 | 美(特別股) |
 
 以上是「美股新增欄位列表」為付費功能，整理成表格的方式，讓大家可以快速審視有哪些欄位有支援美國市場，希望有幫助到大家，感謝大家耐心的收看??
@@ -740,15 +603,12 @@ XS美股欄位的使用介紹 進一步了解美股分析模組 |
 第一步：在 XS 編輯器，新增「\_YieldRank」函數腳本，程式碼如下
 
 ```xs
-
 Retval = GetField("殖利率", "D");
-
 ```
 
 第二步：在 XS 編輯器，新增「殖利率相關資訊」選股腳本，程式碼如下
 
 ```xs
-
 Ret = 1;
 
 outputField1(GetField("殖利率", "D"),"殖利率");
@@ -762,7 +622,6 @@ outputField4(GetFielddate("現金股利", "Y"),"現金股利資料日期");
 outputField5(GetField("總市值(元)", "D"),"總市值(元)");
 
 outputField6(GetFielddate("總市值(元)", "D"),"總市值(元)資料日期");
-
 ```
 
 第三步：在選股中心，新增「標普500\_殖利率排行」策略，並參考下圖，依以下指示操作。
@@ -804,13 +663,11 @@ outputField6(GetFielddate("總市值(元)", "D"),"總市值(元)資料日期");
 「XS自訂指標\_機構持股」的程式碼，雖然圖上有說明，不過仍提供以下程式碼，方便大家複製貼上，動手操作。
 
 ```xs
-
 //因為繪圖設定→查價視窗→數值顯示→%，會自動 × 100，所以該數值要 / 100，才會在顯示正確 % 數值。
 
 plot1(GetField("機構持股比重", "Q")/100,"比重",Checkbox:=1);
 
 plot2(GetField("機構持股", "Q"),"數值",Checkbox:=0);
-
 ```
 
 上述的XS自訂指標腳本的程式碼撰寫完成，並編譯成功後，請依照以下兩個步驟，進行繪圖設定，與加入副圖到技術分析圖中。
@@ -856,13 +713,11 @@ XS美股欄位表 進一步了解美股分析模組 |
 用戶想要計算近 4 期的月營收平均，於是寫出下方 XS 代碼。
 
 ```xs
-
 // 計算 近 4 期的月營收平均
 
 Value1 = GetField("月營收", "M");
 
 Value2 = Average(Value1+Value1[1]+Value1[2]+Value1[3], 4);
-
 ```
 
 但由於變數後方的中括號，其實是代表著不同頻率下的資料內容
@@ -926,7 +781,6 @@ XS 團隊會繼續優化相關語法功能與應用，陪伴投資人一同茁�
 如果除了「月營收」跟「每股稅後淨利(元)」之外，你想要運用在其他欄位的話，可以參考以下的寫法：
 
 ```xs
-
 value1 = GetFieldStartOffset("月營收", "M");
 
 if value1 = 0 then begin
@@ -946,7 +800,6 @@ end else if value1 > 0 then begin
  outputField1(GetField("月營收", "M"),"月營收");
 
 end;
-
 ```
 
 > [!IMPORTANT]
@@ -962,7 +815,6 @@ end;
 當然，你也可以從選股腳本內直接使用這些欄位。以下是一個腳本範例，用來篩選大戶買超的股票，大戶的定義是（買進特大單＋買進大單）－（賣出特大單＋賣出大單）＞ 0的股票。
 
 ```xs
-
 value801 = GetField("買進特大單量", "D") + GetField("買進大單量", "D");
 
 value802 = GetField("賣出特大單量", "D") + GetField("賣出大單量", "D");
@@ -974,29 +826,18 @@ value888 = value801 - value802;
 if value888 > 0 then ret = 1;
 
 outputField1(value888,"大單買超由大到小排名",order:=1);
-
-
-
 ```
 
 以下這張表格，是此次新增的選股欄位與說明表格，詳細的介紹可點選連結查閱，有了這些選股欄位，投資人就能在盤前先做功課，運用選股中心篩選出來的結果，觀察近期大戶資金布局在何處，搶得先機。
 
 | 選股欄位名稱 | 說明 |
-
 | :-------------------------------------------------------------------- | :---------------------------------------------------------------------------- |
-
 | 內盤成交次數/外盤成交次數 | 當日的成交筆數/以內盤成交的成交筆數/以外盤成交的成交筆數 |
-
 | 買進特大單量/買進大單量/買進中單量/買進小單量 | 依照單筆交易金額分級，統計當日以外盤成交的特大單/大單/中單/小單的成交量(張數) |
-
 | 賣出特大單量/賣出大單量/賣出中單量/賣出小單量 | 依照單筆交易金額分級，統計當日以內盤成交的特大單/大單/中單/小單的成交量(張數) |
-
 | 買進特大單金額/買進大單金額/買進中單金額/買進小單金額 | 依照單筆交易金額分級，統計當日以外盤成交的特大單/大單/中單/小單的成交金額(元) |
-
 | 賣出特大單金額/賣出大單金額/賣出中單金額/賣出小單金額 | 依照單筆交易金額分級，統計當日以內盤成交的特大單/大單/中單/小單的成交金額(元) |
-
 | 買進特大單成交次數/買進大單成交次數/買進中單成交次數/買進小單成交次數 | 依照單筆交易金額分級，統計當日以外盤成交的特大單/大單/中單/小單的成交筆數 |
-
 | 賣出特大單成交次數/賣出大單成交次數/賣出中單成交次數/賣出小單成交次數 | 依照單筆交易金額分級，統計當日以內盤成交的特大單/大單/中單/小單的成交筆數 |
 
 ---
@@ -1022,9 +863,7 @@ outputField1(value888,"大單買超由大到小排名",order:=1);
 那麼這樣子的資訊，是不是可以從XS內得知呢？Yes，We Can。
 
 ```xs
-
 value1 = GetField("TickGroup", "Tick");
-
 ```
 
 在Tick資料內有一個欄位叫做「TickGroup」，這個欄位是用來標示這一筆成交資料是怎麼撮合出來的，總共有5種可能的數值：
@@ -1038,20 +877,15 @@ value1 = GetField("TickGroup", "Tick");
 為了簡化讀取Tick資料的流程，7.02版新增了一個ReadTicks函數，可以協助我們自動把把連續成交序列合併統計，讓腳本的的邏輯可以更簡單。我們把上一篇文章「7.02-盤中即時資料欄位的應用」內的篩選大單的腳本改用ReadTicks這個函數來重寫：
 
 ```xs
-
 input: filterMode(1, "篩選方式", inputkind:=dict(["買盤",1], ["賣盤",-1]));
 
 input: filterVolume(100, "大單門檻");
-
-
 
 var: intrabarpersist readtick_cookie(0);// ReadTicks內部使用, 每次呼叫時請照實傳入
 
 array: tick_array[100, 11](0);// 需要宣告一個2維陣列來儲存Tick資料
 
 var: row_count(0), idx(0);
-
-
 
 // 讀取Tick資料
 
@@ -1066,9 +900,6 @@ for idx = 1 to row_count begin
   end;
 
 end;
-
-
-
 ```
 
 要呼叫ReadTicks之前，我們要先準備一個二維的陣列(第5行的tick_array)，一個二維陣列就像是一個Excel的表格，呼叫完ReadTicks之後，每一橫列會儲存一筆Tick資料，而這一筆Tick資料的每個欄位則會存在這個橫列的每一行裡面。
@@ -1104,9 +935,7 @@ ReadTicks讀回的Tick資料會存放在tick_array內，最新的一筆是第一
 - 第 11 個 column 存放的是這些連續成交序列的總成交金額(元)
 
 ```xs
-
 if tick_array[idx, 5] = filterMode and tick_array[idx, 10] >= filterVolume then ...
-
 ```
 
 上面這個判斷式內，tick_array[idx, 5]是內外盤註記，而tick_array[idx, 10]則是這一筆成交的總量(或是連續成交序列的總量)！
@@ -1126,7 +955,6 @@ if tick_array[idx, 5] = filterMode and tick_array[idx, 10] >= filterVolume then 
 從7.02版開始，你可以從腳本內取得每一筆成交資料的詳細資料，除了成交時間，成交價格，成交單量之外，還可以取得這一筆成交資料的內外盤標記(這一筆是外盤成交，還是內盤成交呢？)。以下是Tick資料所支援的所有欄位，以及從腳本內讀取資料的範例：
 
 ```xs
-
 value1 = GetField("Date", "Tick");   // 成交日期，例如20200611 (2020年6月11日)
 
 value2 = GetField("Time", "Tick");   // 成交時間，例如103011 (10點30分11秒)
@@ -1143,23 +971,17 @@ value7 = GetField("AskPrice", "Tick"); // 賣出價格
 
 value8 = GetField("SeqNo", "Tick");  // 資料編號, 每個交易日從1開始編制, 第一筆是1, 第二筆是2, 以下類推
 
-
-
 value22 = GetField("Close", "Tick")[1]; // 前一筆成交價格
 
 value23 = GetField("Close", "Tick")[2]; // 前兩筆成交價格
-
 ```
 
 透過Tick資料，我們從腳本內就可以更掌握目前的行情資料。我們來看一個大單篩選的警示範例，假如我們希望商品出現單筆成交量大於100張的成交時就通知我們的話，可以用底下這個警示腳本來完成：
 
 ```xs
-
 input: filterMode(1, "篩選方式", inputkind:=dict(["買盤",1], ["賣盤",-1]));
 
 input: filterVolume(100, "大單門檻");
-
-
 
 value1 = GetField("Time", "Tick"); // 時間
 
@@ -1169,10 +991,7 @@ value3 = GetField("Volume", "Tick"); // 單量
 
 value4 = GetField("BidAskFlag", "Tick"); // 外盤=1, 內盤=-1
 
-
-
 if value4 = filterMode and value3 >= filterVolume then ret=1;
-
 ```
 
 我們把這個腳本加到策略雷達內，選擇1分鐘頻率，勾選逐筆洗價，同時指定要篩選的參數，例如filterMode選擇買盤，filterVolume選擇100，這樣子就完成了。
@@ -1214,30 +1033,19 @@ Tick欄位 v.s. 報價欄位
 我們把大單篩選的腳本改用這樣子的方式來撰寫。觸發的邏輯改成是如果兩次洗價之間出現了任何一筆大單的話，都顯示警示。
 
 ```xs
-
 input: filterMode(1, "篩選方式", inputkind:=dict(["買盤",1], ["賣盤",-1]));
 
 input: filterVolume(100, "大單門檻");
-
-
 
 var: intrabarpersist last_seqno(0);// 上次洗價時最後一筆Tick的SeqNo
 
 var: curr_seqno(0);// 這次洗價時最後一筆Tick的SeqNo
 
-
-
 if Date <> CurrentDate then return;// 只跑今日的資料
-
-
 
 curr_seqno = GetField("SeqNo", "Tick");// 最新一筆Tick編號
 
-
-
 if last_seqno = 0 then last_seqno = curr_seqno - 1; // 第一次洗價時只洗當時那一筆
-
-
 
 var: seq_no(0), offset(0);
 
@@ -1246,8 +1054,6 @@ seq_no = curr_seqno;
 offset = 0;
 
 while seq_no > last_seqno begin
-
-
 
   // 讀取Tick資料
 
@@ -1259,15 +1065,11 @@ while seq_no > last_seqno begin
 
   value4 = GetField("BidAskFlag", "Tick")[offset];
 
-
-
   if value4 = filterMode and value3 >= filterVolume then begin
 
     ret=1;
 
   end;
-
-
 
   seq_no = seq_no - 1;
 
@@ -1275,12 +1077,7 @@ while seq_no > last_seqno begin
 
 end;
 
-
-
 last_seqno = curr_seqno;
-
-
-
 ```
 
 上面這個腳本比較長一點，所以我們花點篇幅說明處理的方式:
@@ -1306,7 +1103,6 @@ last_seqno = curr_seqno;
 從腳本內要怎麼樣取得這些欄位呢？一樣是透過GetField的語法：
 
 ```xs
-
 value1 = GetField("內盤量", "1"); // 取得1分鐘頻率的數值
 
 value2 = GetField("內盤量", "2"); // 取得2分鐘頻率的數值
@@ -1314,7 +1110,6 @@ value2 = GetField("內盤量", "2"); // 取得2分鐘頻率的數值
 value3 = GetField("內盤量", "5"); // 取得5分鐘頻率的數值
 
 value4 = GetField("內盤量");      // 不指定頻率: 依照目前執行的頻率
-
 ```
 
 語法上最大的差異是頻率欄位可以直接傳入預期的分鐘頻率(只要是XQ目前有支援的分鐘頻率都可以使用)。如果雷達/指標是執行分鐘頻率的話也可以不指定頻率，執行時會依照執行的頻率來抓取對應的數值。
@@ -1328,55 +1123,30 @@ value4 = GetField("內盤量");      // 不指定頻率: 依照目前執行的�
 底下列出 7.02 版所支援的「盤中即時資料欄位」，如果想要了解欄位的詳細內容的話，請點選每個欄位名稱的連結。
 
 | 欄位名稱 | 說明 |
-
 | :-------------------------------------------------------------------- | :------------------------------------------------------------------------------- |
-
 | 成交金額 | 當分鐘的成交金額 |
-
 | 均價 | 開盤到目前為止的成交均價 |
-
 | 內盤量/外盤量 | 當分鐘的內盤成交量/外盤成交量 |
-
 | 上漲量/下跌量 | 當分鐘的上漲成交量/下跌成交量 |
-
 | 估計量 | 到目前為止的當日估計量 |
-
 | 量比 | 估計量 / 昨日整日的成交量 |
-
 | 總成交次數/內盤成交次數/外盤成交次數 | 當分鐘的成交筆數/以內盤成交的成交筆數/以外盤成交的成交筆數 |
-
 | 買進特大單量/買進大單量/買進中單量/買進小單量 | 依照單筆交易金額分級，統計當分鐘以外盤成交的特大單/大單/中單/小單的成交量(張數) |
-
 | 賣出特大單量/賣出大單量/賣出中單量/賣出小單量 | 依照單筆交易金額分級，統計當分鐘以內盤成交的特大單/大單/中單/小單的成交量(張數) |
-
 | 買進特大單金額/買進大單金額/買進中單金額/買進小單金額 | 依照單筆交易金額分級，統計當分鐘以外盤成交的特大單/大單/中單/小單的成交金額(元) |
-
 | 賣出特大單金額/賣出大單金額/賣出中單金額/賣出小單金額 | 依照單筆交易金額分級，統計當分鐘以內盤成交的特大單/大單/中單/小單的成交金額(元) |
-
 | 買進特大單成交次數/買進大單成交次數/買進中單成交次數/買進小單成交次數 | 依照單筆交易金額分級，統計當分鐘以外盤成交的特大單/大單/中單/小單的成交筆數 |
-
 | 賣出特大單成交次數/賣出大單成交次數/賣出中單成交次數/賣出小單成交次數 | 依照單筆交易金額分級，統計當分鐘以內盤成交的特大單/大單/中單/小單的成交筆數 |
-
 | 累計委買/累計委賣/累委買筆/累委賣筆 | 由交易所公布，開盤到目前的累計委買委賣張數(口數)，以及累計委買委賣筆數 |
-
 | 累買成筆/累賣成筆 | 由交易所公布，開盤到目前的以委買成交的筆數以及以委賣成交的筆數，支援期貨／選擇權 |
-
 | 累計成交/累成交筆 | 由交易所公布，開盤到目前的累計成交數量以及成交筆數 |
-
 | 漲停家數/跌停家數/上漲家數/下跌家數 | 目前最新成交價是漲停/跌停/上漲/下跌的家數統計 |
-
 | 內盤家數/外盤家數 | 當分鐘的內盤家數/外盤家數 |
-
 | 基差 | 當分鐘現貨價格與期貨價格之間的差額 |
-
 | Delta/Gamma/Theta/Vega/RHO | 權證/選擇權的希臘數字 |
-
 | 理論價 | 目前最新的理論價格 |
-
 | 波動率 | 當分鐘的波動率 |
-
 | 隱含波動率 | 當分鐘的隱含波動率 |
-
 | 買權成交量/賣權成交量 | 開盤到現在的買權/賣權成交量總和。夜盤商品不納入計算。 |
 
 看完欄位清單之後，那我們就使用這些欄位來做幾個簡單的應用。
@@ -1384,15 +1154,11 @@ value4 = GetField("內盤量");      // 不指定頻率: 依照目前執行的�
 首先開啟IDE，新增一個指標腳本，取名為「當日賺賠」，輸入以下的程式碼：
 
 ```xs
-
 value1 = GetField("均價");
 
 value2 = weightedclose - value1;
 
-
-
 plot1(value2, "賺賠");
-
 ```
 
 開啟技術分析圖，切換到5分鐘頻率，然後加入這個指標，顯示方式改成正負柱狀圖，你會看到類似下方的畫面。
@@ -1402,11 +1168,9 @@ plot1(value2, "賺賠");
 「即時資料欄位」除了可以在自訂指標內使用之外，當然也可以在雷達內使用。接下來新增一個警示腳本，取名為「特大單買盤進場」，然後輸入以下的程式碼：
 
 ```xs
-
 value1 = GetField("買進特大單量", "1") - GetField("賣出特大單量", "1");
 
 if value1 > 0 then ret=1;
-
 ```
 
 把這個腳本加到策略雷達內，選擇1分鐘頻率，勾選逐筆洗價，K棒內單次觸發，指定你想要監控的商品，開始執行後如果當分鐘特大單是買超的話，策略雷達就會產生警示，提醒你這檔商品可能有大戶要開始進場了。
@@ -1434,7 +1198,6 @@ if value1 > 0 then ret=1;
 以上是InputKind的應用範例，InputKind使用說明可以參考XSHelp說明。改寫後的跨分鐘與日頻率KD指標腳本如下：
 
 ```xs
-
  // 跨頻率KD指標，預設跨頻率為30分
 
  // 不支援大頻率跨小頻率，例如：
@@ -1449,21 +1212,13 @@ if value1 > 0 then ret=1;
 
  variable: rsv(0), k(0), _d(0);
 
-
-
  if barfreq <> "Tick" and barfreq <> "Min" and barfreq <> "D" and barfreq <> "AD" then raiseruntimeerror("此範例僅支援分鐘、日與還原日頻率");
 
-
-
  xfMin_stochastic(FreqType, Length, RSVt, Kt, rsv, k, _d);
-
-
 
  Plot1(k, "分鐘與日K(%)");
 
  Plot2(_d, "分鐘與日D(%)");
-
-
 
  // 防呆，大頻率跨小頻率時，在線圖秀不支援
 
@@ -1483,8 +1238,6 @@ if value1 > 0 then ret=1;
 
          setplotlabel(2, "1分D(%)");
 
-
-
      case  "5":
 
          if barfreq <> "Tick" and barfreq <> "Min" then raiseruntimeerror("不支援大頻率跨小頻率：主頻率大於5分鐘");
@@ -1494,8 +1247,6 @@ if value1 > 0 then ret=1;
          setplotlabel(1, "5分K(%)");
 
          setplotlabel(2, "5分D(%)");
-
-
 
      case "10":
 
@@ -1507,8 +1258,6 @@ if value1 > 0 then ret=1;
 
          setplotlabel(2, "10分D(%)");
 
-
-
      case "15":
 
          if barfreq <> "Tick" and barfreq <> "Min" then raiseruntimeerror("不支援大頻率跨小頻率：主頻率大於15分鐘");
@@ -1518,8 +1267,6 @@ if value1 > 0 then ret=1;
          setplotlabel(1, "15分K(%)");
 
          setplotlabel(2, "15分D(%)");
-
-
 
      case "30":
 
@@ -1531,8 +1278,6 @@ if value1 > 0 then ret=1;
 
          setplotlabel(2, "30分D(%)");
 
-
-
      case "60":
 
          if barfreq <> "Tick" and barfreq <> "Min" then raiseruntimeerror("不支援大頻率跨小頻率：主頻率大於60分鐘");
@@ -1543,8 +1288,6 @@ if value1 > 0 then ret=1;
 
          setplotlabel(2, "60分D(%)");
 
-
-
      case "D":
 
          if barfreq <> "Tick" and barfreq <> "Min" and barfreq <> "D" and barfreq <> "AD" then raiseruntimeerror("不支援大頻率跨小頻率：主頻率大於日");
@@ -1552,8 +1295,6 @@ if value1 > 0 then ret=1;
          setplotlabel(1, "日K(%)");
 
          setplotlabel(2, "日D(%)");
-
-
 
      case "AD":
 
@@ -1563,10 +1304,7 @@ if value1 > 0 then ret=1;
 
          setplotlabel(2, "還原日D(%)");
 
-
-
  end; |
-
 ```
 
 ---
@@ -1596,13 +1334,11 @@ if value1 > 0 then ret=1;
 其中，買賣權、履約價、到期天數算是商品的基本資料，是固定的。在6.42版以前, XS沒有提供GetSymbolInfo函數的狀況下，我們會需要一點巧門來取得這些資訊。
 
 ```xs
-
 買賣權=midstr(symbol,6,1); //利用商品名稱取得
 
 履約價=strtonum(midstr(symbol,7,strlen(symbol) - 9)); //利用商品名稱取得
 
 到期天數利用daystoexpirationtf函數，直接寫死找出每月第三個星期三
-
 ```
 
 也就是因為這些規則是死的，利用商品名稱取得資訊的方式讓我們之前系統內建指標只能提供台指選專用的指標。更不要說碰到颱風或農曆春節導致結算日異動時，這個指標就會失真。
@@ -1610,36 +1346,27 @@ if value1 > 0 then ret=1;
 在有了GetSymbolInfo函數之後，這些資訊我們就可以直接使用
 
 ```xs
-
 買賣權=GetSymbolInfo("買賣權");
 
 履約價=GetSymbolInfo("履約價");
 
 到期天數=DateDiff(GetSymbolInfo("到期日"), Date) + 1;
-
 ```
 
 所有的選擇權商品，XS都會提供這些商品基本資料，我們就可以寫出通用版的Delta指標，而不是僅限台指選專用。改寫後的腳本如下：
 
 ```xs
-
 input:
 
      iRate100(2,"無風險利率%"),
 
      iHV(20,"標的歷史波動率計算期間");
 
-
-
  variable:vStrikePrice(0),vVolity100(0),vTTMdays(0);
-
-
 
  if symboltype <> 5 then
 
      raiseruntimeerror("僅支援選擇權");
-
-
 
  if iHV > 0 then
 
@@ -1649,13 +1376,9 @@ input:
 
      vVolity100 = 20;
 
-
-
  vStrikePrice = getsymbolinfo("履約價");
 
  vTTMdays = DateDiff(GetSymbolInfo("到期日"), Date) + 1;
-
-
 
  value1 = bsdelta(leftstr(getsymbolinfo("買賣權"),1), //C表買權、P表賣權
 
@@ -1671,18 +1394,13 @@ input:
 
  vVolity100); //波動率
 
-
-
  plot1(value1,"Delta");
-
 ```
 
 計算Delta需要的所有參數，都是透過GetSymbolInfo取得系統資料，所以現在不止台指選可以用，其他電子選、金融選甚至是個股選擇權都可以使用這個Delta指標。 有沒有注意到在取得標的價格的地方我們是怎麼寫的？
 
 ```xs
-
 getsymbolfield("Underlying","收盤價");
-
 ```
 
 是的，這次我們同時強化了GetSymbolField的功能，在商品欄的位置可以直接使用"Underlying"或"標的"動態取得標的商品。如此一來，不止是本篇文章說明的選擇權希臘字母可以計算，要自行計算期貨商品的價差值也是可行的。
@@ -1708,20 +1426,15 @@ getsymbolfield("Underlying","收盤價");
 小編運用這個原理，寫出以下的背離函數：
 
 ```xs
-
 input:price(numericsimple),index1(numericsimple),length(numericsimple);
 
 if length<5
 
 then raiseruntimeerror("計算期別請超過五期");
 
-
-
 value1=linearregslope(price,length);
 
 value2=linearregslope(index1,length);
-
-
 
 if value1>0 and value2<0
 
@@ -1736,7 +1449,6 @@ else
 　　else
 
 　　　　deviate=0;
-
 ```
 
 透過這個函數，我們就可以比較兩個數列，看看他們是否出現背離的情況，這個函數的寫法是當第一個值下跌而第二個值上昇時，函數的回傳值是 1 ，相反的則是-1 ，若兩個值同方向則是傳回0。
@@ -1744,13 +1456,11 @@ else
 假設我們想找出收盤價下跌，但跟10日RSI上昇的股票，我們就可以運用這個函數，寫出下面這樣的腳本
 
 ```xs
-
 value1=rsi(close,10);
 
 if deviate(close,value1,10)=1
 
 then ret=1;
-
 ```
 
 有了這個函數，我們就可以隨時把兩個時間序列拿出來檢定是否有背離的現象了。
@@ -1778,9 +1488,7 @@ then ret=1;
 在要寫這個腳本時，首先得先找出某特定日到最新的收盤價，一共是幾根Bar。這個函數就叫做GetBarOffset。使用的方法是傳入某個日期，這個函數就會回傳從現在到該日期共隔了幾根Bar。
 
 ```xs
-
 Value1 = GetBarOffset(20151014);
-
 ```
 
 如果今天是2015年10月15日，那上面的程式執行時Value1就會是1，代表是前一根bar。
@@ -1788,7 +1496,6 @@ Value1 = GetBarOffset(20151014);
 有了這個函數，我就來寫出上面所提到的這個腳本
 
 ```xs
-
 input: stardate(20150824);
 
 input:ratio(30);
@@ -1811,25 +1518,17 @@ value1=getbaroffset(stardate);//找出輸入的日期是在第幾根bar
 
 value2=highest(high[1],value1+1);//找出這一波的最高點
 
-
-
 condition1=false;
 
 condition2=false;
-
-
 
 if value2>=close[value1]*(1+ratio/100)//計算波段漲幅有沒有符合要求
 
 then condition1=true;
 
-
-
 if value2>=close[1]*(1+ratio1/100)//計算拉回的幅度夠不夠要求
 
 then condition2=true;
-
-
 
 if nthhighestbar(1,high,10)>=5//從最高點到今天超過五根bar
 
@@ -1840,7 +1539,6 @@ if condition1 and condition2 and close>=close[1]*(1+ratio2/100)
 then ret=1;
 
 end;
-
 ```
 
 在解釋這個腳本之前，我們先來看一下大盤最近的走勢
@@ -1874,7 +1572,6 @@ end;
 首先，我們設計一個計算籌碼集中度的自訂函數，把他叫做BS，取Buysell(買賣超)的簡寫。不知道如何設定自訂函數的使用者，可以先複習一下計算區間漲跌幅的自訂函數這一篇文章：
 
 ```xs
-
 input:days(numericsimple,"計算天數");
 
 value1=GetField("主力買賣超張數");
@@ -1907,12 +1604,9 @@ if value1>ratio and value2<percent
 
 then ret=1;
 
-
-
 outputfield(1,value1,0,"籌碼集中度");
 
 outputfield(2,value2,1,"區間漲幅%");
-
 ```
 
 這個腳本可以找出在N日內，籌碼集中度高於多少百分比，且漲幅低於多少百分比的股票
@@ -1948,11 +1642,9 @@ outputfield(2,value2,1,"區間漲幅%");
 我們可以寫一個選股腳本如下:
 
 ```xs
-
 if close>=close[1]*1.03 and volume>500
 
 then ret=1;
-
 ```
 
 如此一來，我們可以如下圖般，在選股中心新增一個選股叫前一日中長紅，然後加入排程，讓電腦每天幫我們找到符合條件的股票。
@@ -1962,7 +1654,6 @@ then ret=1;
 XS有一個估計量的報價欄位，我們可以利用這個欄位寫一個策略雷達來找出今天預估量會超過昨天成交量且外盤量比內盤量大的股票，寫法很簡單如下：
 
 ```xs
-
 value1=q_InSize;//當日內盤量
 
 value2=q_OutSize;//當日外盤量
@@ -1972,7 +1663,6 @@ if GetQuote("估計量") > volume[1]
 and value2>value1
 
 then ret=1;
-
 ```
 
 接下來，我們來把選股腳本跟策略雷達串在一起
@@ -1998,27 +1688,19 @@ then ret=1;
 設定好了之後，按確認，接下來就跟寫其他腳本一樣可以開始寫函數了。
 
 ```xs
-
-
-
  input:price(numeric);
 
  input:startday(numeric);
 
  input:endday(numeric);
 
-
-
  value1=getbaroffset(startday);
 
  value2=getbaroffset(endday);
 
-
-
  value3=(price[value2]/price[value1])-1 ;
 
  rangechange=value3*100;
-
 ```
 
 有幾個撰寫自訂函數腳本時，要稍加留意之處：
@@ -2026,9 +1708,7 @@ then ret=1;
 自訂函數的名稱一定要是英文的， 在訂定函數內有一個特殊的變數，他的名字就是這個函數的英文名稱。如果計算完成之後要把數值回傳的話，必須把數值傳給這個變數。注意看上面這個例子內的這一行裡面的rangechange就是這個函數的名字，所以這一行表示這個函數算完之後的回傳值就是value3 \* 100：
 
 ```xs
-
 rangechange=value3*100;
-
 ```
 
 自訂函數一樣可以使用input語法來設定參數。可是參數名稱後面括號後不能直接打預設值，而是要寫這個參數的資料格式：如果是數值的話，就寫Numeric，如果是字串的話，就寫String，如果是邏輯值的話，就寫TrueFalse。其他還有更複雜的傳遞格式，就容我們在其他文章內再為大家介紹。
@@ -2036,22 +1716,17 @@ rangechange=value3*100;
 有了這個函數，要寫區間漲跌幅的選股腳本就容易多了:
 
 ```xs
-
 input:startday(20150702,"區間起始日");
 
 input:endday(20151002,"區間結束日");
 
 input:ratio(10,"最低漲幅");
 
-
-
 value1=rangechange(close,startday,endday);
 
 if value1>=ratio
 
 then ret=1;
-
-
 
 value2=GetField("最新股本");
 
@@ -2066,9 +1741,6 @@ outputfield(2,value2,0,"股本(億)");
 outputfield(3,value3,1,"月營收年增率");
 
 outputfield(4,value4,1,"股價淨值比");
-
-
-
 ```
 
 除了計算區間漲跌幅之外，在這個腳本內我們也使用了outputfield的方式，把我們想要觀察的欄位都印出來，方便一起檢視。
@@ -2114,10 +1786,7 @@ OutputField這個語法的主要功能，就是讓使用者可以在選股的結
 例如說我想要估算最新一季的季營收時該怎麼寫？先把資料印出來再說：
 
 ```xs
-
 Value1 = GetField("月營收","M");
-
-
 
 ret = 1;
 
@@ -2128,7 +1797,6 @@ outputfield(2, Value1);
 outputfield(3, Value1[1]);
 
 outputfield(4, Value1[2]);
-
 ```
 
 透過OutputField把最近三期的月營收資料印出來，另外也透過GetFieldDate這個函數把最新一期月營收的資料日期印出來。
@@ -2142,42 +1810,29 @@ outputfield(4, Value1[2]);
 同一季內如果已經公佈營收的，就用公佈的數值， 如果還沒有公佈的，就假設下個月的營收跟最新一期的營收是一樣的這樣子單然是很簡單的估算方式，大家可以依照自己的經驗再做調整。底下就是估算季營收的程式碼，在這裡GetFieldDate就派上用場了:
 
 ```xs
-
 Var: mm(0);
-
-
 
 Value1 = getfield("月營收","M");
 
 mm = Month(GetFieldDate("月營收","M"));
 
-
-
 if mm=1 or mm=4 or mm=7 or mm=10
 
 then value2=Value1 * 3;
-
-
 
 if mm=2 or mm=5 or mm=8 or mm=11
 
 then value2=Value1 * 2 + Value1[1];
 
-
-
 if mm=3 or mm=6 or mm=9 or mm=12
 
 then value2=Value1+Value1[1]+Value1[2];
-
-
 
 // 預估獲利(單位=百萬) = 季營收 * 毛利率 - 營業費用
 
 //
 
 value3 = value2 * GetField("營業毛利率","Q") - GetField("營業費用","Q");
-
-
 
 OutputField(1, mm, "營收月份");
 
@@ -2191,10 +1846,7 @@ OutputField(5, value2, "預估單季營收(億)");
 
 OutputField(6, value3 / 100, "預估單季本業獲利(億)");
 
-
-
 ret = 1;
-
 ```
 
 這段程式碼有點長，基本上就是運用GetFieldDate回傳的營收月份來決定該怎麼樣估算這一季的營收，然後在利用最新一期財報上的毛利率跟營業費用來估算是否會獲利。有興趣的朋友可以用這個腳本跑看看，記得要把執行的頻率設定成"月"喔。
@@ -2212,11 +1864,9 @@ ret = 1;
 首先來介紹基本的語法：
 
 ```xs
-
 Value1 = Average(Close, 5);
 
 Print("Date=", Date, "Close=", Close, "Value1", Value1);
-
 ```
 
 在Print指令內，我們可以把想要印出來的欄位一股腦的寫在裡面，可以印出字串，也可以印出數值。
@@ -2236,9 +1886,7 @@ Print的結果,除了在XScript編輯器內可以看到之外，另外在XS的�
 在Print指令的第一個參數位置，加上file(“檔案路徑")的參數，就可以指定print出來的檔案要放置的路徑。例如，我們想輸出成交價至C:\Print下，可以這樣寫：
 
 ```xs
-
 print(file("C:\print\"),date,symbol,close);
-
 ```
 
 這個腳本輸出的檔案就會移到C:\Print下。
@@ -2250,11 +1898,7 @@ print(file("C:\print\"),date,symbol,close);
 例如，我們想把檔案名稱改為“商品代碼.log”，可以這樣寫：
 
 ```xs
-
 print(file("c:\Print\[Symbol].log"),date,symbol,close);
-
-
-
 ```
 
 有沒有注意到我們上一個範例怎麼指定商品代碼的？用[Symbol]。只要是在file裡面寫了[Symbol]的位置，在輸出的時候就會自動用當時的商品代碼來取代。另外，你也可以使用[ScriptName]、[Freq]或[Date]。這些特殊字串在指定路徑或檔名的時候都可以用，這樣子我們可以輸出的變化就很多了。
@@ -2262,9 +1906,7 @@ print(file("c:\Print\[Symbol].log"),date,symbol,close);
 如果我們想按商品代碼來整理數據，可以這樣寫：
 
 ```xs
-
 print(file("C:\print\[Symbol]\"),date,symbol,close);
-
 ```
 
 ![依商品分類輸出示意圖](images/20260209005651.png)
@@ -2274,11 +1916,7 @@ print(file("C:\print\[Symbol]\"),date,symbol,close);
 或者是，我們想把所有數據都輸出到同一個檔案print.log中，可以這樣寫：
 
 ```xs
-
 print(file("C:\print\print.log"),date,symbol,close);
-
-
-
 ```
 
 ![統一輸出檔案示意圖](images/20260209005749.png)
@@ -2304,21 +1942,15 @@ print(file("C:\print\print.log"),date,symbol,close);
 首先我們來看一下均線黃金交叉的腳本：
 
 ```xs
-
 input: Shortlength(5, "短期均線期數");
 
 input: Longlength(20, "長期均線期數");
-
-
 
 Value1 = Average(Close,Shortlength);
 
 Value2 = Average(Close,Longlength);
 
-
-
 If Value1 cross over Value2 then ret = 1;
-
 ```
 
 在這個腳本我們先計算短期的均線數字，把他存在Value1裡面，再計算長期的均線數字，把他存在Value2裡面，然後判斷Value1是否向上穿越(cross over)Value2，如果是的話則觸發。
@@ -2328,21 +1960,15 @@ If Value1 cross over Value2 then ret = 1;
 要存取這些在之前K棒所算過的數值的方式，就跟存取前一根K棒的價格的方式一樣，是採用[1]的方式來取得。所以，如果要找到前一期黃金交叉的商品的話，只需要把判斷向上穿越的程式碼從Value1改成Value1[1]就可以了。
 
 ```xs
-
 input: Shortlength(5, "短期均線期數");
 
 input: Longlength(20, "長期均線期數");
-
-
 
 Value1 = Average(Close,Shortlength);
 
 Value2 = Average(Close,Longlength);
 
-
-
 If Value1[1] cross over Value2[1] then ret = 1;
-
 ```
 
 這樣子是不是很簡單呢？
@@ -2354,11 +1980,9 @@ If Value1[1] cross over Value2[1] then ret = 1;
 再來看一個例子：
 
 ```xs
-
 Value1 = Close - Close[1];
 
 if Value1 > 0 And Value1[1] > 0 And Value1[2] > 0 then ret=1;
-
 ```
 
 大家可以看得出這個腳本要找的是什麼商品了嗎？就祝大家作多的股票都跟這個腳本一樣，連續上漲三天喔！！ |
@@ -2372,7 +1996,6 @@ if Value1 > 0 And Value1[1] > 0 And Value1[2] > 0 then ret=1;
 # [SetBackBar指定頻率設定資料筆數](https://www.xq.com.tw/lesson/xspractice/%E8%A8%AD%E7%BD%AE%E6%8C%87%E5%AE%9A%E9%A0%BB%E7%8E%87%E5%BC%95%E7%94%A8%E7%AD%86%E6%95%B8%E7%9A%84%E6%87%89%E7%94%A8/)
 
 ```xs
-
 //交易策略執行頻率請設定5分鐘
 
 //
@@ -2393,11 +2016,7 @@ if Value1 > 0 And Value1[1] > 0 And Value1[2] > 0 then ret=1;
 
 input:Davglength(20,"日均線期數"), Hlength(3, "近N根5分K棒最高價");
 
-
-
 settotalBar(Davglength*54);
-
-
 
 condition1 = close > average(GetField("收盤價", "D"),Davglength);
 
@@ -2407,18 +2026,13 @@ condition11= close < average(GetField("收盤價", "D"),Davglength);
 
 condition21= close cross under highest(high[1], Hlength);
 
-
-
 if condition1 and condition2 and filled = 0 then
 
 setposition(1,market);
 
-
-
 if condition11 and condition21 and filled <> 0 then
 
 setposition(0,market);
-
 ```
 
 上述範例在跑台股商品時，因為要用5分K棒組成日K棒來運算範例的20日均線數值，所以資料筆數需要設定到54(一天54根5分K)×20(均線期數)＝1080筆，也就是使用settotalBar(Davglength\*54)這行語法或者在介面上設定足夠的資料筆數，才能成功執行交易或雷達策略。
@@ -2428,7 +2042,6 @@ setposition(0,market);
 在v7.06.01版本中，此範例可以使用 setbackbar(20,"D"); 直接將GetField指定頻率的資料引用筆數設定充足，主頻率5分K只要設定三筆即可執行成功交易或雷達策略，如下範例交易腳本語法
 
 ```xs
-
 //交易策略執行頻率請設定５分鐘
 
 //
@@ -2453,8 +2066,6 @@ settotalBar(Hlength);
 
 setbarBack(Davglength,"D"); // 在 v7.06 版本添加 setbackbar 指定頻率調整資料引用筆數
 
-
-
 condition1 = close > average(GetField("收盤價", "D"),Davglength);
 
 condition2 = close cross Above highest(high[1], Hlength);
@@ -2463,18 +2074,13 @@ condition11= close < average(GetField("收盤價", "D"),Davglength);
 
 condition21= close cross under highest(high[1], Hlength);
 
-
-
 if condition1 and condition2 and filled = 0 then
 
 setposition(1,market);
 
-
-
 if condition11 and condition21 and filled <> 0 then
 
 setposition(0,market);
-
 ```
 
 有了setbackbar指定頻率設定資料引用筆數後，在此範例使用 setbarBack(Davglength,"D"); 來調整日頻率資料的引用筆數，就可以讓使用者簡便設定足夠的資料引用筆數，排除GetField指定頻率多期數運算時需要設定龐大資料筆數的困擾。
@@ -2506,11 +2112,7 @@ setposition(0,market);
 執行腳本時，除了資料讀取筆數這個參數會影響腳本執行的筆數之外，另外由於腳本內常常需要讀取之前的資料來做計算，例如要計算3日收盤價平均值時，會引用到上一根K棒的收盤價以及上上一根K棒的收盤價：
 
 ```xs
-
 Value1 = (Close + Close[1] + Close[2]) / 3;
-
-
-
 ```
 
 所以在腳本要執行之前，系統除了要準備資料讀取範圍內的K棒資料之外，另外也需要往前多準備一些K棒資料：
@@ -2520,11 +2122,7 @@ Value1 = (Close + Close[1] + Close[2]) / 3;
 在下面這張圖內，假如腳本的內容是
 
 ```xs
-
 Value1 = Close - Close[5]; {計算５日漲幅}
-
-
-
 ```
 
 由於最大引用筆數只有4筆，所以腳本要去讀取Close[5]的時候會發生錯誤。這時候系統就會重新調整執行的範圍，從發生錯誤的下一筆開始重新執行。
@@ -2544,21 +2142,13 @@ XS自訂指標
 或是可以透過以下的函數從腳本內控制指標資料的長度：
 
 ```xs
-
 SetTotalBar(300);
-
-
-
 ```
 
 如果在指標腳本內引用SetTotalBar(300)的話，那這個指標就只會畫最新的300筆資料(不包含當日即時的資料)。如果你希望可以從某個指定日期開始畫圖，可以使用這一版新提供的SetFirstBarDate函數：
 
 ```xs
-
 SetFirstBarDate(20150101);
-
-
-
 ```
 
 這樣子的話指標就會從20150101日開始畫圖。
@@ -2566,11 +2156,7 @@ SetFirstBarDate(20150101);
 至於最大引用範圍這個參數，系統會根據使用者指定的資料範圍來推算一個預設值。使用者也在腳本內透過SetBackBar這個函數來做控制：
 
 ```xs
-
 SetBackBar(50);
-
-
-
 ```
 
 另外還有一個 SetBarBack函數，他的用途跟SetBackBar是一模一樣的。
@@ -2606,11 +2192,9 @@ XQ 提供了能夠在線圖上指定區域填色的功能，例如 KD 指標的�
 ## 一、函數語法
 
 ```xs
-
 PlotFill(序列編號, vFrom, vTo)
 
 PlotFill(序列編號, vFrom, vTo, "序列名稱")
-
 ```
 
 ## 二、函數說明
@@ -2670,28 +2254,19 @@ PlotFill(序列編號, vFrom, vTo, "序列名稱")
 以下範例計算 KD 指標，並將 KD 的超買超賣區間填色：
 
 ```xs
-
 //計算KD指標，並將KD的超買超賣區間填色
 
 input: Length(9, "天數"), RSVt(3, "RSVt權數"), Kt(3, "Kt權數");
 
 input: OverBought(80, "超買"), OverSold(20, "超賣");
 
-
-
 variable: rsv(0), k(0), _d(0);
 
-
-
 Stochastic(Length, RSVt, Kt, rsv, k, _d);
-
-
 
 Plot1(k, "K(%)");
 
 Plot2(_d, "D(%)");
-
-
 
 //當K值在超買線以上時
 
@@ -2722,7 +2297,6 @@ end else begin
     NoPlot(4);
 
 end;
-
 ```
 
 ### 執行效果
@@ -6357,7 +5931,6 @@ Print(
   FormatDate("yyyy/MM/dd", Date), 
 
   NumToStr(value1, 0), NumToStr(value2, 0), condition1);
-
 ```
 
 在紅字的部分，腳本內利用 GetInfo("FilterMode") 來判斷目前是跑選股，還是跑選股回測/回溯，如果是跑回測/回溯的話，那麼抓取大戶持股資料時，就往前偏一期，也就是說不抓當週的資料，改抓上一週的資料。 這樣子跑出來的資料是長這個樣子的： 2023/06/05 122 129 FALSE 2023/06/06 122 129 FALSE 2023/06/07 122 129 FALSE 2023/06/08 122 129 FALSE 2023/06/09 122 129 FALSE 2023/06/12 125 122 TRUE 2023/06/13 125 122 TRUE 2023/06/14 125 122 TRUE 2023/06/15 125 122 TRUE 2023/06/16 125 122 TRUE 2023/06/19 124 125 FALSE 2023/06/20 124 125 FALSE 2023/06/21 124 125 FALSE 在6/5日到6/8日之間，這時候腳本就不認為千張大戶股東人數增加(正確)。 可是，6/9日那一天也不認為有增加，腳本要等到6/12日(星期一)才會認為真的增加了。 這代表著，使用者要等到星期一下午收盤時(因為這是執行選股，每日收盤後資料才會異動)才會發現千張大戶股東人數增加了，可是事實上，因為資料是星期五收盤後就公佈了，所以星期一開盤前市場上的人就都已經知道這件事情了!! 也就是說透過自行偏移一期的方式，雖然可以解決提前偷看資料的問題，可是也產生了訊號延後到星期一收盤後才會產生的問題。
@@ -6409,7 +5982,6 @@ if value1 > value1[1] then ret=1;
 ```
 
 ```xs
-
 ```
 
 這樣子的寫法在這 次改版後可能會產生問題。 由於之後系統在執行 GetField("大戶持股人數", "W", param:=1000)時，會依照實際資料是否公佈來決定腳本會看到的大戶持股人數的欄位，例如如果今天是星期四的話，那這時候就會抓到上一週末所公佈的數值，如果是星期五的話，就會抓到當週公佈的數值。 上面的腳本如果是跑日頻率的話：
@@ -6439,11 +6011,9 @@ if GetField("大戶持股人數", "W", param:=1000) > 
 value1 = GetField("大戶持股人數", "W", param:=1000);
 
 if value1 > value1[1] then ret=1;
-
 ```
 
 ```xs
-
 ```
 
 ```xs
@@ -6456,7 +6026,6 @@ if trueall(
    GetField("大戶持股人數", "W", param:=1000) > 
 
    GetField("大戶持股人數", "W", param:=1000)[1], 3) then ret=1;
-
 ```
 
 ```xs
@@ -6467,7 +6036,6 @@ if trueall(
 value1 = GetField("大戶持股人數", "W", param:=1000);
 
 if trueall(value1 > value1[1], 3) then ret=1;
-
 ```
 
 ```xs
@@ -6478,7 +6046,6 @@ if trueall(value1 > value1[1], 3) then ret=1;
 if LinearReg(GetField("大戶持股人數", "W", param:=1000), 5) > 0 
 
 then ret=1;
-
 ```
 
 ```xs
@@ -6623,7 +6190,6 @@ if _firstTime = 0 then begin
 	_firstTime = 1; //第一次洗價後_firstTime就會持續=1，此後不會再=0了
 
 end;
-
 ```
 
 - isfirstcall(" ") 的寫法：
@@ -6632,7 +6198,6 @@ end;
 condition1 = ……;
 
 if isfirstcall(" ") then condition1 then ……;
-
 ```
 
 #### **二、isfirstcall("Bar")：此根 Bar 的第一次洗價 **
@@ -6655,7 +6220,6 @@ if _Bar <> currentbar then begin
 	_Bar = currentbar;   //更新 _Bar的數值
 
 end;
-
 ```
 
 - isfirstcall("Bar") 的寫法：
@@ -6664,7 +6228,6 @@ end;
 condition1 = ......;
 
 if isfirstcall("Bar") and condition1[1] then ......;
-
 ```
 
 **(二) Bar 內 N 次觸發，使用最新洗價的結果來判斷 **
@@ -6697,7 +6260,6 @@ if condition1 and counts < N then begin
 	counts += 1;
 
 end;
-
 ```
 
 - isfirstcall ("Bar") 的寫法：
@@ -6720,7 +6282,6 @@ if condition1 and counts < N then begin
 	counts += 1;
 
 end;
-
 ```
 
 #### **三、isfirstcall("Date")：此交易日的第一次洗價 **
@@ -6736,7 +6297,6 @@ end;
 if date<>date[1] and Position > 0 then
 
 	SetPosition(0, label:="換日開盤清倉");
-
 ```
 
 - 若是期貨(全日)，不用 isfirstcall 的寫法(通用於全部商品)：
@@ -6753,7 +6313,6 @@ if isSessionFirstBar and _Bar <> currentBar and Position > 0 then begin
 	_Bar = currentBar;
 
 end;
-
 ```
 
 - isfirstcall("Date") 的寫法(通用於全部商品)：
@@ -6762,7 +6321,6 @@ end;
 if IsFirstCall("Date") and Position > 0 then
 
 SetPosition(0, label:="換日開盤清倉");
-
 ```
 
 #### **四、isfirstcall("Realtime")：進入即時洗價區間的第一次洗價 **
@@ -6787,7 +6345,6 @@ end;
 if currentTime >= TimeAdd(_startTime,"MM",N) then
 
 	raiseRunTimeError("時間到停止策略");
-
 ```
 
 - isfirstcall("Date") 的寫法：
@@ -6802,7 +6359,6 @@ if isfirstcall("Realtime") then _startTime = currentTime;
 if currentTime >= TimeAdd(_startTime,"MM",N) then
 
 	raiseRunTimeError("時間到停止策略");
-
 ```
 
 #### **五、isfirstcall("RealBar")：此交易日進入即時洗價區間，首次產生成交事件後的第一次洗價 **
@@ -7234,7 +6790,6 @@ Print(
   FormatDate("yyyy/MM/dd", Date), 
 
   NumToStr(value1, 0), NumToStr(value2, 0), condition1);
-
 ```
 
 在紅字的部分，腳本內利用 GetInfo("FilterMode") 來判斷目前是跑選股，還是跑選股回測/回溯，如果是跑回測/回溯的話，那麼抓取大戶持股資料時，就往前偏一期，也就是說不抓當週的資料，改抓上一週的資料。 這樣子跑出來的資料是長這個樣子的： 2023/06/05 122 129 FALSE 2023/06/06 122 129 FALSE 2023/06/07 122 129 FALSE 2023/06/08 122 129 FALSE 2023/06/09 122 129 FALSE 2023/06/12 125 122 TRUE 2023/06/13 125 122 TRUE 2023/06/14 125 122 TRUE 2023/06/15 125 122 TRUE 2023/06/16 125 122 TRUE 2023/06/19 124 125 FALSE 2023/06/20 124 125 FALSE 2023/06/21 124 125 FALSE 在6/5日到6/8日之間，這時候腳本就不認為千張大戶股東人數增加(正確)。 可是，6/9日那一天也不認為有增加，腳本要等到6/12日(星期一)才會認為真的增加了。 這代表著，使用者要等到星期一下午收盤時(因為這是執行選股，每日收盤後資料才會異動)才會發現千張大戶股東人數增加了，可是事實上，因為資料是星期五收盤後就公佈了，所以星期一開盤前市場上的人就都已經知道這件事情了!! 也就是說透過自行偏移一期的方式，雖然可以解決提前偷看資料的問題，可是也產生了訊號延後到星期一收盤後才會產生的問題。
@@ -7286,7 +6841,6 @@ if value1 > value1[1] then ret=1;
 ```
 
 ```xs
-
 ```
 
 這樣子的寫法在這 次改版後可能會產生問題。 由於之後系統在執行 GetField("大戶持股人數", "W", param:=1000)時，會依照實際資料是否公佈來決定腳本會看到的大戶持股人數的欄位，例如如果今天是星期四的話，那這時候就會抓到上一週末所公佈的數值，如果是星期五的話，就會抓到當週公佈的數值。 上面的腳本如果是跑日頻率的話：
@@ -7316,11 +6870,9 @@ if GetField("大戶持股人數", "W", param:=1000) > 
 value1 = GetField("大戶持股人數", "W", param:=1000);
 
 if value1 > value1[1] then ret=1;
-
 ```
 
 ```xs
-
 ```
 
 ```xs
@@ -7333,7 +6885,6 @@ if trueall(
    GetField("大戶持股人數", "W", param:=1000) > 
 
    GetField("大戶持股人數", "W", param:=1000)[1], 3) then ret=1;
-
 ```
 
 ```xs
@@ -7344,7 +6895,6 @@ if trueall(
 value1 = GetField("大戶持股人數", "W", param:=1000);
 
 if trueall(value1 > value1[1], 3) then ret=1;
-
 ```
 
 ```xs
@@ -7355,7 +6905,6 @@ if trueall(value1 > value1[1], 3) then ret=1;
 if LinearReg(GetField("大戶持股人數", "W", param:=1000), 5) > 0 
 
 then ret=1;
-
 ```
 
 ```xs
@@ -7500,7 +7049,6 @@ if _firstTime = 0 then begin
 	_firstTime = 1; //第一次洗價後_firstTime就會持續=1，此後不會再=0了
 
 end;
-
 ```
 
 - isfirstcall(" ") 的寫法：
@@ -7509,7 +7057,6 @@ end;
 condition1 = ……;
 
 if isfirstcall(" ") then condition1 then ……;
-
 ```
 
 #### **二、isfirstcall("Bar")：此根 Bar 的第一次洗價 **
@@ -7532,7 +7079,6 @@ if _Bar <> currentbar then begin
 	_Bar = currentbar;   //更新 _Bar的數值
 
 end;
-
 ```
 
 - isfirstcall("Bar") 的寫法：
@@ -7541,7 +7087,6 @@ end;
 condition1 = ......;
 
 if isfirstcall("Bar") and condition1[1] then ......;
-
 ```
 
 **(二) Bar 內 N 次觸發，使用最新洗價的結果來判斷 **
@@ -7574,7 +7119,6 @@ if condition1 and counts < N then begin
 	counts += 1;
 
 end;
-
 ```
 
 - isfirstcall ("Bar") 的寫法：
@@ -7597,7 +7141,6 @@ if condition1 and counts < N then begin
 	counts += 1;
 
 end;
-
 ```
 
 #### **三、isfirstcall("Date")：此交易日的第一次洗價 **
@@ -7613,7 +7156,6 @@ end;
 if date<>date[1] and Position > 0 then
 
 	SetPosition(0, label:="換日開盤清倉");
-
 ```
 
 - 若是期貨(全日)，不用 isfirstcall 的寫法(通用於全部商品)：
@@ -7630,7 +7172,6 @@ if isSessionFirstBar and _Bar <> currentBar and Position > 0 then begin
 	_Bar = currentBar;
 
 end;
-
 ```
 
 - isfirstcall("Date") 的寫法(通用於全部商品)：
@@ -7639,7 +7180,6 @@ end;
 if IsFirstCall("Date") and Position > 0 then
 
 SetPosition(0, label:="換日開盤清倉");
-
 ```
 
 #### **四、isfirstcall("Realtime")：進入即時洗價區間的第一次洗價 **
@@ -7664,7 +7204,6 @@ end;
 if currentTime >= TimeAdd(_startTime,"MM",N) then
 
 	raiseRunTimeError("時間到停止策略");
-
 ```
 
 - isfirstcall("Date") 的寫法：
@@ -7679,7 +7218,6 @@ if isfirstcall("Realtime") then _startTime = currentTime;
 if currentTime >= TimeAdd(_startTime,"MM",N) then
 
 	raiseRunTimeError("時間到停止策略");
-
 ```
 
 #### **五、isfirstcall("RealBar")：此交易日進入即時洗價區間，首次產生成交事件後的第一次洗價 **
