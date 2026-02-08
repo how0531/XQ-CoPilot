@@ -66,15 +66,71 @@ def parse_mixed_content(content: str) -> Dict[str, any]:
         "//",
         "{",
         "}",
+        "numeric",
+        "string",
+        "bool",
+        "simple",
+        "series",
     ]
     code_pattern = re.compile(f"({'|'.join(xs_keywords)})", re.IGNORECASE)
+
+    # 選股欄位特徵 (Metadata)
+    categories = [
+        "常用",
+        "基本",
+        "獲利",
+        "營收",
+        "資產",
+        "負債",
+        "股東權益",
+        "現金流量",
+        "股利",
+        "籌碼",
+        "交易",
+        "技術",
+        "事件",
+    ]
+    units = ["元", "千元", "百萬", "億", "％", "次", "張", "股", "天", "bps"]
+    formats = ["數值", "字串", "布林值", "日期"]
+    scripts = ["指標", "選股", "警示", "交易", "函數"]
+    freqs = ["即時", "Tick", "分", "日", "週", "月", "季", "半年", "年"]
+    symbols = ["台股", "港股", "美股", "期貨", "選擇權", "大盤"]
+
+    metadata = {
+        "category": "",
+        "unit": "",
+        "format": "",
+        "scripts": [],
+        "frequency": "",
+        "symbols": [],
+    }
 
     for line in lines:
         line = line.strip()
         if not line:
             continue
 
-        # 識別類別
+        # 1. 優先匹配 Metadata
+        if line in categories:
+            metadata["category"] = line
+            continue
+        if line in units:
+            metadata["unit"] = line
+            continue
+        if line in formats:
+            metadata["format"] = line
+            continue
+        if line in scripts:
+            metadata["scripts"].append(line)
+            continue
+        if line in freqs:
+            metadata["frequency"] = line
+            continue
+        if line in symbols:
+            metadata["symbols"].append(line)
+            continue
+
+        # 原有的類別識別（保留相容性）
         if re.match(
             r"^(陣列|交易|欄位|數學|字串|日期|一般|系統|報價|選股|資料)函數$", line
         ):
@@ -138,6 +194,7 @@ def parse_mixed_content(content: str) -> Dict[str, any]:
             result["examples"].extend(code_buffer)
 
     result["description"] = text_buffer
+    result["metadata"] = metadata
 
     return result
 
@@ -148,12 +205,11 @@ def format_function_doc(func_name: str, parsed_data: Dict) -> str:
     """
     lines = [f"### {func_name}", ""]
 
-    # 語法區塊 (嘗試從 description 抽出第一行可能是語法的內容 if syntax empty)
+    # 1. 語法區塊
     syntax = parsed_data.get("syntax", [])
     if not syntax and parsed_data["description"]:
-        # 有些語法塊被判定為 description 第一行
         first_line = parsed_data["description"][0]
-        if "(" in first_line and ")" in first_line:
+        if "(" in first_line and ")" in first_line and len(first_line) < 100:
             syntax = [first_line]
             parsed_data["description"] = parsed_data["description"][1:]
 
@@ -162,14 +218,43 @@ def format_function_doc(func_name: str, parsed_data: Dict) -> str:
         lines.append("")
         lines.append("```xs")
         for s in syntax:
-            # 移除可能存在的標記
             s = s.replace("```xs", "").replace("```", "").strip()
             if s:
                 lines.append(s)
         lines.append("```")
         lines.append("")
 
-    # 說明區塊
+    # 2. Metadata 表格 (針對選股欄位優化)
+    meta = parsed_data.get("metadata", {})
+    has_meta = any(
+        [
+            meta["category"],
+            meta["unit"],
+            meta["format"],
+            meta["scripts"],
+            meta["frequency"],
+            meta["symbols"],
+        ]
+    )
+
+    if has_meta:
+        lines.append("| 項目 | 內容 |")
+        lines.append("| :--- | :--- |")
+        if meta["category"]:
+            lines.append(f"| **欄位分類** | {meta['category']} |")
+        if meta["unit"]:
+            lines.append(f"| **單位** | {meta['unit']} |")
+        if meta["format"]:
+            lines.append(f"| **格式** | {meta['format']} |")
+        if meta["scripts"]:
+            lines.append(f"| **支援腳本** | {', '.join(meta['scripts'])} |")
+        if meta["frequency"]:
+            lines.append(f"| **可用頻率** | {meta['frequency']} |")
+        if meta["symbols"]:
+            lines.append(f"| **支援商品** | {', '.join(meta['symbols'])} |")
+        lines.append("")
+
+    # 3. 說明區塊
     desc_lines = [
         l for l in parsed_data["description"] if l != parsed_data.get("category", "")
     ]
@@ -186,7 +271,7 @@ def format_function_doc(func_name: str, parsed_data: Dict) -> str:
                 )
         lines.append("")
 
-    # 範例區塊
+    # 4. 範例區塊
     if parsed_data.get("examples"):
         lines.append("**範例:**")
         lines.append("")
@@ -200,7 +285,7 @@ def format_function_doc(func_name: str, parsed_data: Dict) -> str:
         lines.append("```")
         lines.append("")
 
-    # 注意事項
+    # 5. 注意事項
     if parsed_data.get("notes"):
         lines.append("**注意事項:**")
         lines.append("")
@@ -244,10 +329,34 @@ def find_mixed_content_sections(filepath: str) -> List[Tuple[int, int, str]]:
             ):
                 j += 1
 
-            # 檢查這個區塊是否包含 \\n
+            # 檢查這個區塊是否包含 \\n 或 選股特有的 Metadata 關鍵字
             block_content = "".join(lines[i:j])
-            if "\\n" in block_content and (
-                "函數" in block_content or "Array" in block_content
+
+            # 定義 Metadata 關鍵字
+            meta_keywords = [
+                "常用",
+                "基本",
+                "獲利",
+                "營收",
+                "資產",
+                "負債",
+                "股東權益",
+                "現金流量",
+                "股利",
+                "籌碼",
+                "技術",
+                "事件",
+                "％",
+                "數值",
+                "選股",
+                "台股",
+            ]
+            has_meta = any(kw in block_content for kw in meta_keywords)
+
+            if ("\\n" in block_content or has_meta) and (
+                "函數" in block_content
+                or "Array" in block_content
+                or "GetField" in block_content
             ):
                 sections.append((i, j, func_name))
 
