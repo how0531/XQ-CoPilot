@@ -360,10 +360,7 @@ input:
     _MA_Short(5, "短均線"),
     _MA_Long(20, "長均線");
 
-// 1.2 交易濾網與限制 (Adv)
-input: _DayMode(0, "交易日限制", InputKind:=Dict(["無", 0], ["周一休", 1], ["周二休", 2], ["周三休", 3], ["周四休", 4], ["周五休", 5]));
-input: _EstVolume(3000, "預估量>N張");
-input: _IndexLimit(1.5, "大盤漲跌±N%不交易"); // 極端盤勢濾網
+
 
 
 // ==============================
@@ -384,21 +381,9 @@ var:
 if BarFreq <> "Min" then RaiseRunTimeError("僅支援分鐘線頻率");
 if GetSymbolInfo("買賣現沖") = false then return;
 
-// 3.1 風險同意書 (強制)
-input: _MakeSure(0, "了解風險請選是", InputKind:=Dict(["是", 1], ["否", 0]));
-if _MakeSure <> 1 then RaiseRunTimeError("請確實了解腳本內容，並勾選【是】");
 
-// 3.2 模式選擇 (實盤/回測)
-input: _TradeMode(1, "交易模式", InputKind:=Dict(["實盤", 1], ["回測", 0]));
-if _TradeMode = 1 and GetInfo("IsRealTime") = 0 then return; // 實盤模式下，非即時不執行
 
-// 3.3 交易日濾網
-if _DayMode > 0 and DayOfWeek(Date) = _DayMode then return;
 
-// 3.4 大盤濾網 (極端行情不交易)
-value1 = GetSymbolField("TSE.TW", "收盤價", "D");
-value2 = GetSymbolField("TSE.TW", "收盤價", "D")[1];
-if absvalue((value1 - value2) / value2 * 100) > _IndexLimit then return;
 
 
 // ==============================
@@ -426,9 +411,9 @@ _Lots = IntPortion(_Amount * 10000 / (GetField("漲停價", "D") * 1000));
 // ==============================
 
 // 5.1.1 進場邏輯（均線黃金交叉 + 濾網）
-Condition1 = GetField("估計量") >= _EstVolume; // 預估量濾網
 
-if filled = 0 and position = 0 and _MA_S cross above _MA_L and Condition1 then begin
+
+if filled = 0 and position = 0 and _MA_S cross above _MA_L then begin
     SetPosition(_Lots);
     _EntryFlag = 1;
     _OrderTime = Time; // 紀錄下單時間

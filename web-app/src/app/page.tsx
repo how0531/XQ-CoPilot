@@ -8,7 +8,7 @@ import ChatContainer from '@/components/chat/ChatContainer';
 import ChatSidebar from '@/components/chat/ChatSidebar';
 
 export default function Home() {
-  const { user, loading, isGuestMode } = useAuth();
+  const { user, loading, isGuestMode, enterGuestMode } = useAuth();
   const [selectedChatId, setSelectedChatId] = useState<string | undefined>(undefined);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -52,6 +52,13 @@ export default function Home() {
           </div>
 
           <LoginButton />
+          
+          <button
+            onClick={() => enterGuestMode()}
+            className="w-full mt-4 py-2 px-4 bg-white/50 hover:bg-white/70 dark:bg-gray-800/50 dark:hover:bg-gray-800/70 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition-colors border border-gray-200 dark:border-gray-700"
+          >
+            訪客預覽 (Guest Preview)
+          </button>
 
           <p className="text-center text-sm text-slate-500 dark:text-slate-400 mt-6">
             使用 Google 帳號安全登入
@@ -140,7 +147,7 @@ export default function Home() {
             {/* Warning / Status */}
             {isGuestMode && (
                <div className="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">
-                ⚠️ AI 功能需配置 API Key
+                訪客預覽模式 (使用系統 API Key)
               </div>
             )}
           </div>

@@ -12,6 +12,7 @@ interface AuthContextType {
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
   isGuestMode: boolean; // 是否為訪客模式
+  enterGuestMode: () => void; // 手動進入訪客模式
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -19,31 +20,49 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  
-  const isGuestMode = !isFirebaseConfigured;
+  const [isGuestMode, setIsGuestMode] = useState(false);
 
   useEffect(() => {
-    if (isGuestMode) {
-      // ⚠️ 訪客模式：缺少 Firebase 配置，跳過初始化
-      console.warn('⚠️ 訪客模式：缺少 Firebase 配置，AI 功能需要配置 API Keys');
-      setUser(null);
+    // 1. 檢查是否缺少 Firebase 配置
+    if (!isFirebaseConfigured) {
+      console.warn('⚠️ 缺少 Firebase 配置，強制進入訪客模式');
+      setIsGuestMode(true);
       setLoading(false);
       return;
     }
 
-    // 正常模式：監聽 Firebase Auth 狀態
+    // 2. 檢查 LocalStorage 是否有手動訪客標記
+    const storedGuestMode = localStorage.getItem('xq_chatbot_guest_mode');
+    if (storedGuestMode === 'true') {
+      setIsGuestMode(true);
+      setLoading(false);
+      return;
+    }
+
+    // 3. 正常模式：監聽 Firebase Auth 狀態
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setLoading(false);
+      // 如果登入成功，確保退出訪客模式
+      if (user) {
+        setIsGuestMode(false);
+        localStorage.removeItem('xq_chatbot_guest_mode');
+      }
     });
 
     return () => unsubscribe();
-  }, [isGuestMode]);
+  }, []);
 
   const signInWithGoogle = async () => {
-    if (isGuestMode) {
-      alert('⚠️ 訪客模式：請先在 .env.local 配置 Firebase API Keys 才能登入');
+    if (!isFirebaseConfigured) {
+      alert('⚠️ 系統錯誤：缺少 Firebase 配置，無法登入');
       return;
+    }
+    
+    // 如果在訪客模式下點擊登入，先清除訪客狀態
+    if (isGuestMode) {
+      setIsGuestMode(false);
+      localStorage.removeItem('xq_chatbot_guest_mode');
     }
 
     const provider = new GoogleAuthProvider();
@@ -51,12 +70,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
-    if (isGuestMode) return;
+    if (isGuestMode) {
+      setIsGuestMode(false);
+      localStorage.removeItem('xq_chatbot_guest_mode');
+      // 重新載入以觸發 Auth 狀態檢查
+      window.location.reload();
+      return;
+    }
     await firebaseSignOut(auth);
   };
 
+  const enterGuestMode = () => {
+    setIsGuestMode(true);
+    localStorage.setItem('xq_chatbot_guest_mode', 'true');
+    setUser(null); // 確保清除使用者狀態
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, signInWithGoogle, signOut, isGuestMode }}>
+    <AuthContext.Provider value={{ user, loading, signInWithGoogle, signOut, isGuestMode, enterGuestMode }}>
       {children}
     </AuthContext.Provider>
   );
