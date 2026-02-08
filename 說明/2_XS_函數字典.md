@@ -42,13 +42,10 @@ BarAdjusted -  (內建函數)
 應用在指定策略執行的頻率，避免執行頻率設定錯誤的範例語法如下：
 
 - **範例一**：確認執行頻率必須是「還原日」頻率才可執行
-
 ```
 if BarFreq <> "D" or BarAdjusted <> True  then raiseRunTimeError("僅支援還原日頻率");
 ```
-
 - **範例二**：確認執行頻率必須是「還原5分鐘」頻率才可執行
-
 ```
 if BarInterval <> 5
 
@@ -56,7 +53,6 @@ or barFreq <> "Min"
 
 or BarAdjusted <> true then raiseRunTimeError("僅支援還原5分鐘線圖");
 ```
-
 ---
 
 ## BarFreq
@@ -91,13 +87,11 @@ BarFreq -  (內建函數)
 說明：
 
 一般可以使用這個函數來判斷目前的執行頻率
-
 ```
 //確認資料必須是日線
 
 if BarFreq <> "D" then return;
 ```
-
 ---
 
 ## BarInterval
@@ -120,7 +114,6 @@ BarInterval -  (內建函數)
 說明：
 
 一般而言BarInterval函數會跟[BarFreq](api?a=barfreq&b=sys)一起搭配使用，用來判斷目前執行的分鐘頻率的分鐘間隔。
-
 ```
 // 先判斷目前是分鐘線
 
@@ -138,7 +131,6 @@ Begin
 
 End;
 ```
-
 ---
 
 ## CallFunction
@@ -171,7 +163,6 @@ CallFunction -  (內建函數)
 CallFunction的用法很簡單，第一個參數固定是要被呼叫的函數名稱，其餘的參數就是看被呼叫函數需要幾個參數，依序填入即可。
 
 範例：
-
 ```
 plot1(average(c,5));
 
@@ -179,7 +170,6 @@ plot2(callfunction("average",c,5));
 
 //以上二個寫法效果是一樣的
 ```
-
 ---
 
 ## CurrentBar
@@ -202,7 +192,6 @@ K棒編號 = CurrentBar
 傳回執行腳本時的K棒序列編號，由1開始，第一筆K棒編號為1，第二筆K棒編號為2，依序遞增。
 
 可以使用這個函數來判斷目前腳本執行的時機點
-
 ```
 if CurrentBar = 1 then
 
@@ -212,7 +201,6 @@ else
 
 	value1 = value1[1] + value2 * (Close - value1[1]);
 ```
-
 上述範例利用CurrentBar來判斷目前是否是第一筆K棒。如果是的話則回傳XAverage的初始數值。
 
 ---
@@ -243,29 +231,23 @@ DataAlign(欲設定的資料對位方式)
 ![對位方式](https://www.xq.com.tw/xstrader/wp-content/uploads/2015/08/DataAlign.png)
 
 由於每日外資買賣超資料都是在下午16:00以後才會公布，也就是在當日交易區段時價位資料的日期與外資買賣超資料的日期會有一天的差異。所以當以下的腳本在5/28日上午執行時
-
 ```
 if Close > Close[1] and
 
    GetField("外資買賣超") > 0 then ...
 ```
-
 系統會依照對位方式決定GetField("外資買賣超")函數會取得哪一天的外資買賣超資料。
 
 目前系統支援兩種資料對位方式，分別是
 
 - **絕對對位**
-
 ```
 DataAlign(0);
 ```
-
 - **遞補對位**
-
 ```
 DataAlign(1);
 ```
-
 在**絕對對位**模式時，GetField("外資買賣超")函數的日期必須與價位日期一致(**同期別**)，也就是說系統會嘗試讀取5/28日的外資買賣超資料，此時由於資料尚未公佈，所以執行會發生失敗(引用資料不存在)。
 
 而在**遞補對位**模式時，系統在找不到5/28日的外資買賣超資料時，會**自動往前尋找**。在上面的範例內 GetField("外資買賣超")則會找到5/27日的外資買賣超資料。
@@ -279,13 +261,11 @@ DataAlign(1);
 選股腳本由於常常需要讀取營收/財報等欄位資料，而這些資料通常公佈時間都是落後於價位日期的，所以預設為遞補對位。
 
 使用者如果知道所需資料的日期的話，也可以透過不同的寫法來讀取到預期的資料，不需要更改對位模式。以上述範例而言，如果這是一個策略雷達腳本的話，由於策略雷達腳本的執行時間通常是在交易時間區段，此時外資買賣超資料一定會落後一期。所以腳本可以修改成下列寫法:
-
 ```
 if Close > Close[1] and
 
    GetField("外資買賣超")[1] > 0 then ...
 ```
-
 注意到腳本內使用\*\*GetField("外資買賣超")[1]\*\*語法來讀取前一期的外資買賣超。
 
 ---
@@ -310,19 +290,15 @@ ExecOffset -  (內建函數)
 使用在函數內，用來取得目前函數執行時*偏移*的K棒根數。
 
 一般的函數呼叫方式如下:
-
 ```
 Value1 = Average(Volume, 5);
 ```
-
 此時如果從Average函數內去呼叫ExecOffset時得到的值是0。
 
 如果呼叫的方式改成:
-
 ```
 Value1 = Average(Volume, 5)[1];
 ```
-
 的話，則在呼叫Average函數時利用\*\*[1]\*\*設定了偏移的K棒個數，此時Average function執行時取得的資料是當時資料往前偏移一筆的結果，也就是說Value1會是前5日成交量的平均值，不包含最新一日的成交量。
 
 在這樣子的使用情境底下，Average函數內讀取**ExecOffset**時會得到1.
@@ -359,13 +335,11 @@ File指令有兩種用法:
 第二種用法是傳入檔案名稱，例如File("d:\Print\MyOutput.log")。一旦指定檔案名稱之後，所有Print的輸出都會寫到這個檔案內，包含所有被執行到的商品。
 
 以下是完整的範例:
-
 ```
 Print(File("d:\Print\"), date,symbol,close);
 
 Print(File("d:\Print\MyOutput.log"), date,symbol,close);
 ```
-
 除了以上用法之外，File內的檔案名稱或是目錄名稱也可以包含以下的特殊字串:
 
 - [StrategyName] ← 轉換成策略名稱，也就是代表雷達名稱、選股策略名稱、指標名稱、自動交易策略名稱
@@ -383,11 +357,9 @@ Print(File("d:\Print\MyOutput.log"), date,symbol,close);
 如果檔案名稱或是目錄名稱包含以上的特殊字串的話，則XS會把這些字串轉換成執行的商品，頻率，腳本名稱後組成輸出的目錄名稱或是檔案名稱。
 
 舉例而言:
-
 ```
 Print(File("d:\Print\[Date]_[ScriptName]_[Symbol]_[Freq].log"), date, symbol, close);
 ```
-
 如果腳本名稱是"MyScript", 執行的頻率是日, 執行的商品為2330.TW的話，則Print指令所產生的檔案會是"d:\Print\MyScript_2330.TW_D.log"。請注意如果檔案名稱內有包含特殊字串的話，則每個商品的Print檔案會獨立產生，而不是寫到同一個檔案內。
 
 ---
@@ -395,11 +367,9 @@ Print(File("d:\Print\[Date]_[ScriptName]_[Symbol]_[Freq].log"), date, symbol, cl
 如果需要避開重覆Print在同一個檔案，可以運用File指令搭配[StartTime]參數，讓每次執行的Print檔案可以分開不同目錄，檔案維護上比較方便。
 
 以下的範例會把輸出資料分開到不同檔案：
-
 ```
 Print(file("[StrategyName]_[Symbol]_[StartTime].log"), "Date=", NumToStr(Date, 0), "Close=", NumToStr(Close, 2));
 ```
-
 請參考[File指令](api?a=file&b=bif)，以及[教學文章](https://xstrader.net/print%E8%AA%9E%E6%B3%95%E8%AA%BF%E6%95%B4/)。
 
 ---
@@ -488,7 +458,6 @@ GetBarOffset -  (內建函數)
 當回傳值為1時，代表目前K棒的前一根K棒日期/時間為傳入日期/時間。
 
 範例：
-
 ```
 value1 = GetBarOffset(20150831); //取得20150831這根K棒的相對位置
 
@@ -496,7 +465,6 @@ value2 = High[value1]; //取得20150831當天的最高價
 
 plot1(value2); //繪出20150831最高價的水平線
 ```
-
 注意，當無傳入日期這根K棒時，會往前找到最接近的一根。例如：20150829、20150830是非交易日，所以會往前找到20150828這根K棒。也就是說GetBarOffset(20150828)、GetBarOffset(20150829)、GetBarOffset(20150830)的回傳值會是相等的。
 
 ---
@@ -533,7 +501,6 @@ GetFieldStartOffset -  (內建函數)
 例如目前可能是跑日線，然後GetFieldStartOffset要查的是月頻率欄位，此時 GetFieldStartOffset所回傳的是月頻率欄位有幾筆。
 
 **選股腳本範例：判斷當月營收是否創掛牌新高**
-
 ```
 value1 = GetFieldStartOffset("月營收", "M");
 
@@ -555,9 +522,7 @@ end else if value1 > 0 then begin
 
 end;
 ```
-
 **範例選股範例：判斷創N期新高**
-
 ```
 input: min_period(12, "最低期別");
 
@@ -593,7 +558,6 @@ if idx >= min_period then begin
 
 end;
 ```
-
 ---
 
 ## GetFirstBarDate
@@ -723,13 +687,11 @@ GetInfo -  (內建函數)
 關於AT的EnableTrade、BID、AccType以及AID的進一步說明，可以參考[自動交易語法 取得「交易帳號」使用說明](https://www.xq.com.tw/at_id/)
 
 範例：
-
 ```
 value1 = getinfo("IsRealTime"); //若value1為1，則代表目前計算的是即時資料
 
 plot1(value1);
 ```
-
 ---
 
 ## GetSymbolFieldStartOffset
@@ -762,13 +724,11 @@ GetSymbolFieldStartOffset -  (內建函數)
 GetSymbolFieldStartOffset是GetFieldStartOffset語法的延伸，在取得欄位相關資料時可以指定商品，透過這個函數可以在腳本中取得其他商品的欄位筆數。
 
 以下是一個簡單的範例：
-
 ```
 Value1 = GetSymbolFieldStartOffset("1101.TW", "月營收");　// value1 為取得目前腳本執行頻率的台泥(1101)目前最新一筆月營收欄位與月營收欄位第一筆資料間的欄位筆數。
 
 Value2 = GetSymbolFieldStartOffset("1101.TW", "月營收", "M");　// value2 為取得月頻率的台泥(1101)目前最新一筆月營收欄位與月營收欄位第一筆資料間的欄位筆數。
 ```
-
 詳細的語法說明可以參考 [GetFieldStartOffset](api?a=GetFieldStartOffset&b=bif)函數。
 
 ---
@@ -830,7 +790,6 @@ GetTBMode -  (內建函數)
 - SetTBMode(0) 預設值，腳本資料計算筆數為全部資料，整個數列只算一次，拉動畫面不會重算。
 
 範例:
-
 ```
 Input: Period(200, "EMA");
 
@@ -842,7 +801,6 @@ Plot1(EMA(Close, Period), "EMA");
 
 Plot2(GetTBMode);//取得自定指標的繪圖模式
 ```
-
 ---
 
 ## GetTotalBar
@@ -1036,17 +994,14 @@ NoPlot(指標繪圖序列編號)
 如果在某些情形底下我們希望某個序列這一點的值不要畫的話，則可以使用NoPlot的語法來做清除的動作。
 
 以下我們先看一個範例:
-
 ```
 Value1 = Close - Close[1];
 
 Plot1(Value1);
 ```
-
 在上面這個腳本內，我們先計算先後兩筆K棒的差值，然後把差值畫在Plot1上面。
 
 如果我們希望只有上漲時才畫的話，那則可以改成這樣子的寫法:
-
 ```
 Value1 = Close - Close[1];
 
@@ -1054,7 +1009,6 @@ Plot1(Value1);
 
 If Value1 <= 0 Then NoPlot(1);
 ```
-
 上述範例內使用NoPlot函數，指定序列1在Value1 <= 0 的時候不要畫圖。
 
 ---
@@ -1099,7 +1053,6 @@ OutputField的語法可以傳入至多四個參數:
 - 從5.60版之後增加第四個參數，可以傳入輸出欄位的標題。如果不傳的話則預設的欄位標題為"欄位" + 序號。
 
 以下是簡單的範例:
-
 ```
 OutputField(1, GetField("月營收年增率","M"));
 
@@ -1107,7 +1060,6 @@ OutputField(2, GetField("月營收月增率","M"), 1);
 
 OutputField(3, GetField("月營收月增率","M"), 1, "月營收月增率");
 ```
-
 以上的範例在執行後會多產生三個欄位，第一個欄位為"欄位1"，內容為月營收年增率。第二個欄位為"欄位2"，內容為月營收年增率轉成一位小數點。第三個欄位為"月營收年增率"，內容與第二個欄位相同。
 
 ![OutputField](https://www.xq.com.tw/xstrader/wp-content/uploads/2015/09/OutputField.png)
@@ -1115,7 +1067,6 @@ OutputField(3, GetField("月營收月增率","M"), 1, "月營收月增率");
 OutputField指令也可以在函數名稱之後直接加上序號，例如OutputField1, OutputField2等。如果函數名稱內就包含序號的話，則就不需要傳入序號參數。
 
 上述的範例可以改寫為:
-
 ```
 OutputField1(GetField("月營收年增率","M"));
 
@@ -1123,7 +1074,6 @@ OutputField2(GetField("月營收月增率","M"), 1);
 
 OutputField3(GetField("月營收月增率","M"), 1, "月營收月增率");
 ```
-
 OutputField指令內所設定的欄位標題也可以透過[SetOutputName函數](api?a=setoutputname&b=bif)來指定。
 
 OutputField 也可以使用 [order](api?a=order) 來指定選股結果區的欄位數值上/下排序，請參考連結說明使用。
@@ -1152,13 +1102,11 @@ Playsound -  (內建函數)
 在指定檔案時，若沒有指定絕對路徑的話，會從預設資料夾 C:\SysJust\XQ2005\User\Sound 搜尋符合的檔案。
 
 範例:
-
 ```
 PlaySound("GML.wav");
 
 PlaySound("C:\SysJust\XQ2005\User\Sound\GML.wav");
 ```
-
 ---
 
 ## Plot
@@ -1201,19 +1149,16 @@ Plot函數可以傳入三個參數
 - 第三個參數為「是否開啟下拉式選單」提供給使用者勾選顯示指標。可以不用傳，如果不傳的話，則不會有下拉式選單提供選擇。checkbox:=1 為預設顯示指標；checkbox:=0 為預設「不」顯示指標。
 
 **範例#1**
-
 ```
 Plot1(Average(Close, 5));
 
 Plot2(Close, "收盤價");
 ```
-
 在範例#1 內輸出兩個繪圖數列，第一個數列為收盤價的五日平均值，圖形名稱為 "Plot1"，第二個數列為收盤價(Close)，圖形名稱為 "收盤價"。
 
 Plot1到Plot99除了可以是一個函數之外，也可以在腳本內被當成數列來引用。
 
 **範例#2**
-
 ```
 Plot1(Average(Close, 5));
 
@@ -1223,11 +1168,9 @@ Value1 = Plot2 - Plot1;
 
 Plot3(Value1, "差值");
 ```
-
 在範例#2 內Value1的數值是繪圖數列2(Plot2)與繪圖數列1(Plot1)的相減值，然後把這個差值畫在Plot3上面。
 
 **範例#3**
-
 ```
 //checkbox:=1，為預設顯示指標。
 
@@ -1241,7 +1184,6 @@ plot3(low,"最低價",checkbox:=0);
 
 plot4(close,"收盤價",checkbox:=1);//預設繪製出「收盤價」指標
 ```
-
 在範例#3 中，有使用到 checkbox 參數，故將此XS指標腳本加入指標後的技術分析副圖，在滑鼠點選下拉式選單圖示如下：
 
 ![下拉式選單](https://www.xq.com.tw/wp-content/uploads/2021/10/20211029_checkbox.png)
@@ -1301,7 +1243,6 @@ PlotK(序列編號, vOpen, vHigh, vLow, vClose, "序列名稱")
 vOpen, vHigh, vLow, vClose 對應的是K棒的開高低收。
 
 平均K線 (Heikin-Ashi) 範例：
-
 ```
 var: ha_open(0), ha_high(0), ha_low(0), ha_close(0);
 
@@ -1321,7 +1262,6 @@ ha_low = minlist(low, ha_open, ha_close);
 
 PlotK(1, ha_open, ha_high, ha_low, ha_close, "平均K線");
 ```
-
 ---
 
 ## PlotLine
@@ -1373,11 +1313,9 @@ Print(指定檔案,數值1, 數值2, 數值3, ...) ← 交易腳本必須用此�
 Print函數可以傳入多個參數，使用逗號分隔，參數可以是文字或是數值。每個Print函數會產生一行的輸出，內容為傳入的參數的文字或是數值，每個參數之間有一個空白。
 
 範例:
-
 ```
 Print("Date=", NumToStr(Date, 0), "Close=", NumToStr(Close, 2));
 ```
-
 把上述指標腳本放入技術分析內，執行時可以在XSScript編輯器的執行畫面內看到輸出，每一筆bar寫出一筆紀錄
 
 ![Print紀錄](https://www.xq.com.tw/xstrader/wp-content/uploads/2015/09/Print2.png)
@@ -1391,21 +1329,17 @@ Print函數的執行結果除了在XSScript編輯器內可以看到之外，另�
 使用者也可以利用[File指令](api?a=file&b=bif)來指定輸出的目錄或是檔名，交易腳本必須用此法才能列印到檔案。
 
 以下的範例會把輸出檔案寫在"d:\print"這個目錄內：
-
 ```
 Print(file("d:\print\"), "Date=", NumToStr(Date, 0), "Close=", NumToStr(Close, 2));
 ```
-
 ---
 
 如果需要避開重覆Print在同一個檔案，可以運用[File指令](api?a=file&b=bif)搭配[StartTime]參數，讓每次執行的Print檔案可以分開不同目錄，檔案維護上比較方便。
 
 以下的範例會把輸出資料分開到不同檔案：
-
 ```
 Print(file("[StrategyName]_[Symbol]_[StartTime].log"), "Date=", NumToStr(Date, 0), "Close=", NumToStr(Close, 2));
 ```
-
 請參考[File指令](api?a=file&b=bif)，以及[教學文章](https://xstrader.net/print%E8%AA%9E%E6%B3%95%E8%AA%BF%E6%95%B4/)。
 
 ---
@@ -1430,19 +1364,15 @@ RaiseRunTimeError(錯誤訊息)
 當腳本遇到任何重大錯誤時，可以使用RaiseRunTimeError函數來終止腳本的執行。
 
 舉例而言:
-
 ```
 if q_CurrentShareCapital < 100000000{100,000,000股*10 = 10億} then RaiseRunTimeError("市值小於10億踢除");
 ```
-
 上述是一個警示腳本，透過 [q_CurrentShareCapital](api?a=q_CurrentShareCapital) 欄位來判斷商品的股本是否小於10億，如果小於10億是的話則中斷執行。
 
 與下列程式比較:
-
 ```
 if q_CurrentShareCapital < 100000000{100,000,000股*10 = 10億} then return;
 ```
-
 請注意如果是使用return指令的話，則執行的這一筆bar雖然會被跳出，可是當還有新的K棒時，程式還是會繼續執行，如果判斷是否要跳出的邏輯比較複雜的話，可能會有一些效率上的影響。如果已經確定腳本不需要再執行的話，可以使用RaiseRuntimeError，比較有效率，而且執行的畫面上也可以看到錯誤訊息，方便使用者掌握腳本的狀態。
 
 ---
@@ -1481,7 +1411,6 @@ SetAlign可以根據欄位屬性，指定腳本執行時的資料對位計算方
 例如 "每股現金流量" 第一季的資料在4/16首次可以被XS取得、第二季的資料在7/13首次可以被XS取得。那4/16會標記第一季的資料；7/13的K棒才會標記第二季的資料（4/16~7/12之間的K棒，會取得的是第一季的資料）。
 
 **範例:**
-
 ```xs
 //
 
@@ -1497,7 +1426,6 @@ SetAlign可以根據欄位屬性，指定腳本執行時的資料對位計算方
 
 //
 ```
-
 ### SetAlign的使用
 
 **說明:**
@@ -1507,7 +1435,6 @@ SetAlign可以根據欄位屬性，指定腳本執行時的資料對位計算方
 - **指標**、**警示**、**自動交易腳本**的範例如下：
 
 **範例:**
-
 ```xs
 //
 
@@ -1533,7 +1460,6 @@ SetAlign("營收財報", 1); //警示、自動交易腳本的預設值是「公�
 
 //
 ```
-
 ---
 
 ## SetBackBar
@@ -1636,11 +1562,9 @@ SetBarFreq可以傳入多個頻率字串，使用逗號分隔，用來指定選�
 - 年線: "Y"
 
 範例:
-
 ```
 SetBarFreq("Q", "Y"); // 指定選股腳本只能執行在季線/年線的頻率上面
 ```
-
 由於選股腳本內可能會同時運用到多種不同欄位的頻率，而不同頻率的欄位又有可能因為資料公佈的時間差而產生期別上的差異。為了幫助使用者選到合適的執行頻率，XS選股程式在執行時會先分析這個腳本內所使用到的所有欄位的頻率，然後列出可以挑選的頻率。如果使用者希望可以更精確的指定頻率的話，則可以使用SetBarFreq這個函數。
 
 ---
@@ -1665,17 +1589,13 @@ SetBarMode(函數計算方式)
 SetBarMode可以指定函數的計算方式，分別為(0),(1),(2)
 
 對於Setbarmode 0,1,2 三種計算方式解釋:
-
 ```
 SetBarMode(0); //Auto，預設值
 ```
-
 由系統判定是simple函數 或是 series 函數
-
 ```
 SetBarMode(1);  //指定為simple函數
 ```
-
 Simple型態是指，例如average 這類函數計算方式，今期所計算的平均數與前一期的平均數為個別獨立運用，不會相互有關係
 
 例如:平均數average
@@ -1683,11 +1603,9 @@ Simple型態是指，例如average 這類函數計算方式，今期所計算的
 (1,2,3,4,5)/5 = 3 ；(2,3,4,5,6)/5 = 4
 
 兩者計算的結果無關聯
-
 ```
 SetBarMode(2);  //指定為series函數
 ```
-
 Series 型態是指，例如MACD,RSI 指標，屬於連續性的數值，今期所計算的值會引用到前期的數值來做運算。
 
 例如RSI指標計算「期間內絕對漲幅」的公式為
@@ -1761,19 +1679,16 @@ SetInputName1(顯示名稱)
 說明：
 
 在XS語法內可以使用[Input語法](api?a=input)來設定腳本輸入的參數。
-
 ```
 Input: Length(10);
 
 Plot1(Average(Close, Length));
 ```
-
 例如上面範例內定義了一個輸入參數，名稱為Length，初始值為10。在腳本內可以直接使用**Length**這個變數，而在腳本執行時則可以利用參數設定畫面來動態修改**Length**的數值，以便讓程式的設計更有彈性。
 
 ![Input設定](https://www.xq.com.tw/xstrader/wp-content/uploads/2015/09/InputWithName.png)
 
 如果希望在設定畫面上可以看到中文名稱，而不是英文的變數名稱的話，則可以使用SetInputName這個函數。
-
 ```
 Input: Length(10);
 
@@ -1781,7 +1696,6 @@ SetInputName(1, "天期");
 
 Plot1(Average(Close, Length));
 ```
-
 SetInputName必須傳入兩個參數
 
 - 第一個參數是參數的序號，從1開始，
@@ -1795,7 +1709,6 @@ SetInputName必須傳入兩個參數
 SetInputField指令也可以在函數名稱之後直接加上序號，例如SetInputName1, SetInputName2等。如果函數名稱內就包含序號的話，則就不需要傳入序號參數。
 
 上面的範例可以改寫成:
-
 ```
 Input: Length(10);
 
@@ -1803,15 +1716,12 @@ SetInputName1("天期");
 
 Plot1(Average(Close, Length));
 ```
-
 在XQ 5.60版之後，為了讓這個動作更簡單，使用者可以直接在Input語法內指定輸入參數的顯示名稱，上面的範例可以改寫成:
-
 ```
 Input: Length(10, "天期");
 
 Plot1(Average(Close, Length));
 ```
-
 新的Input的語法可以讓程式變的更短，而且由於顯示名稱跟Input可以寫在同一行內，使用者不需要再去記憶每個Input的序號，建議大家以後直接使用Input語法來指定輸入參數的顯示名稱。
 
 ---
@@ -1846,25 +1756,21 @@ SetOutputName必須傳入兩個參數:
 - 第二個參數是欄位的名稱
 
 例如:
-
 ```
 OutputField1(GetField("月營收年增率","M"));
 
 SetOutputName(1, "月營收年增率");
 ```
-
 在上面範例內指定第一個輸出欄位的標題為"月營收年增率"。
 
 SetOutputField指令也可以在函數名稱之後直接加上序號，例如SetOutputName1, SetOutputName2等。如果函數名稱內就包含序號的話，則就不需要傳入序號參數。
 
 上面的範例可以改寫成:
-
 ```
 OutputField1(GetField("月營收年增率","M"));
 
 SetOutputName1("月營收年增率");
 ```
-
 在XQ 5.60版之後，[OutputField指令](api?a=outputfield&b=bif)也增加了可以直接傳入欄位標題的功能。
 
 ---
@@ -1897,7 +1803,6 @@ SetPlotLabel傳入兩個參數
 兩者最大的差異是，在Plot函數內的第二個參數目前只支援固定的字串，而SetPlotLabel的第二個參數則可以是一個字串相關的敘述式，使用上比較有彈性。
 
 舉例而言:
-
 ```
 Input: Period(10);
 
@@ -1905,7 +1810,6 @@ Plot1(Average(Close, Period));
 
 SetPlotLabel(1, Text("天期(", NumToStr(Period, 0), ")"));
 ```
-
 在上述範例內我們希望指標圖形上面可以看到平均線的天期，例如如果天期是5的話，我們希望指標序列的名稱是"天期(5)"，而如果天期是10的話，則我們希望指標序列的名稱是"天期(10)"。
 
 由於天期是透過[Input語法](api?a=input)傳入的，數值可以動態被修改，沒有辦法寫成一個固定的字串，所以我們使用SetPlotLabel，搭配[Text函數](api?a=text&b=bif)以及[NumToStr函數](api?a=numtostr&b=bif)來組出天期的字串。
@@ -1942,7 +1846,6 @@ SetRemoveOutlier("zscore", value:=3)
 此語法必須在rank內的最上層，不能夠放在 if 或 for 等邏輯判斷內。
 
 以下是簡單範例：
-
 ```
 Rank myRank Begin
 
@@ -1952,7 +1855,6 @@ Rank myRank Begin
 
     end;
 ```
-
 此範例會用波動率進行排行，但會先排除掉 zscore 絕對值大於3的商品。
 
 ---
@@ -1983,7 +1885,6 @@ SetTBMode(繪圖模式)
 - SetTBMode(0) 預設值，腳本資料計算筆數為全部資料，整個數列只算一次，拉動畫面不會重算。
 
 範例:
-
 ```
 Input: Period(200, "EMA");
 
@@ -1991,7 +1892,6 @@ SetTBMode(1);//指定自定指標的繪圖模式，可以變更參數比較一�
 
 Plot1(EMA(Close, Period), "EMA");
 ```
-
 ---
 
 ## SetTotalBar
@@ -2087,7 +1987,6 @@ SymbolExchange函數回傳目前執行商品的交易所編碼，例如 "TW"。
 當回傳值為"SG"時，表示商品屬於新加坡。
 
 範例:
-
 ```
 If SymbolExchange = "TW" then
 
@@ -2097,7 +1996,6 @@ begin
 
 end;
 ```
-
 ---
 
 ## SymbolType
@@ -2134,7 +2032,6 @@ SymbolType函數回傳目前執行腳本的商品類型。
 當回傳值為7時，表示商品是特別股。
 
 範例:
-
 ```
 If SymbolType = 3 then
 
@@ -2144,7 +2041,6 @@ begin
 
 end;
 ```
-
 ---
 
 ## AddSpread
@@ -2169,13 +2065,11 @@ AddSpread函數用來計算依照商品跳動點加減幾檔後的價格。
 呼叫時需要傳入兩個參數：第一個參數是基礎價格，第二個參數是加減檔數，如果要加檔數的話請傳入一個大於0的數值，如果要減檔數的話請傳入一個小於0的數值。如果商品有漲跌停限制的話，計算後的數值不會超過漲跌停限制。
 
 **範例**
-
 ```
 Value1 = AddSpread(Close, 1);  { 收盤價+1檔 }
 
 Value2 = AddSpread(Low, -1); { 最低價-1檔 }
 ```
-
 這個函數主要應用在交易的情境，如果目前的執行商品並沒有檔位限制的話(例如加權指數)，則系統會以商品的報價跳動點來當成檔位的計算依據(例如加權指數的話則每一檔是0.01)。
 
 ---
@@ -2253,7 +2147,6 @@ Buy函數的第一個參數是加碼部位，必須是一個正整數。第二�
 與SetPosition一樣，也可以透過label函數傳入指令標記。
 
 **範例**
-
 ```
 Buy(1);
 
@@ -2263,7 +2156,6 @@ Buy(1, MARKET);
 
 Buy(1, label:="買進1張");
 ```
-
 **注意事項**
 
 當目前的Position < 0時，執行Buy指令時會先把空頭部位全部平倉(部位變成0)，之後再進行加碼的動作。
@@ -2271,7 +2163,6 @@ Buy(1, label:="買進1張");
 Buy(0)是一個特殊用法，如果此時的部位小於0的話，Buy(0)的作用是把部位變成0，如果此時的部位大於0的話，則Buy(0)沒有任何作用。
 
 以下是Buy(N)的執行邏輯：
-
 ```
 if Position < 0 then
 
@@ -2281,7 +2172,6 @@ else
 
     SetPosition(Position + N);  { 從Position(零或是正數)變成Position+N }
 ```
-
 ---
 
 ## CancelAllOrders
@@ -2339,7 +2229,6 @@ Cover函數的第一個參數是回補部位，必須是一個正整數。第二
 與SetPosition一樣，也可以透過label函數傳入指令標記。
 
 **範例**
-
 ```
 Cover(1);
 
@@ -2349,7 +2238,6 @@ Cover(1, MARKET);
 
 Cover(1, label:="回補1張");
 ```
-
 **注意事項**
 
 Cover指令只有在目前Position < 0時才會有作用。如果Cover的回補數量超過目前空單數量的話，則Position會改成0，也就是說Cover函數不會把目標部位變成多頭(Position > 0)。
@@ -2357,7 +2245,6 @@ Cover指令只有在目前Position < 0時才會有作用。如果Cover的回補�
 Cover(0)是一個特殊用法，如果此時的部位小於0的話，Cover(0)的作用是把部位變成0，如果此時的部位大於0的話，則Cover(0)沒有任何作用。
 
 以下是Cover(N)的執行邏輯：
-
 ```
 if Position < 0 then
 
@@ -2369,7 +2256,6 @@ if Position < 0 then
 
         SetPosition(minlist(Position + N, 0)); { 從Position(負數)增加N張，最終數字不會大於0 }
 ```
-
 ---
 
 ## DefaultBuyPrice
@@ -2400,7 +2286,6 @@ Value1 = DefaultBuyPrice
 如果策略指定預設買進價格為市價的話，DefaultBuyPrice會回傳商品的漲停價(如果商品沒有漲停跌停價的話，則回傳洗價K棒的收盤價)。如果指定的是觸發價 +/- 檔數的話，則依照回傳洗價K棒的收盤價加減檔數後的價格。與[AddSpread](api?a=AddSpread&b=bif)一樣，加減檔數後的數值不會超過商品的漲跌停限制。
 
 使用者可以利用這個函數，取得交易指令的實際委託價格，可以應用於，例如利用金額來換算委託數量。
-
 ```
 input: ordersize_w(10, "每筆交易金額(萬)");
 
@@ -2410,7 +2295,6 @@ value1 = (ordersize_w * 10000) / (DefaultBuyPrice * 1000);
 
 SetPosition(value1);
 ```
-
 ---
 
 ## DefaultSellPrice
@@ -2441,7 +2325,6 @@ Value1 = DefaultSellPrice
 如果策略指定預設賣出價格為市價的話，DefaultSellPrice會回傳商品的跌停價(如果商品沒有漲停跌停價的話，則回傳洗價K棒的收盤價)。如果指定的是觸發價 +/- 檔數的話，則回傳依照洗價K棒的收盤價加減檔數後的價格。與[AddSpread](api?a=AddSpread&b=bif)一樣，加減檔數後的數值不會超過商品的漲跌停限制。
 
 使用者可以利用這個函數，取得交易指令的實際委託價格，可以應用於，例如利用金額來換算委託數量。
-
 ```
 input: ordersize_w(10, "每筆交易金額(萬)");
 
@@ -2451,7 +2334,6 @@ value1 = (ordersize_w * 10000) / (DefaultSellPrice * 1000);
 
 SetPosition(-1 * value1);
 ```
-
 ---
 
 ## Filled
@@ -2488,7 +2370,6 @@ Filled是一個整數，可以大於0、等於0、也可以小於0。從自動�
 透過比對Position跟Filled，腳本可以判斷目前腳本的成交情形，進而做不同的後續處理：
 
 **範例#1**
-
 ```
 if Position = 0 and entry_condition then SetPosition(1);
 
@@ -2500,17 +2381,14 @@ if Filled = 1 then begin
 
 end;
 ```
-
 在這個範例內腳本透過判斷Filled是否是1來決定是否已經成交。一旦成交之後，則透過比對目前價格與未平倉成本[FilledAvgPrice](api?a=FilledAvgPrice&b=bif)是否達到停損停利的範圍來決定是否要進行平倉。
 
 **範例#2**
-
 ```
 if Position = 0 and entry_condition then SetPosition(1);
 
 if TrueAll(Position <> Filled, 3) then SetPosition(1, MARKET);
 ```
-
 在這個範例內腳本透過比對Position跟Filled的差異來決定是否尚未成交。如果Position跟Filled連續3根bar都不一樣的話，那麼就改用市價買進。
 
 ---
@@ -2560,7 +2438,6 @@ Value1 = FilledAvgPrice
 FilledAvgPrice回傳目前商品的未平倉成本。如果目前Filled數值是0的話，則FilledAvgPrice回傳0，否則FilledAvgPrice回傳的是一個大於等於0的數值，與Filled的方向無關。
 
 **範例**
-
 ```
 if Filled > 0 then begin
 
@@ -2570,15 +2447,12 @@ if Filled > 0 then begin
 
 end;
 ```
-
 ### 未平倉成本計算邏輯
 
 **語法:**
-
 ```xs
 如果策略在設定時指定要採用[交易帳號的庫存部位](https://www.xq.com.tw/lesson/xsat/xsat_overview/#stock)的話，此時系統就會依照策略的設定修改未平倉成本，之後收到成交之後再依照先進先出的方式調整數值。
 ```
-
 **說明:**
 
 **語法:**
@@ -2592,7 +2466,6 @@ end;
 請注意：未平倉成本不包含交易成本，所以使用者如果要估算未平倉損益時，可以在腳本內利用[Ｆ[FilledRecordCount](api?a=FilledRecordCount&b=bif)等函數取得每一筆成交紀錄，然後再自行計算。
 
 **範例:**
-
 ```xs
 //
 
@@ -2640,7 +2513,6 @@ end;
 
 //
 ```
-
 ---
 
 ## FilledEntryDate
@@ -2755,7 +2627,6 @@ Value1 = FilledRecordCount
 腳本執行過程內，系統會紀錄每一筆成交紀錄，依照成交時間排序，FilledRecordCount則代表這些成交紀錄的筆數。透過FilledRecordCount，以及其他FilledRecord開頭的函數，包含[FilledRecordDate](api?a=FilledRecordDate&b=bif)，[FilledRecordTime](api?a=FilledRecordTime&b=bif)，[FilledRecordPrice](api?a=FilledRecordPrice&b=bif)，[FilledRecordBS](api?a=FilledRecordBS&b=bif)，[FilledRecordQty](api?a=FilledRecordQty&b=bif)等，來取得完整的成交紀錄資訊。
 
 **範例**
-
 ```
 var: idx(0);
 
@@ -2775,7 +2646,6 @@ for idx = 1 to FilledRecordCount begin
 
 end;
 ```
-
 ---
 
 ## FilledRecordDate
@@ -2965,7 +2835,6 @@ Condition1 = IsMarketPrice(value1)
 說明：
 
 商品的五檔委買委賣價，或是成交明細資料(Tick資料)的買進價，賣出價有可能會是市價。如果腳本希望判斷這種情形時，可以使用IsMarketPrice這個函數。
-
 ```
 //範例
 
@@ -2973,9 +2842,7 @@ Condition1 = IsMarketPrice(value1)
 
 if IsMarketPrice(q_BestBid1) then setposition(1);
 ```
-
 ![市價買](https://www.xq.com.tw/wp-content/uploads/2020/10/%E5%B8%82%E5%83%B9%E8%B2%B7.jpg)
-
 ```
 //範例
 
@@ -2983,7 +2850,6 @@ if IsMarketPrice(q_BestBid1) then setposition(1);
 
 if IsMarketPrice(q_BestAsk1) then setposition(0);
 ```
-
 ![市價賣](https://www.xq.com.tw/wp-content/uploads/2020/10/%E5%B8%82%E5%83%B9%E8%B3%A3.jpg)
 
 ---
@@ -3068,7 +2934,6 @@ Sell函數的第一個參數是減碼部位，必須是一個正整數。第二�
 與SetPosition一樣，也可以透過label函數傳入指令標記。
 
 **範例**
-
 ```
 Sell(1);
 
@@ -3078,7 +2943,6 @@ Sell(1, MARKET);
 
 Sell(1, label:="出場1張");
 ```
-
 **注意事項**
 
 Sell指令只有在目前Position > 0時才會有作用。如果Sell的減碼數量大於目前Position的話，則Position會改成0，也就是說Sell函數不會把目標部位變成空頭(Position < 0)。
@@ -3086,7 +2950,6 @@ Sell指令只有在目前Position > 0時才會有作用。如果Sell的減碼數
 Sell(0)是一個特殊用法，如果此時的部位大於0的話，Sell(0)的作用是把部位變成0，如果此時的部位小於0的話，則Sell(0)沒有任何作用。
 
 以下是Sell(N)的執行邏輯：
-
 ```
 if Position > 0 then
 
@@ -3098,7 +2961,6 @@ if Position > 0 then
 
         SetPosition(maxlist(Position - N, 0)); { 從Position(正數)減少N張，最終數字不會小於0 }
 ```
-
 ---
 
 ## SetPosition
@@ -3133,43 +2995,33 @@ SetPosition函數的第一個參數是目標部位(Position)，代表交易策�
 當腳本呼叫SetPosition(或是其他交易函數)時，系統會比對目前的Position以及新的目標部位的差異，然後送出對應的委託單，如果這些委託單完全成交的話，商品的淨成交部位就會跟目標部位是一樣的。
 
 **範例#1**
-
 ```
 SetPosition(1);
 ```
-
 把腳本的部位變成1，委託價格使用策略預設的買賣價格。如果原先的Position是0的話，這個指令會買進1張，如果原先的Position是2的話，這個指令會賣出1張。如果原先的Position是1的話，這個指令會檢視目前委託的執行情形，可能會送出改價的委託(如果原先委託尚未成交，且這一次的委託價格跟上一筆委託單的委託價格不一樣的話)，或是不做任何動作。詳細的執行邏輯請參考底下「[交易指令的執行方式](api?a=SetPosition&b=bif#TradeOrderAnchor)」的說明。
 
 **範例#2**
-
 ```
 SetPosition(1, Close);
 ```
-
 把腳本的部位變成1，委託價格使用目前的收盤價。SetPosition的第二個參數是委託價格，可以傳入一個固定數值(例如100.0)，或是其他的數值運算(例如Close, Close+1.0, 等)。
 
 **範例#3**
-
 ```
 SetPosition(-1);
 ```
-
 把腳本的部位變成-1，委託價格使用策略預設的買賣價格。如果原先的Position是0的話，這個指令會賣出1張，如果原先的Position是-2的話，這個指令會買進1張。
 
 **範例#4**
-
 ```
 SetPosition(-1, MARKET);
 ```
-
 把腳本的部位變成-1，委託價格使用市價。系統會依照帳號類型來決定市價單該如何傳送，如果是證券帳號的話，會傳送市價委託，如果是期貨帳號的話，則會傳送範圍市價委託。
 
 **範例#5**
-
 ```
 SetPosition(Position+1, AddSpread(Close, 1));
 ```
-
 把腳本的部位變成目前的Position再加1張，所以不管原先的Position是多少，這個指令都會買進1張。委託的價格則是目前收盤價再往上加一檔。
 
 [Position](api?a=Position&b=bif)是一個內建的欄位，腳本可以透過這個欄位取得目前的部位數值。
@@ -3179,11 +3031,9 @@ SetPosition(Position+1, AddSpread(Close, 1));
 除了SetPosition語法可以改變腳本部位之外，系統同時還提供[Buy](api?a=Buy&b=bif)、[Sell](api?a=Sell&b=bif)、[Short](api?a=Short&b=bif)、[Cover](api?a=Cover&b=bif)這幾種語法，請參考相關說明。
 
 **範例#6**
-
 ```
 SetPosition(1, label:="我的標記");
 ```
-
 可以透過label這個參數, 傳入這次SetPosition的標記名稱。請參考底下[交易指令的標記名稱](api?a=SetPosition&b=bif#TradeLabelAnchor)的說明。
 
 ## Position跟Filled的關係
@@ -3252,7 +3102,6 @@ SetPosition的第一個參數是目標部位，系統預期腳本會傳入一個
 SetPosition所需傳入的參數除了目標部位以及委託價格之外，還可以另外透過label參數，傳入一個字串（字串長度最多64個字)，代表這個交易指令的名稱，當這個交易指令成交時，通知的UI上可以看到這個名稱文字，方便使用者辨識這次的成交原因。
 
 **範例**
-
 ```
 if Position = 0 then begin
 
@@ -3266,7 +3115,6 @@ if Position = 0 then begin
 
 end;
 ```
-
 為了避免混淆，同一個腳本內的交易指令的標記名稱必須是唯一的。
 
 ![標記名稱_V2](https://www.xq.com.tw/wp-content/uploads/2020/11/20201225_%E6%A8%99%E8%A8%98%E5%90%8D%E7%A8%B1_V2.png)
@@ -3274,7 +3122,6 @@ end;
 ## Position異動的時機點
 
 我們看以下的腳本範例，這是一個很常見的進場+出場的交易情境：
-
 ```
 var: entry_condition(false), exit_condition(false);
 
@@ -3286,7 +3133,6 @@ if Position = 0 and entry_condition then SetPosition(1);
 
 if Position = 1 and exit_condition then SetPosition(0);
 ```
-
 我們知道當腳本發現Position是0，而且entry_condition是true的時候，腳本會呼叫SetPosition(1)。
 
 那麼腳本呼叫完SetPosition(1)之後，在下一行執行時Position會馬上變成1嗎？
@@ -3306,7 +3152,6 @@ if Position = 1 and exit_condition then SetPosition(0);
 ## 交易指令的優先順序
 
 如果一個腳本內有多個交易指令的話，那系統怎麼決定要執行哪些交易指令呢？我們看以下的範例：
-
 ```
 if condition1 then SetPosition(1);
 
@@ -3314,7 +3159,6 @@ if condition2 then SetPosition(2);
 
 if condition3 then SetPosition(3);
 ```
-
 在上面這個範例內，有可能因為condition1，condition2，condition3的狀態而呼叫了不同的交易指令，甚至先呼叫了SetPosition(1)，然後又呼叫了SetPosition(3)。當遇到這種情形時，系統會如何決定要執行哪一個交易指令呢？
 
 目前XS自動交易的執行方式是只執行第一個交易指令，忽略之後的交易指令。以上面腳本範例而言，如果condition1是false，condition2是true，condition3也是true的話，那麼當次洗價的第一個交易指令是SetPosition(2)，所以系統會執行這一個，至於之後呼叫的SetPosition(3)則予以忽略。
@@ -3384,7 +3228,6 @@ if condition3 then SetPosition(3);
 假設在這一筆委託還沒有成交前，腳本又呼叫了SetPosition(1, 99.0)，此時系統發現新的部位雖然跟原先部位一樣，可是因為還沒有成交，而且委託價格不一樣，所以此時系統會刪除原先的委託，然後改送一筆買進1張的委託，委託價格是99.0。
 
 這樣子的執行邏輯可以應用在追價的情境，例如以下的腳本範例
-
 ```
 if Position = 0 and entry_condition then begin
 
@@ -3402,7 +3245,6 @@ if Position = 1 and Filled = 0 and CurrentBar - value1 >= 2 then begin
 
 end;
 ```
-
 在這個腳本內我們發現Position是1，Filled還是0，而且離上一次下單已經超過2根bar了，通常會發生這樣子的情形可能是商品的價格已經超過先前委託的價格。此時可以使用SetPosition傳入不同價格的方式來告訴系統我想要改用不同的委託價格。當執行到 SetPosition(1, AddSpread(Close, 5))時，系統就會刪除原先的委託，然後改用新的委託價格來送單。
 
 ## 策略初始部位
@@ -3424,7 +3266,6 @@ end;
 ### 使用交易帳號的庫存來設定策略的部位
 
 **語法:**
-
 ```xs
 詳細說明請參考「自動交易策略設定」內的「[交易帳號庫存部位整合](http://www.xq.com.tw/lesson/xsat/xsat_overview/#stock)」
 
@@ -3438,7 +3279,6 @@ end;
 
 * [自動交易中心操作介紹](https://www.xq.com.tw/lesson/xsat/xsat_center/)
 ```
-
 **說明:**
 
 **語法:**
@@ -3479,7 +3319,6 @@ Short函數的第一個參數是加碼部位，必須是一個正整數。第二
 與SetPosition一樣，也可以透過label函數傳入指令標記。
 
 **範例**
-
 ```
 Short(1);
 
@@ -3489,7 +3328,6 @@ Short(1, MARKET);
 
 Short(1, label:="放空1張");
 ```
-
 注意事項
 
 當目前的Position > 0時，執行Short指令時會先把多頭部位全部平倉(部位變成0)，之後再進行空單加碼的動作。
@@ -3497,7 +3335,6 @@ Short(1, label:="放空1張");
 Short(0)是一個特殊用法，如果此時的部位大於0的話，Short(0)的作用是把部位變成0，如果此時的部位小於0的話，則Short(0)沒有任何作用。
 
 以下是Short(N)的執行邏輯：
-
 ```
 if Position > 0 then
 
@@ -3507,7 +3344,6 @@ else
 
     SetPosition(Position - N); { 從Position(0或是負數)變成 Position-N }
 ```
-
 ---
 
 ## InStr
@@ -3542,7 +3378,6 @@ InStr -  (內建函數)
 - 第三個參數可以指定比對開始的位置。
 
 如果欲比對的字串是原始字串的一部份的話，則回傳這個字串位於原始字串的位置。反之則回傳0。
-
 ```
 Value1 = InStr("abcdefg", "bc");  // Value1 = 2
 
@@ -3550,7 +3385,6 @@ Value2 = InStr("abcdefg", "xyz"); // Value2 = 0
 
 Value3 = InStr("Hello Hello", "Hello", 6);  //Value3 = 7
 ```
-
 在上述範例內，"bc"是"abcdefg"的一部份，所以Value1的值會是"bc"位於"abcdefg"內的位置，第2個字元。而"xzy"並不是"abcdefg"的一部份，所以Value2 = 0。
 
 Value3 則是因為指定要從第6個位置開始找起，所以會找到第二個Hello，故回7。
@@ -3581,13 +3415,11 @@ LeftStr -  (內建函數)
 - 第二個參數是欲取出的字元個數
 
 回傳值是從原始字串左邊開始長度為第二個參數的子字串。
-
 ```
 Var: str1("");
 
 str1 = LeftStr("abcdefg", 3);  // str1 = "abc"
 ```
-
 在上面範例內，str1是"abcdefg"從左邊算起長度為3的子字串，"abc"。
 
 請參考 [RightStr函數](api?a=rightstr&b=bif) 以及 [MidStr函數](api?a=midstr&b=bif)。
@@ -3612,13 +3444,11 @@ LowerStr -  (內建函數)
 說明：
 
 範例如下:
-
 ```
 Var: str1("");
 
 str1 = LowerStr("ABCDEFG");  // str1 = "abcdefg"
 ```
-
 請參考[UpperStr函數](api?a=upperstr&b=bif)
 
 ---
@@ -3649,7 +3479,6 @@ MidStr -  (內建函數)
 - 第三個參數是欲取出的子字串的字元長度
 
 範例:
-
 ```
 Var: str1(""), str2("");
 
@@ -3657,7 +3486,6 @@ str1 = MidStr("abcdefg", 1, 3);  // str1 = "abc"
 
 str2 = MidStr("abcdefg", 2, 3);  // str1 = "bcd"
 ```
-
 在上面範例內，str1是"abcdefg"這個字串第一個位置開始長度為3的子字串, "abc"，而str2則是"abcdefg"這個字串第二個位置開始長度為3的子字串, "bcd"。
 
 請參考 [LeftStr函數](api?a=leftstr&b=bif) 以及 [RightStr函數](api?a=rightstr&b=bif)。
@@ -3684,7 +3512,6 @@ NumToStr -  (內建函數)
 NumToStr回傳的字串會依照指定的小數位數來處理，如果實際數值的小數位數**大於**指定的小數位數的話，則採用四捨五入的方式來計算，如果實際數值的小數位數**小於**指定的小數位數的話，則在小數位數後面補0。
 
 舉例說明:
-
 ```
 Var: Str1(""), Str2(""), Str3("");
 
@@ -3696,7 +3523,6 @@ Str2 = NumToStr(Value1, 1);  // Str2 = "144.5"
 
 Str3 = NumToStr(Value2, 2);  // Str3 = "144.50"
 ```
-
 在上例內，Str1的字串值是144.5四捨五入後換算的結果 "145"，而Str3的字串值則在小數位數1之後補0，以確保有兩位小數 "144.50"。
 
 請參考[StrToNum函數](api?a=strtonum&b=bif)。
@@ -3727,13 +3553,11 @@ RightStr -  (內建函數)
 - 第二個參數是欲取出的字元個數
 
 回傳值是從原始字串右邊開始長度為第二個參數的子字串。
-
 ```
 Var: str1("");
 
 str1 = RightStr("abcdefg", 3);  // str1 = "efg"
 ```
-
 在上面範例內，str1是"abcdefg"從右邊算起長度為3的子字串，"efg"。
 
 請參考 [LeftStr函數](api?a=leftstr&b=bif) 以及 [MidStr函數](api?a=midstr&b=bif)。
@@ -3774,7 +3598,6 @@ StrCompare -  (內建函數)
 當回傳值為 1 時，表示字串1順序大於字串2。
 
 當回傳值為 -1 時，表示字串1順序小於字串2。
-
 ```
 //預設為不區分大小寫，所以下列二種得到的結果是一樣的
 
@@ -3788,7 +3611,6 @@ if StrCompare(symbol,"2330.tw",false) = 0 then plot3(1) else plot3(0);
 
 if StrCompare(symbol,"2330.TW",false) = 0 then plot4(1) else plot4(0);
 ```
-
 ---
 
 ## StrEndWith
@@ -3819,7 +3641,6 @@ condition1 = StrEndWith(字串1, 字串2, 比對方式);
 預設的比對方是不區分字母大小寫，但可以透過傳入第三個參數來改變。
 
 範例：
-
 ```
 condition1 = StrEndWith(“ABCDEFG”, “DEFG”);
 
@@ -3837,7 +3658,6 @@ condition1 = StrEndWith(“ABCDEFG”, “defg”, false);
 
 //回傳 False。
 ```
-
 ---
 
 ## StrLen
@@ -3858,11 +3678,9 @@ StrLen -  (內建函數)
 說明：
 
 範例如下:
-
 ```
 Value1 = StrLen("abcdefg");  // Value1 = 7
 ```
-
 ---
 
 ## StrSplit
@@ -3891,7 +3709,6 @@ value1 = StrSplit(字串, 分隔字元, 輸出陣列);
 此函數可以把第一個字串參數用第二個字串參數切割後放入的第三個參數陣列中。
 
 範例：
-
 ```
 Array: tokens[](""), tokens2[3]("");
 
@@ -3899,7 +3716,6 @@ value1 = StrSplit("A,B,C,D,E", ",", tokens);
 
 value2 = StrSplit("A,B,C;D,E", ",", tokens2);
 ```
-
 value1 會是5。
 
 tokens因為是動態陣列，所以會被自動調整成5個元素的大小。
@@ -3940,7 +3756,6 @@ condition1 = StrStartWith(字串1, 字串2, 比對方式);
 預設的比對方是不區分字母大小寫，但可以透過傳入第三個參數來改變。
 
 範例：
-
 ```
 condition1 = StrStartWith(“ABCDEFG”, “ABC”);
 
@@ -3958,7 +3773,6 @@ condition1 = StrStartWith(“ABCDEFG”, “abc”, false);
 
 //回傳 False。
 ```
-
 ---
 
 ## StrToNum
@@ -3979,11 +3793,9 @@ StrToNum -  (內建函數)
 說明：
 
 範例：
-
 ```
 Value1 = StrToNum("123.45");  // Value1 = 123.45
 ```
-
 請參考[NumToStr函數](api?a=numtostr&b=bif)。
 
 ---
@@ -4016,7 +3828,6 @@ str1 = StrTrim(字串, 選項);
 此函數可以用來刪除字串中的開頭和結尾的空白字元，預設是將開頭與結尾的空白都刪除，但可以透過傳入參數的方式來指定只刪除開頭或結尾。
 
 範例：
-
 ```
 str1 = StrTrim("  hello world ");
 
@@ -4034,7 +3845,6 @@ str1 = StrTrim("  hello world ", 2);
 
 //回傳的字串會是"  hello world"。
 ```
-
 ---
 
 ## Text
@@ -4057,13 +3867,11 @@ Text -  (內建函數)
 Text函數可以傳入多個參數，使用逗號分隔。函數執行完成後會把這些參數一一轉成對應的字串後再將這些字串連結成一個大字串後回傳。
 
 舉例:
-
 ```
 Variables: str("");
 
 str = Text("Close=", 10);
 ```
-
 上述範例執行之後 str變數的值會變成 "Close=10"。
 
 這個函數可以搭配[Print函數](api?a=print&b=bif)來控制印出來的結果。
@@ -4088,13 +3896,11 @@ UpperStr -  (內建函數)
 說明：
 
 範例如下:
-
 ```
 Var: str1("");
 
 str1 = UpperStr("abcdefg");  // str1 = "ABCDEFG"
 ```
-
 請參考[LowerStr函數](api?a=lowerstr&b=bif)
 
 ---
@@ -4117,17 +3923,14 @@ AbsValue -  (內建函數)
 說明：
 
 AbsValue函數用來計算傳入數值的**絕對值**。舉例而言：
-
 ```
 Value1 = Abs(3);
 
 Value2 = Abs(-3);
 ```
-
 在上面範例內, Value1跟Value2的數值都是3。
 
 以下使用AbsValue來計算兩條均線的差異，由於腳本只關心差異的大小，所以使用AbsValue函數來取得絕對值，不用考慮正負號。
-
 ```
 Value1 = Average(Close, 5);
 
@@ -4137,7 +3940,6 @@ Value3 = AbsValue(Value1 - Value2);
 
 If Value3 <= 0.01 * Close Then Ret = 1;
 ```
-
 ---
 
 ## ArcCosine
@@ -4162,11 +3964,9 @@ ArcCosine函數用來計算三角函數的[反餘絃函數](https://zh.wikipedia
 輸入數值後，算出對應的角度。
 
 範例:
-
 ```
 Value1 = ArcCosine(0.5);  // Value1 = 60
 ```
-
 ---
 
 ## ArcSine
@@ -4191,11 +3991,9 @@ ArcSine -  (內建函數)
 輸入數值後，算出對應的角度。
 
 範例:
-
 ```
 Value1 = ArcSine(0.5);  // Value1 = 30
 ```
-
 ---
 
 ## ArcTangent
@@ -4220,11 +4018,9 @@ ArcTangent -  (內建函數)
 輸入數值後，算出對應的角度。
 
 範例:
-
 ```
 Value1 = ArcTangent(1);  // Value1 = 45
 ```
-
 ---
 
 ## AvgList
@@ -4245,11 +4041,9 @@ AvgList -  (內建函數)
 說明：
 
 使用AvgList時可以傳入多個數值，數值之間使用逗號分隔，例如：
-
 ```
 Value1 = AvgList(Open, High, Low);
 ```
-
 上述範例內使用AvgList來計算Typical Price (_(開盤價 + 最高價 + 最低價) / 3_)。
 
 請注意: 如果要計算序列型的數值的平均值的話，則可以使用[Average函數](api?a=average&b=sys)。
@@ -4276,13 +4070,11 @@ Ceiling -  (內建函數)
 回傳小數點無條件進位後的整數。
 
 範例:
-
 ```
 Value1 = Ceiling(10.0);  // Value1 = 10.0
 
 Value2 = Ceiling(10.1);  // Value2 = 11.0
 ```
-
 ---
 
 ## CoTangent
@@ -4307,11 +4099,9 @@ CoTangent -  (內建函數)
 輸入角度後回傳餘切值。
 
 範例:
-
 ```
 Value1 = CoTangent(45);  // Value1 = 1.0
 ```
-
 ---
 
 ## Combination
@@ -4334,11 +4124,9 @@ Combination -  (內建函數)
 計算從N個不同數字的集合內取出M個不同數字的[可能組合個數](https://zh.wikipedia.org/wiki/%E7%BB%84%E5%90%88%E6%95%B0%E5%AD%A6)。
 
 範例
-
 ```
 Value1 = Combination(3, 2); // Value1 = 3
 ```
-
 假設母集合有三個數字 A, B, C, 則取出任意兩個數字的可能組合數 = (A,B), (B,C), (A,C) 共三種。
 
 請參考 [Permutation函數](api?a=permutation&b=bif)
@@ -4367,11 +4155,9 @@ Cos -  (內建函數)
 輸入角度後回傳餘弦值。
 
 範例:
-
 ```
 Value1 = Cos(60);  // Value1 = 0.5
 ```
-
 ---
 
 ## Cosine
@@ -4415,11 +4201,9 @@ ExpValue -  (內建函數)
 計算[自然對數次方](https://zh.wikipedia.org/wiki/%E6%8C%87%E6%95%B0%E5%87%BD%E6%95%B0)運算後的數值。
 
 回傳結果為 **e**(自然對數, 約等於2.718281828)的N次方。
-
 ```
 Value1 = ExpValue(1);  // Value1 = 2.718281828
 ```
-
 請參考[Log函數](api?a=log&b=bif)。
 
 ---
@@ -4444,11 +4228,9 @@ Factorial -  (內建函數)
 [階乘函數](https://zh.wikipedia.org/wiki/%E9%9A%8E%E4%B9%98)就是由1開始遞增連乘到該整數。例如3的階乘數(3!) = 1 \* 2 \* 3 = 6。
 
 範例:
-
 ```
 Value1 = Factorial(3); // Value1 = 6
 ```
-
 ---
 
 ## Floor
@@ -4471,11 +4253,9 @@ Floor -  (內建函數)
 回傳數值的整數部分，小數點後的數字無條件捨去。
 
 範例:
-
 ```
 Value1 = Floor(10.5); // Value1 = 10
 ```
-
 請參考 [Ceiling函數](api?a=ceiling&b=bif) 以及 [Round函數](api?a=round&b=bif)
 
 ---
@@ -4498,13 +4278,11 @@ FracPortion -  (內建函數)
 說明：
 
 範例:
-
 ```
 Value1 = IntPortion(10.5);   // Value1 = 10
 
 Value2 = FracPortion(10.5);  // Value2 = 0.5
 ```
-
 請參考 [IntPortion函數](api?a=intportion&b=bif)。
 
 ---
@@ -4527,13 +4305,11 @@ IntPortion -  (內建函數)
 說明：
 
 範例:
-
 ```
 Value1 = IntPortion(10.5);   // Value1 = 10
 
 Value2 = FracPortion(10.5);  // Value2 = 0.5
 ```
-
 請參考 [FracPortion函數](api?a=fracportion&b=bif)。
 
 ---
@@ -4556,13 +4332,11 @@ Log -  (內建函數)
 說明：
 
 回傳以**e**(自然對數)為底的[對數值](https://zh.wikipedia.org/wiki/%E5%AF%B9%E6%95%B0)。
-
 ```
 Value1 = ExpValue(1);
 
 Value2 = Log(Value1);  // 約等於1
 ```
-
 請參考[ExpValue函數](api?a=expvalue&b=bif)。
 
 ---
@@ -4587,7 +4361,6 @@ MaxList -  (內建函數)
 MaxList可以傳入多個數值，數值之間使用逗號分開。
 
 以下是範例:
-
 ```
 Value1 = Average(Close, 5);
 
@@ -4601,7 +4374,6 @@ If Open < MinList(Value1, Value2, Value3) And
 
 Then Ret = 1;
 ```
-
 在這個腳本內使用MaxList來算出5日/10日/20日均線的最大值。當開盤價低於均線且收盤價站上均線時觸發訊號。
 
 腳本內同時使用到[MinList函數](api?a=minlist&b=bif)，這個函數的用法類似MaxList，傳入多個數值後回傳這些數值的最小值。
@@ -4628,11 +4400,9 @@ MaxList2 -  (內建函數)
 MaxList2可以傳入多個數值，數值之間使用逗號分開。
 
 範例:
-
 ```
 Value1 = MaxList2(1, 2, 3, 4, 5);  // Value1 = 4;
 ```
-
 ---
 
 ## MinList
@@ -4655,7 +4425,6 @@ MinList -  (內建函數)
 MinList可以傳入多個數值，數值之間使用逗號分開。
 
 以下是一個腳本範例:
-
 ```
 Value1 = Average(Close, 5);
 
@@ -4669,7 +4438,6 @@ If Open < MinList(Value1, Value2, Value3) And
 
 Then Ret = 1;
 ```
-
 在這個腳本內使用MinList來算出5日/10日/20日均線的最小值。當開盤價低於均線且收盤價站上均線時觸發訊號。
 
 腳本內同時使用到[MaxList函數](api?a=maxlist&b=bif)，這個函數的用法類似MinList，傳入多個數值後回傳這些數值的最大值。
@@ -4696,11 +4464,9 @@ MinList2 -  (內建函數)
 MinList2可以傳入多個數值，數值之間使用逗號分開。
 
 範例:
-
 ```
 Value1 = MinList2(1, 2, 3, 4, 5);  // Value1 = 2;
 ```
-
 ---
 
 ## Mod
@@ -4721,13 +4487,11 @@ Mod -  (內建函數)
 說明：
 
 範例:
-
 ```
 Value1 = Mod(10, 2); // Value1 = 0 (可以整除)
 
 Value2 = Mod(10, 3); // Value2 = 1(不能整除，除完後餘1)
 ```
-
 ---
 
 ## Neg
@@ -4748,13 +4512,11 @@ Neg -  (內建函數)
 說明：
 
 範例
-
 ```
 Value1 = Neg(5);  // Value1 = -5
 
 Value2 = Neg(-5);  // Value2 = -5
 ```
-
 請參考[Pos函數](api?a=pos&b=bif)。
 
 ---
@@ -4779,7 +4541,6 @@ NthMaxList -  (內建函數)
 **排名位置**從1開始，1表示是回傳排名第一(最大)的數字，2表示回傳排名第二(次大)的數字，以下類推。在**排名位置**之後可以傳入任意個數值，使用逗號分開。
 
 舉例:
-
 ```
 Value1 = NthMaxList(1, 50, 50, 40, 30);  // Value1 = 50
 
@@ -4789,17 +4550,14 @@ Value3 = NthMaxList(3, 50, 50, 40, 30);  // Value3 = 40
 
 Value4 = NthMaxList(4, 50, 50, 40, 30);  // Value4 = 30
 ```
-
 上述計算 50, 50, 40, 30 這四個數字由大到小的排名數字。請注意傳入的數值內有兩個50，分居排名1跟2。
 
 另外一個範例:
-
 ```
 Value1 = NthMaxList(1, Close, Close[1], Close[2], Close[3], Close[4]);
 
 Value2 = NthMaxList(5, Close, Close[1], Close[2], Close[3], Close[4]);
 ```
-
 使用NthMaxList取得近5日的最高收盤價以及最低收盤。
 
 當排名位置為1時，NthMaxList函數等同於[MaxList函數](api?a=maxlist&b=bif)。當排名位置為最後一名時，NthMaxList函數等同於[MinList函數](api?a=minlist&b=bif)。
@@ -4826,7 +4584,6 @@ NthMinList -  (內建函數)
 **排名位置**從1開始，1表示是回傳排名第一(最小)的數字，2表示回傳排名第二(次小)的數字，以下類推。在**排名位置**之後可以傳入任意個數值，使用逗號分開。
 
 舉例:
-
 ```
 Value1 = NthMinList(1, 50, 50, 40, 30);  // Value1 = 30
 
@@ -4836,7 +4593,6 @@ Value3 = NthMinList(3, 50, 50, 40, 30);  // Value3 = 50
 
 Value4 = NthMinList(4, 50, 50, 40, 30);  // Value4 = 50
 ```
-
 上述計算 50, 50, 40, 30 這四個數字由小到大的排名數字。請注意傳入的數值內有兩個50，分居排名3跟4。
 
 請參考 [NthMaxList函數](api?a=nthmaxlist&b=bif)。
@@ -4863,11 +4619,9 @@ Permutation -  (內建函數)
 計算從N個不同數字的集合內取出M個不同數字的[可能排列個數](https://zh.wikipedia.org/wiki/%E7%BB%84%E5%90%88%E6%95%B0%E5%AD%A6)。
 
 範例:
-
 ```
 Value1 = Permutation(3, 2);  // Value1 = 6
 ```
-
 假設母集合有三個數字 A, B, C, 則取出任意兩個不同數字的可能排列方式 = (A,B), (A,C), (B,A), (B,C), (C,A), (C,B) 共六種。
 
 請參考 [Combination函數](api?a=combination&b=bif)
@@ -4892,13 +4646,11 @@ Pos -  (內建函數)
 說明：
 
 這個函數的結果與[AbsValue函數](api?a=absvalue&b=bif)相同。
-
 ```
 Value1 = Pos(-10);  // Value1 = 10
 
 Value2 = Pos(10);  // Value2 = 10
 ```
-
 ---
 
 ## Power
@@ -4919,11 +4671,9 @@ Power -  (內建函數)
 說明：
 
 範例:
-
 ```
 Value1 = Power(10, 2);  // Value1 = 10的2次方 = 100
 ```
-
 ---
 
 ## Random
@@ -4944,11 +4694,9 @@ Random -  (內建函數)
 說明：
 
 範例:
-
 ```
 Value1 = Random(10);
 ```
-
 Value1的數值會是一個介於0跟10之間的隨機數字 (0 <= Value1 And Value1 < 10)，而且每次執行時Value1的數值都會不相同。
 
 一般而言會在計算統計相關數字時使用隨機數字來模擬可能的數值分配情境。
@@ -4973,7 +4721,6 @@ Round -  (內建函數)
 說明：
 
 範例:
-
 ```
 Value1 = Round(10.547, 0); // Value1 = 11
 
@@ -4981,7 +4728,6 @@ Value2 = Round(10.547, 1); // Value1 = 10.5
 
 Value3 = Round(10.547, 2); // Value1 = 10.55
 ```
-
 請參考 [Ceiling函數](api?a=ceiling&b=bif) 以及 [Floor函數](api?a=floor&b=bif)
 
 ---
@@ -5006,7 +4752,6 @@ Sign -  (內建函數)
 說明：
 
 範例:
-
 ```
 Value1 = Sign(10);  // Value1 = 1
 
@@ -5014,7 +4759,6 @@ Value2 = Sign(-10); // Value2 = -1
 
 Value3 = Sign(0);   // Value3 = 0
 ```
-
 ---
 
 ## Sin
@@ -5039,11 +4783,9 @@ Sin -  (內建函數)
 輸入角度後回傳正弦值。
 
 範例:
-
 ```
 Value1 = Sin(30);  // Value1 = 0.5
 ```
-
 ---
 
 ## Sine
@@ -5085,11 +4827,9 @@ Square -  (內建函數)
 說明：
 
 範例:
-
 ```
 Value1 = Square(10);  // Value1 = 100
 ```
-
 請參考 [SquareRoot函數](api?a=squareroot&b=bif)。
 
 ---
@@ -5112,11 +4852,9 @@ SquareRoot -  (內建函數)
 說明：
 
 範例:
-
 ```
 Value1 = SquareRoot(100);  // Value1 = 10
 ```
-
 請參考 [Square函數](api?a=square&b=bif)。
 
 ---
@@ -5141,11 +4879,9 @@ SumList -  (內建函數)
 使用SumList時可以傳入數個數值，數值之間用逗號隔開。
 
 範例:
-
 ```
 Value1 = SumList(Open, High, Low, Close) / 4;
 ```
-
 上述範例內使用SumList來計算平均價格 (_(開盤價 + 最高價 + 最低價 + 收盤價) / 4_)。
 
 請注意: 如果要計算序列型的數值的加總值的話，則可以使用[Summation函數](api?a=summation&b=sys)。
@@ -5174,11 +4910,9 @@ Tan -  (內建函數)
 輸入角度，回傳對應的正切值。
 
 範例:
-
 ```
 Value1 = Tan(45);  // Value1 = 1.0
 ```
-
 ---
 
 ## Tangent
@@ -5236,11 +4970,9 @@ CurrentDate -  (內建函數)
 - DD: 執行的日期，數值範圍從01到31，2碼
 
 舉例而言，如果執行日期是2015年6月1日，則CurrentDate回傳 20150601。
-
 ```
 Print("CurrentDate=", CurrentDate);
 ```
-
 ---
 
 ## DateAdd
@@ -5283,7 +5015,6 @@ DateAdd -  (內建函數)
 DateAdd函數回傳的數值也是YYYYMMDD的日期格式。
 
 範例:
-
 ```
 Value1 = DateAdd(20150601, "Y", 1);  // Value1 = 20160601, 加1年
 
@@ -5293,7 +5024,6 @@ Value3 = DateAdd(20150601, "D", 1);  // Value3 = 20150602, 加1天
 
 Value4 = DateAdd(20150601, "D", -1); // Value4 = 20150531, 減1天
 ```
-
 ---
 
 ## DateDiff
@@ -5318,19 +5048,15 @@ DateDiff -  (內建函數)
 日期數值為YYYYMMDD的8碼數字，例如CurrentDate，或是Date，或是20150601，或是其他日期相關函數所回傳的日期欄位。
 
 DateDiff回傳的數值是第一個日期減第二個日期的差異天數，如果第一個日期小於第二個日期的話，則回傳的數值是負數。
-
 ```
 Value1 = DateDiff(20160601, 20160501);  // Value1 = 31(日)
 
 Value2 = DateDiff(20160601, 20160602);  // Value2 = -1(日)
 ```
-
 一般可以利用這個函數來判斷價位日期之間的關係
-
 ```
 if High > Highest(Close[1],60) and DateDiff(CurrentDate, Date) < 5 then ret=1;
 ```
-
 以上的警示範例(使用日資料執行)會在近5日內創60日新高時觸發。注意到腳本內使用DateDiff來判斷創新高的日期(Date)是否與目前電腦日期(也就是執行當日)的差異是在5日之內。
 
 ---
@@ -5355,7 +5081,6 @@ DateToJulian -  (內建函數)
 在XS系統內日期的標準格式為YYYYMMDD的8碼數字。如果需要執行日期的計算時，一般可以使用[DateAdd函數](api?a=dateadd&b=bif)或是[DateDiff函數](api?a=datediff&b=bif)。
 
 另外一種計算方式，則是把日期轉換成[儒略日格式](https://zh.wikipedia.org/wiki/%E5%84%92%E7%95%A5%E6%97%A5)後再來計算。因為儒略日格式採用**絕對天數**的方式來紀錄日期數值，所以可以直接做數值運算，然後再使用[JulianToDate函數](api?a=JulianToDate&b=bif)轉成YYYYMMDD的8碼日期格式。
-
 ```
 Value1 = DateToJulian(20150601);  // 把20150601轉成Julian格式
 
@@ -5363,7 +5088,6 @@ Value1 = Value1 + 1;                        // 直接加1天
 
 Value2 = JulianToDate(Value1);       // Value2 = 20150602
 ```
-
 ---
 
 ## DateToString
@@ -5398,11 +5122,9 @@ DateToString -  (內建函數)
 回傳字串的格式是"**YYYY/MM/DD**"，其中YYYY為４位年份，MM為月份，從01到12，DD則是日期，從01到31。
 
 舉例而言，如果目前日期是20150601的話，以下的程式碼
-
 ```
 Print(DateToString(CurrentDate));
 ```
-
 將會印出 "2015/06/01"的字串。
 
 請參考[StringToDate函數](api?a=stringtodate&b=bif)。
@@ -5453,7 +5175,6 @@ DateValue -  (內建函數)
 - 如果是WY，則回傳當年的第幾週，範圍從1到53
 
 以下是一個範例:
-
 ```
 Value1 = DateValue(20150601, "Y");  // Value1 = 2015
 
@@ -5467,7 +5188,6 @@ Value5 = DateValue(20150601, "WM"); // Value5 = 1 (6月第一週)
 
 Value6 = DateValue(20150601, "WY"); // Value6 = 23 (2015年第23週)
 ```
-
 這個函數可以看成是[Year函數](api?a=year&b=bif)，[Month函數](api?a=month&b=bif)，[DayOfMonth函數](api?a=dayofmonth&b=bif)，[DayOfWeek函數](api?a=dayofweek&b=bif)，[WeekOfMonth函數](api?a=weekofmonth&b=bif)，以及[WeekOfYear函數](api?a=weekofyear&b=bif)等函數的綜合體。
 
 ---
@@ -5504,13 +5224,11 @@ DayOfMonth -  (內建函數)
 回傳的數值則是這個日期是這個月的第幾天，可能的數值從1到31。
 
 舉例：
-
 ```
 Value1 = DayOfMonth(20150601);	// Value1 = 1
 
 Value2 = DayOfMonth(20150630);  // Value2 = 30
 ```
-
 日期相關的函數請參考[Year函數](api?a=year&b=bif)，[Month函數](api?a=month&b=bif)，[DayOfMonth函數](api?a=dayofmonth&b=bif)，[DayOfWeek函數](api?a=dayofweek&b=bif)，[WeekOfMonth函數](api?a=weekofmonth&b=bif)，以及[WeekOfYear函數](api?a=weekofyear&b=bif)。
 
 ---
@@ -5547,7 +5265,6 @@ DayOfWeek -  (內建函數)
 回傳的數值則是這個日期是這個星期的第幾天，可能的數值從0(星期日)到6(星期六)。
 
 範例:
-
 ```
 If DayOfWeek(Date) = 1 Then
 
@@ -5557,7 +5274,6 @@ Begin
 
 End;
 ```
-
 日期相關的函數請參考[Year函數](api?a=year&b=bif)，[Month函數](api?a=month&b=bif)，[DayOfMonth函數](api?a=dayofmonth&b=bif)，[DayOfWeek函數](api?a=dayofweek&b=bif)，[WeekOfMonth函數](api?a=weekofmonth&b=bif)，以及[WeekOfYear函數](api?a=weekofyear&b=bif)。
 
 ---
@@ -5590,13 +5306,11 @@ EncodeDate -  (內建函數)
 函數回傳值的格式為8碼的日期數字。
 
 以下範例:
-
 ```
 Value1 = EncodeDate(2015,1,1);   // Value1 = 20150101
 
 Value2 = EncodeDate(2015,12,31); // Value2 = 20151231
 ```
-
 ---
 
 ## FormatDate
@@ -5655,11 +5369,9 @@ FormatDate -  (內建函數)
 格式字串內除了可以使用上面字串的組合之外，也可以搭配其他的字元。
 
 範例如下:
-
 ```
 Value1 = FormatDate("yyyy/MM/dd", 20150601);  // Value1 = "2015/06/01"
 ```
-
 注意到格式字串內有使用"/"字串，這些額外的字串也會出現在回傳字串內。
 
 ---
@@ -5719,11 +5431,9 @@ Month -  (內建函數)
 回傳的數值則是這個日期的月份，可能的數值從1到12。
 
 舉例：
-
 ```
 Value1 = Month(20150601);　　// Value1 = 6
 ```
-
 日期相關的函數請參考[Year函數](api?a=year&b=bif)，[Month函數](api?a=month&b=bif)，[DayOfMonth函數](api?a=dayofmonth&b=bif)，[DayOfWeek函數](api?a=dayofweek&b=bif)，[WeekOfMonth函數](api?a=weekofmonth&b=bif)，以及[WeekOfYear函數](api?a=weekofyear&b=bif)。
 
 ---
@@ -5748,11 +5458,9 @@ StringToDate -  (內建函數)
 說明：
 
 範例:
-
 ```
 Value1 = StringToDate("2015/06/01");  // Value1 = 20150601
 ```
-
 請參考[DateToString函數](api?a=datetostring&b=bif)。
 
 ---
@@ -5787,11 +5495,9 @@ WeekOfMonth -  (內建函數)
 日期數值通常是透過CurrentDate，或是Date(資料的日期欄位)，或是其他日期相關函數所產生的日期數值。
 
 回傳的數值則是這個日期是這個月的第幾個星期，可能的數值從1到6。
-
 ```
 Value1 = WeekOfMonth(20150601);   // Value1 = 1 (第一週)
 ```
-
 日期相關的函數請參考[Year函數](api?a=year&b=bif)，[Month函數](api?a=month&b=bif)，[DayOfMonth函數](api?a=dayofmonth&b=bif)，[DayOfWeek函數](api?a=dayofweek&b=bif)，[WeekOfMonth函數](api?a=weekofmonth&b=bif)，以及[WeekOfYear函數](api?a=weekofyear&b=bif)。
 
 ---
@@ -5826,11 +5532,9 @@ WeekOfYear -  (內建函數)
 日期數值通常是透過CurrentDate，或是Date(資料的日期欄位)，或是其他日期相關函數所產生的日期數值。
 
 回傳的數值則是這一年第幾個星期，可能的數值從1到53。
-
 ```
 Value1 = WeekOfYear(20150101);   // Value1 = 1 (第一週)
 ```
-
 日期相關的函數請參考[Year函數](api?a=year&b=bif)，[Month函數](api?a=month&b=bif)，[DayOfMonth函數](api?a=dayofmonth&b=bif)，[DayOfWeek函數](api?a=dayofweek&b=bif)，[WeekOfMonth函數](api?a=weekofmonth&b=bif)，以及[WeekOfYear函數](api?a=weekofyear&b=bif)。
 
 ---
@@ -5865,11 +5569,9 @@ Year -  (內建函數)
 回傳的數值則是這個日期的所在年度。
 
 舉例：
-
 ```
 Value1 = Year(20150601);　　// Value1 = 2015
 ```
-
 日期相關的函數請參考[Year函數](api?a=year&b=bif)，[Month函數](api?a=month&b=bif)，[DayOfMonth函數](api?a=dayofmonth&b=bif)，[DayOfWeek函數](api?a=dayofweek&b=bif)，[WeekOfMonth函數](api?a=weekofmonth&b=bif)，以及[WeekOfYear函數](api?a=weekofyear&b=bif)。
 
 ---
@@ -5912,7 +5614,6 @@ CurrentTime -  (內建函數)
 舉例而言，如果執行時間是上午的9點30分00秒，則CurrentTime回傳 93000，如果執行時間為下午1點30分00秒，則CurrentTime回傳133000。
 
 我們可以使用這個函數來判斷腳本的執行時間，例如在以下範例內使用CurrentTime來判斷腳本執行時是否已經是中午12:30分之後。
-
 ```
 If CurrentTime >= 123000 Then
 
@@ -5922,7 +5623,6 @@ Begin
 
 End;
 ```
-
 ---
 
 ## CurrentTimeMS
@@ -5965,7 +5665,6 @@ CurrentTimeMS -  (內建函數)
 舉例而言，如果執行時間是上午的9點30分00秒500毫秒，則CurrentTimeMS回傳 93000.500，如果執行時間為下午1點10分00秒500毫秒，則CurrentTimeMS回傳131000.500。
 
 我們可以使用這個函數來判斷腳本的執行時間，例如在以下範例內使用CurrentTimeMS來判斷腳本執行時是否已經是中午12點30分00秒500毫秒之後。
-
 ```
 If CurrentTimeMS >= 123000.500 Then
 
@@ -5975,7 +5674,6 @@ Begin
 
 End;
 ```
-
 ---
 
 ## EncodeTime
@@ -6012,7 +5710,6 @@ EncodeTime -  (內建函數)
 例如傳入HH=9, MM=30, SS=0的話，則回傳93000。如果傳入HH=12, MM=30, SS=0的話，則回傳123000。如果傳入HH=13, MM= 15, SS=0, MS=255 的話，則回傳 131500.255。
 
 以下是應用範例:
-
 ```
 Value1 = EncodeTime(12, 30, 0);
 
@@ -6030,7 +5727,6 @@ if CurrentTimeMS >= Value2 Then Begin
 
 End;
 ```
-
 ---
 
 ## FormatTime
@@ -6097,7 +5793,6 @@ CurrentTimeMS，則是含有毫秒的時間數值，是一個 8~9 碼的數字�
 格式字串內除了可以使用上面字串的組合之外，也可以搭配其他的字元。
 
 範例如下
-
 ```
 var:_Str1(""),_Str2("");
 
@@ -6105,7 +5800,6 @@ _Str1 = FormatTime("HH:mm:ss", 132530.255);  // _Str1 = "13:25:30"
 
 _Str2 = FormatTime("HH:mm:ss:fff", 132530.255);  // _Str2 = "13:25:30"
 ```
-
 注意到格式字串內有使用":"字串，這些額外的字串也會出現在回傳字串內。
 
 ---
@@ -6138,7 +5832,6 @@ Hour -  (內建函數)
 - SS是秒數，數值範圍從00到59，必須是2位數字
 
 時間數值通常是透過CurrentTime，Time(資料的時間欄位)，或是其他時間相關函數所產生的時間數值。
-
 ```
 Value1 = Hour(Time);
 
@@ -6150,9 +5843,7 @@ Begin
 
 End;
 ```
-
 上述範例利用Hour取得目前分鐘K棒資料時間的小時數值。
-
 ```
 Value2 = Hour(CurrentTime);
 
@@ -6164,7 +5855,6 @@ Begin
 
 End;
 ```
-
 上述範例則是傳入[CurrentTime](api?a=currentime&b=bif)，也就是目前電腦的時間，格視為 HHMMSS。
 
 ---
@@ -6178,7 +5868,6 @@ End;
 - SS是秒數，數值範圍從00到59，必須是2位數字
 
 - fff是毫秒，數值範圍從000到999，必須是3位數字
-
 ```
 Value3 = Hour(CurrentTimeMS);
 
@@ -6190,7 +5879,6 @@ Begin
 
 End;
 ```
-
 上述範例是傳入[CurrentTimeMS](api?a=currentimems&b=bif)，也是目前電腦的時間，不過是含有毫秒的電腦的時間，格式為 HHMMSS.fff。
 
 時間相關的的函數請參考[Hour函數](api?a=hour&b=bif)，[Minute函數](api?a=minute&b=bif)，以及[Second函數](api?a=second&b=bif)。
@@ -6227,7 +5915,6 @@ MilliSecond -  (內建函數)
 - fff是毫秒，數值範圍從0到999，必須是3位數字
 
 時間數值通常是透過CurrentTime，CurrentTimeMS，Time(資料的時間欄位)，或是其他時間相關函數所產生的時間數值。
-
 ```
 Value1 = CurrentTimeMS;
 
@@ -6239,7 +5926,6 @@ Begin
 
 End;
 ```
-
 時間相關的的函數請參考[Hour函數](api?a=hour&b=bif)，[Minute函數](api?a=minute&b=bif)，[Second函數](api?a=second&b=bif)，以及[MilliSecond](api?a=millisecond&b=bif)
 
 ---
@@ -6272,7 +5958,6 @@ Minute -  (內建函數)
 - SS是秒數，數值範圍從00到59，必須是2位數字
 
 時間數值通常是透過CurrentTime，Time(資料的時間欄位)，或是其他時間相關函數所產生的時間數值。
-
 ```
 Value1 = Minute(Time);
 
@@ -6284,7 +5969,6 @@ Begin
 
 End;
 ```
-
 上述範例取得目前分鐘K棒資料時間的分鐘數值。
 
 ---
@@ -6300,7 +5984,6 @@ End;
 - fff是毫秒，數值範圍從000到999，必須是3位數字
 
 含有毫秒的時間數值，通常是透過CurrentTimeMS，[FilledRecordTimeMS](api?a=FilledRecordTimeMS&b=bif)，或是其他時間相關函數所產生的時間數值。
-
 ```
 Value1 = Minute(CurrentTimeMS);
 
@@ -6312,7 +5995,6 @@ Begin
 
 End;
 ```
-
 上述範例，也是取得目前分鐘K棒資料時間的分鐘數值，不過是傳入含有毫秒的目前電腦時間。
 
 時間相關的的函數請參考[Hour函數](api?a=hour&b=bif)，[Minute函數](api?a=minute&b=bif)，以及[Second函數](api?a=second&b=bif)。
@@ -6347,7 +6029,6 @@ Second -  (內建函數)
 - SS是秒數，數值範圍從00到59，必須是2位數字
 
 時間數值通常是透過CurrentTime，Time(資料的時間欄位)，或是其他時間相關函數所產生的時間數值。
-
 ```
 Value1 = CurrentTime;
 
@@ -6359,7 +6040,6 @@ Begin
 
 End;
 ```
-
 ---
 
 時間數值也可以是一個含有毫秒的 8~9 碼的數字，格式是HHMMSS.fff：
@@ -6375,7 +6055,6 @@ End;
 含有毫秒的時間數值，通常是透過CurrentTimeMS，[FilledRecordTimeMS](api?a=FilledRecordTimeMS&b=bif)，或是其他時間相關函數所產生的時間數值。
 
 以下的範例是用 CurrentTimeMS 傳入的時間數值
-
 ```
 Value2 = CurrentTimeMS;
 
@@ -6387,7 +6066,6 @@ Begin
 
 End;
 ```
-
 時間相關的的函數請參考[Hour函數](api?a=hour&b=bif)，[Minute函數](api?a=minute&b=bif)，[Second函數](api?a=second&b=bif)，以及[MilliSecond](api?a=millisecond&b=bif)
 
 ---
@@ -6414,7 +6092,6 @@ StringToTime -  (內建函數)
 說明：
 
 範例:
-
 ```
 if CurrentTime > StringToTime("13:00:00") Then Begin
 
@@ -6428,7 +6105,6 @@ if CurrentTimeMS > StringToTime("13:00:00.500") Then Begin
 
 End;
 ```
-
 請參考[TimeToString函數](api?a=timetostring&b=bif)。
 
 ---
@@ -6489,7 +6165,6 @@ TimeAdd -  (內建函數)
 TimeAdd回傳的數值也是HHMMSS或者HHMMSS.fff的時間格式。
 
 以下是簡單的範例：
-
 ```
 Value1 = TimeAdd(120000, "H", 1);	// Value1 = 130000
 
@@ -6497,9 +6172,7 @@ Value2 = TimeAdd(123000, "M", -30); // Value2 = 120000
 
 Value3 = TimeAdd(120000, "MS", 1); // Value3 = 120000.001
 ```
-
 以下是一個應用範例，使用１分鐘頻率執行，利用TimeAdd來判斷目前資料是否是位於創新高後的１小時內:
-
 ```
 Var: HighTime(0);
 
@@ -6515,7 +6188,6 @@ Begin
 
 End;
 ```
-
 請注意上述範例內當Date不等於Date[1]時(分鐘線資料換日)必須把HighTime清掉，以確保HighTime是當日創新高的時間點。
 
 ---
@@ -6576,7 +6248,6 @@ TimeDiff回傳的數值是第一個時間減第二個時間的差異:
 - 如果第三個參數是"MS"，則回傳兩個時間換算成毫秒。
 
 如果第一個時間小於第二個時間的話，則回傳的數值是負數。
-
 ```
 Value1 = TimeDiff(130000, 120000, "H"); // Value1 = 1(小時)
 
@@ -6588,9 +6259,7 @@ Value4 = TimeDiff(123000, 130000, "H"); // Value4 = -0.5(小時)
 
 Value5 = TimeDiff(120000.123, 120000, "MS"); // Value5 = 123(毫秒)
 ```
-
 底下是一個應用範例，使用１分鐘資料。利用TimeDiff來計算大單成交的時間間隔，如果發生的很密集的話則觸發。
-
 ```
 Var: vTime(0);
 
@@ -6606,7 +6275,6 @@ If vTime <> vTime[1] and absValue(TimeDiff(vTime, vTime[1], "M")) < 5 Then begin
 
 end;
 ```
-
 ---
 
 ## TimeToString
@@ -6645,11 +6313,9 @@ TimeToString -  (內建函數)
 回傳字串的格式是"**HH:MM:SS**"，其中HH(小時)的範圍從00到23 (24小時制，兩碼)，MM(分鐘)的範圍從00到59，SS(秒數)的範圍從00到59。
 
 舉例而言，如果目前時間是9點30分00秒，以下的程式碼
-
 ```
 Print(TimeToString(CurrentTime));
 ```
-
 將會印出 "09:30:00"的字串。
 
 ---
@@ -6657,11 +6323,9 @@ Print(TimeToString(CurrentTime));
 如果回傳字串的格式是"**HH:MM:SS.fff**"，其中HH(小時)的範圍從00到23 (24小時制，兩碼)，MM(分鐘)的範圍從00到59，SS(秒數)的範圍從00到59，fff(毫秒)的範圍從000到999。
 
 例如目前時間是9點30分00秒500毫秒，以下的程式碼
-
 ```
 Print(TimeToString(CurrentTimeMS));
 ```
-
 將會印出 "09:30:00.500"的字串。
 
 請參考[StringToTime函數](api?a=stringtotime&b=bif)。
@@ -6730,7 +6394,6 @@ TimeValue -  (內建函數)
 - 如果是 MS 的話，則回傳時間的毫秒，範圍從0到999
 
 以下是一個範例:
-
 ```
 Value1 = TimeValue(CurrentTime, "H");
 
@@ -6748,7 +6411,6 @@ if Value2 >= 500 Then Begin
 
 End;
 ```
-
 這個函數可以看成是 [Hour](api?a=hour&b=bif), [Minute](api?a=minute&b=bif), [Second](api?a=second&b=bif), 以及 [MilliSecond](api?a=MilliSecond&b=bif) 還有的綜合體。
 
 ---
@@ -6836,7 +6498,6 @@ GetField函數可以傳入四個參數:
 - 第四個參數則是「設定預設值」運用Default參數來設定若遇到此欄位對應K棒沒有資料的狀況要回傳的數值。
 
 以下是一個簡單的範例:
-
 ```
 Value1 = GetField("收盤價");　// value1 為取得目前腳本執行頻率的收盤價。
 
@@ -6846,7 +6507,6 @@ Value3 = GetField("收盤價", "1", Adjusted:=true);　// value3 為取得還原
 
 Value4 = GetField("本益比", "D", Default := 0);    // 當運算的K棒沒有對應的本益比時，則回傳0。
 ```
-
 設定預設值並無法解決所有的欄位錯誤，例如 取未來值 (ex. GetField("Close", "1", Default:=0)[-1]) 以及 不支援的欄位/頻率 (ex.GetField("本益比", "Y", Default := 0)) 還是會發生錯誤。
 
 GetField可以使用的欄位分成兩種類型:
@@ -6858,7 +6518,6 @@ GetField可以使用的欄位分成兩種類型:
 使用者可以點選XS編輯器內的編輯選單/插入欄位選項，或是按快捷鍵F7，進入插入欄位畫面內搜尋或是瀏覽需要的欄位，從插入欄位畫面內也可以找到欄位的說明等資訊。
 
 GetField欄位除了可以取得某個欄位在目前K棒的數值之外，也可以取得某個欄位的前期值:
-
 ```
 If Close > Close[1] And
 
@@ -6868,7 +6527,6 @@ Then
 
    Ret = 1;
 ```
-
 在上述警示範例內使用GetField("外資買賣超")來讀取外資的買賣超張數。注意到**GetField("外資買賣超")[1]**的用法：GetField函數的回傳值是跟**Close**一樣是一個序列，可以使用[]的語法來讀取前期值。
 
 資料欄位支援Tick、分鐘、日、週、月、季、半年、年、還原日、還原月、還月季等頻率，視欄位內容決定支援的頻率，在插入欄位的畫面中會列出欄位支援的商品及頻率。
@@ -6876,11 +6534,9 @@ Then
 選股腳本不支援Tick、分鐘頻率，同樣也能在呼叫GetField時指定引用的資料頻率，
 
 當使用者選擇「外資買賣超」欄位時，頻率選項內會列出這個欄位可以被使用的頻率：日、週、月。如果使用者選擇週的話，則按插入後編輯器內會出現以下的程式碼:
-
 ```
 GetField("外資買賣超","W");
 ```
-
 注意到GetField的第二個參數傳入了 "W"，代表要抓取週線頻率。當GetField函數內傳入了指定頻率時，則不管腳本執行的頻率是什麼，系統一定會回傳這個欄位指定的頻率內容。
 
 以下是GetField的頻率代碼清單：
@@ -6910,13 +6566,11 @@ GetField("外資買賣超","W");
 如果在頻率選項內選擇「**預設**」的話，則產生的GetField程式碼內將不會傳入第二個參數。這表示當GetField執行時回傳的資料頻率會跟腳本執行的頻率是一樣的。
 
 如果GetField函數內傳入了頻率參數，而且這個頻率跟目前腳本執行的頻率不一樣的話，則我們稱這種情形為**跨頻率**。
-
 ```
 If Close > Close[1] and
 
    GetField("外資買賣超","W") > GetField("外資買賣超","W") [1] then ret = 1;
 ```
-
 上述選股腳本內我們使用日頻率來執行，所以Close, Close[1]都是日頻率的資料，而GetField("外資買賣超","W")則是週頻率的資料。 當腳本執行時遇到要讀取不同頻率的資料時，系統會使用以下的方式來決定不同頻率的資料的日期:
 
 目前腳本執行的頻率為主頻率，以上例而言主頻率為日頻率，如果要讀取週頻率資料時，以日資料的計算日期來取得當下的週資料；例如，台積電(2330) 在2018/07/16~2018/07/20期間中：
@@ -6975,7 +6629,6 @@ GetFieldDate函數傳入的參數與GetField是一樣的，需要傳入欄位名
 由於營收/財報等資料的公佈日期往往落後於目前的日期，所以如果在運算時需要清楚的知道資料的日期的話，則可以使用GetFieldDate這個函數。
 
 在以下的選股腳本內，我們使用GetFieldDate來判斷最新一期月營收的日期，然後利用這個日期來估計最新一季的獲利:
-
 ```
 Var: mm(0);
 
@@ -7005,7 +6658,6 @@ OutputField2(value2 / 100, "預估單季本業獲利(億)");
 
 ret = 1;
 ```
-
 當最新一期的月營收的月份是1月/4月/7月/10月時, 我們估算當季的營收為最新這個月的營收 \* 3，如果最新一期的月營收的月份是2月/5月/8月/11月時，因為當季的營收已經公佈了兩個月了，所以我們用當季的第一次營收 ( GetField("月營收", "M")[1] ) 來加上最新這個月的營收 \* 2來當成這一季的估季營收，如果最新一期的月營收的月份是3月/6月/9月/12月的話，則因為當季所有月份的營收都已經公佈了，所以我們就把近三期的月營收加起來。
 
 計算完當季的估計營收之後，接下來就可以使用最新一期的毛利率等資料來估算獲利了。
@@ -7083,7 +6735,6 @@ GetQuote -  (內建函數)
 目前即時報價欄位僅能使用在警示與交易類型的腳本。而且由於報價欄位的數值是採用即時更新的方式，只提供最新的數值，無法取得前期值，因此無法使用在回測上，在使用上要注意這個特性。
 
 以下是一個使用即時報價欄位的範例:
-
 ```
 Input: OpenGap(1);
 
@@ -7097,7 +6748,6 @@ if  q_DailyHigh = q_DailyOpen and
 
 then ret=1;
 ```
-
 上面的這個警示腳本內判斷如果當日開在最高([q_DailyHigh](api?a=q_dailyhigh) = [q_DailyOpen](api?a=q_dailyopen))，而且是跳空開出 (q_DailyOpen > [q_RefPrice](api?a=q_refprice) \* (1 + 跳空比例/100)，而目前的價格 [q_Last](api?a=q_last)已經回落一定範圍的話則觸發警示。在這裡q_DailyHigh為當日的最高價, q_DailyOpen為當日的開盤價, q_RefPrice為當日的參考價, q_Last為當日的最新價格，這些都是常用的報價欄位。
 
 ---
@@ -7148,7 +6798,6 @@ GetSymbolField函數可以傳入五個參數：
 ![插入商品選股欄位](https://www.xq.com.tw/xstrader/wp-content/uploads/2016/11/InsertSymbolField_Filter.png)
 
 以下是一個簡單的範例：
-
 ```
 Value1 = getsymbolField("1101.TW", "收盤價");　// value1 為取得目前腳本執行頻率的台泥(1101)收盤價。
 
@@ -7158,7 +6807,6 @@ Value3 = getsymbolField("1101.TW", "收盤價", "1", Adjusted:=true);　// value
 
 Value4 = getsymbolField("1101.TW", "收盤價", "1", Adjusted:=true, Default:= 0);　// value3 為取得還原1分鐘頻率的台泥(1101)收盤價，當取不到資料時預設值為0。
 ```
-
 ---
 
 另外在「插入欄位」畫面的商品下拉式選單有「標的商品、期貨近/遠/次遠月」選項，選擇後按下插入，系統會自動插入GetSymbolField取得標的商品相關欄位的語法在XS編輯器中，編譯成功後加入相關應用，即可取得商品的「標的商品、期貨近/遠/次遠月」相關欄位數據。
@@ -7166,7 +6814,6 @@ Value4 = getsymbolField("1101.TW", "收盤價", "1", Adjusted:=true, Default:= 0
 ![插入標的商品欄位](https://www.xq.com.tw/wp-content/uploads/2021/07/20210721_%E6%8F%92%E5%85%A5%E6%A8%99%E7%9A%84%E5%95%86%E5%93%81.png)
 
 以下是 GetSymbolField「標的商品、期貨近/遠/次遠月」範例：
-
 ```
 //假設以下情境：
 
@@ -7198,7 +6845,6 @@ value3 = GetSymbolField("Future*2", "收盤價");
 
 //在此範例就是台積電期10月(FICDF10.TF)收盤價。
 ```
-
 詳細的語法說明可以參考 [GetField](api?a=getfield&b=bif)函數。
 
 ---
@@ -7235,7 +6881,6 @@ GetSymbolFieldDate函數可以傳入三個參數：
 - 第三個參數則是欄位的頻率，如果省略這個參數的話，則會依照目前腳本執行的頻率來取得對應的資料
 
 以下是一個簡單的範例（選股腳本）：
-
 ```
 GetSymbolFieldDate("2330.TW","月營收");
 
@@ -7243,7 +6888,6 @@ GetSymbolFieldDate("2330.TW","月營收","M");
 
 ret=1;
 ```
-
 詳細的語法說明可以參考 [GetFieldDate](api?a=GetFieldDate&b=bif)函數。
 
 ---
@@ -7268,7 +6912,6 @@ GetSymbolInfo -  (內建函數)
 交易者在制定交易策略時，除了使用交易市場的數據用來計算相關數值外，也會想要利用商品相關資訊，例如台股商品的注意股及買賣現沖的資訊，來作為交易策略的判斷依據。為了讓交易者可以如願以償，XS語法內提供了GetSymbolInfo這個函數，來協助交易者完成這樣的工作。
 
 GetSymbolInfo函數可以傳入商品資訊欄位的中文或是英文名稱，以下是一個簡單的範例：
-
 ```
 var:aa(""),aaa("");
 
@@ -7276,7 +6919,6 @@ aa = GetSymbolInfo("交易所");//回傳最新的實際掛牌交易所（支援�
 
 aaa= GetSymbolInfo("exchange");//回傳最新的實際掛牌交易所（支援台股、權證與可轉債）
 ```
-
 GetSymbolInfo可以使用的商品資訊欄位為：
 
 - 交易所：回傳商品掛牌的交易所。格式是字串。支援台股、台(權證)、台(可轉債)、台(特別股)、美(股票)
@@ -7425,7 +7067,6 @@ Symbol函數回傳目前執行腳本的商品代碼，格式是商品編碼 + '.
 如果有多個商品同時執行同一個腳本時(例如策略雷達)，可以利用這個函數來判斷目前執行的商品而做不同的處理，也可以利用這個函數搭配[Print函數](api?a=print&b=bif)來輸出目前執行的商品代碼。
 
 範例:
-
 ```
 If Symbol = "2330.TW" then
 
@@ -7435,7 +7076,6 @@ begin
 
 end;
 ```
-
 請參考[SymbolName函數](api?a=symbolname&b=bif)。
 
 ---
@@ -7462,11 +7102,9 @@ SymbolName函數回傳目前執行腳本的商品名稱，例如 "台積電"，"
 通常可以在[Print函數](api?a=print&b=sys)內使用這個函數，在列印的內容內把商品名稱印出來。
 
 範例:
-
 ```
 Print("商品名稱", SymbolName);
 ```
-
 請參考[Symbol函數](api?a=symbol&b=bif)。
 
 ---
@@ -7489,11 +7127,9 @@ UserID -  (內建函數)
 說明：
 
 UserID函數回傳目前XQ登入者的使用者代碼。
-
 ```
 Print("目前使用者代碼", UserID);
 ```
-
 ---
 
 ## Array_Compare
@@ -7526,7 +7162,6 @@ Array_Compare(陣列A, 陣列A開始比對的位置, 陣列B, 陣列B開始比�
 - 如果比對的範圍超過Array的大小的話，則回傳-2。
 
 舉例:
-
 ```
 Array: arrA[5](0); // 宣告arrA是一個有5個元素的陣列，初始值都是0
 
@@ -7548,7 +7183,6 @@ Value3 = Array_Compare(arrA, 1, arrB, 2, 3); // 範例3: Value3 = 0
 
 Value4 = Array_Compare(arrA, 1, arrB, 1, 8); // 範例4: Value4 = -2
 ```
-
 第一個範例比對arrA的第一個位置開始的三個數字跟arrB的第一個位置開始的三個數字，也就是比對 (arrA[1], arrA[2], arrA[3])這三個數字與 (arrB[1], arrB[2], arrB[3])這三個數字的差異。其中 arrA的三個數字分別為 (0, 10, 20), 而 arrB的三個數字分別為 (0, 0, 10)。比對時兩邊的第一個數字是相同的(都是0)，而第二個數字 arrA的10 > arrB的0，所以回傳1。
 
 第二個範例比對arrA的第一個位置開始的三個數字跟arrC的第一個位置開始的三個數字，也就是比對 (arrA[1], arrA[2], arrA[3])這三個數字與 (arrC[1], arrC[2], arrC[3])這三個數字的差異。其中 arrA的三個數字分別為 (0, 10, 20), 而 arrC的三個數字分別為 (0, 20, 30)。比對時兩邊的第一個數字是相同的(都是0)，而第二個數字 arrA的10 < arrC的20，所以回傳-1。
@@ -7579,7 +7213,6 @@ Array_Copy(陣列A, 陣列A開始複製的位置, 陣列B, 陣列B開始儲存�
 說明：
 
 請參考以下範例:
-
 ```
 Array: arrA[5](0); // 宣告arrA是一個有5個元素的陣列，初始值都是0
 
@@ -7593,7 +7226,6 @@ Array_Copy(arrA, 1, arrB, 1, 5); // 執行後 arrB = [1, 2, 3, 4, 5]
 
 Array_Copy(arrA, 1, arrC, 2, 3); // 執行後 arrC = [0, 1, 2, 3, 0]
 ```
-
 第一個範例內，指定從arrA的第一個位置開始複製到arrB的第一個位置，總共複製5個元素，所以執行完成後arrB的內容會是[1, 2, 3, 4, 5]，剛好跟arrA的數值完全一樣。
 
 第二個範例內，指定從arrA的第一個位置開始複製到arrC的第二個位置，總共複製3個元素，也就是說:
@@ -7626,15 +7258,12 @@ Array_GetMaxIndex -  (內建函數)
 說明：
 
 回傳陣列內的元素個數。
-
 ```
 Array: arrA[5](0); // 宣告arrA是一個有5個元素的陣列，初始值都是0
 
 Value1 = Array_GetMaxIndex(arrA);  // Value1 = 5
 ```
-
 我們可以利用這個函數來動態取得陣列的大小，讓程式更容易維護：
-
 ```
 Array: arrA[5](0); // 宣告arrA是一個有5個元素的陣列，初始值都是0
 
@@ -7648,7 +7277,6 @@ Begin
 
 End;
 ```
-
 在上述範例內雖然我們已經知道arrA的大小為5，可是我們還是可以利用 Array_GetMaxIndex 來取得 arrA 的大小。未來程式如果有需要調整arrA的大小時，程式內迴圈的程式碼可以不需要修改，方便程式的維護。
 
 ---
@@ -7673,7 +7301,6 @@ Array_GetType -  (內建函數)
 說明：
 
 請看下列範例程式跟註解說明:
-
 ```
 Array: arrNumber[5](0);
 
@@ -7687,7 +7314,6 @@ Value2 = Array_GetType(arrString);     // Value2 = 3
 
 Value3 = Array_GetType(arrBoolean); // Value3 = 2
 ```
-
 ---
 
 ## Array_SetMaxIndex
@@ -7710,7 +7336,6 @@ Array_SetMaxIndex(陣列，陣列內的元素個數)
 說明：
 
 設定[動態陣列](api?a=array&b=keyword)的大小。
-
 ```
 Var: Count(0);
 
@@ -7722,7 +7347,6 @@ Array_SetMaxIndex(NumArray, Count);
 
 NumArray[Count] = High;
 ```
-
 在上述範例內，我們希望可以儲存破20期新高的所有價格。由於執行過程內可能會發生多次創新高的情形，所以我們使用陣列來儲存這些創新高的價位。又由於無法知道創新高的出現次數，所以程式使用動態陣列來儲存這些價格。在上面的範例內，Count就是目前已經創新高的個數，而當又出現創新高的情形時，程式就使用Array_SetMaxIndex來擴充陣列的大小。
 
 ---
@@ -7755,7 +7379,6 @@ Array_SetValRange需要傳入四個參數:
 - 第四個參數是要設定的數值
 
 執行時，從這個陣列的開始位置一直到結束位置的每個元素的數值都會被改成為新設定的數值。
-
 ```
 Array: arr[5](0); // 宣告arrA是一個有5個元素的陣列，初始值都是0
 
@@ -7763,7 +7386,6 @@ arr[1] = 1;  arr[2] = 2; arr[3] = 3; arr[4] = 4; arr[5] = 5;
 
 Array_SetValRange(arr, 1, 3, 0); // arr[1] = 0, arr[2] = 0, arr[3] = 0, arr[4] = 4, arr[5] = 5
 ```
-
 在上例內呼叫Array_SetValRange，位置從1到3，新設定的數值為0。所以執行結束後arr[1], arr[2], arr[3]的數值都會被改成0，而arr[4]跟arr[5]的值則維持不變。
 
 ---
@@ -7800,7 +7422,6 @@ Array_Sort需要傳入四個參數:
 執行後這個陣列內指定範圍內元素將會依照指定的排序方式重新排列。
 
 舉例:
-
 ```
 Array: arr[5](0); // 宣告arrA是一個有5個元素的陣列，初始值都是0
 
@@ -7810,7 +7431,6 @@ Array_Sort(arr, 1, 5, true);   // arr = [1, 2, 3, 4, 5]
 
 Array_Sort(arr, 1, 5, false);  // arr = [5, 4, 3, 2, 1]
 ```
-
 上例內第一次呼叫Array_Sort時，傳入的順序是true，所以會從小排到大，執行完成後arr的內容變成
 
 [1, 2, 3, 4, 5]。
@@ -7853,7 +7473,6 @@ Array_Sort2d需要傳入五個參數:
 執行後這個陣列內指定範圍內元素將會依照指定的排序方式重新排列。
 
 舉例:
-
 ```
 Array: datum[15, 6](0); // 宣告datum是一個有15（列）6（行）的二維陣列，初始值都是0
 
@@ -7879,7 +7498,6 @@ array_sort2d(datum, 1, 15, 6, true); //datum = [最小volume, 次小volume, ... 
 
 array_sort2d(datum, 1, 15, 6, false); //datum = [最大volume, 次大volume, ... 最小volume]
 ```
-
 上例內第一次呼叫array_sort2d時，傳入的順序是true，所以會從小排到大，執行後datum的內容以第六行排序，排序後同列的資料會以第六行為基準一起移動。
 
 第二次呼叫array_sort2d時，傳入的順序是false，所以會從大排到小，執行後datum的內容以第六行排序，排序後同列的資料會以第六行為基準一起移動。
@@ -7906,7 +7524,6 @@ Array_Sum -  (內建函數)
 Array_Sum除了要傳入陣列變數之外，尚須傳入要進行加總的開始位置跟結束位置。
 
 舉例:
-
 ```
 Array: arr[5](0); // 宣告arrA是一個有5個元素的陣列，初始值都是0
 
@@ -7916,7 +7533,6 @@ Value1 = Array_Sum(arr, 1, 5); // Value1 = 15 (1 + 2 + 3 + 4 + 5)
 
 Value2 = Array_Sum(arr, 1, 3); // Value2 = 6 (1 + 2 + 3)
 ```
-
 上例內Value1是arr這個陣列從第一個元素加總到第五個元素的數值，也就是等於arr[1] + arr[2] + arr[3] + arr[4] + arr[5] = 15，而Value2則是從第一個元素到第三個元素的加總 (1 + 2 + 3 = 6)。
 
 ---
@@ -10401,13 +10017,11 @@ Array函數
 以Array儲存跨頻率的序列值，傳入一個序列。
 
 範例：
-
 ```
 Array: CloseArray[](0);
 
 ArrayXDaySeries(GetField("收盤價","D"),SBB_length,_DayValue);
 ```
-
 ---
 
 ## EnterMarketCloseTime
@@ -10501,13 +10115,11 @@ getfield("AvgPrice") 是今日的平均成交價，也就是「當日每筆的�
 平均價格 = (當期開盤價 + 當期最高價 + 當期最低價 + 當期收盤價)/4
 
 範例：
-
 ```
 plot1(avgprice);    //繪製當天平均價格的連線
 
 plot2(avgprice[1]); //繪製前一天平均價格的連線
 ```
-
 ---
 
 ## CloseD
@@ -10536,13 +10148,11 @@ CloseD -  (系統函數)
 當使用頻率小於日線時，用CloseD可以找到某期的日收盤價。
 
 範例：
-
 ```
 plot1(CloseD(0)); //繪製當日收盤價的連線
 
 plot2(CloseD(1)); //繪製前一日收盤價的連線
 ```
-
 相關的函數包含:
 
 - [OpenD](api?a=opend&b=sys), [OpenW](api?a=openw&b=sys), [OpenM](api?a=openm&b=sys), [OpenQ](api?a=openq&b=sys), [OpenH](api?a=openh&b=sys), [OpenY](api?a=openy&b=sys)
@@ -10581,11 +10191,9 @@ CloseH -  (系統函數)
 當使用頻率小於半年線時，用CloseH可以找到某期的半年收盤價。
 
 範例：
-
 ```
 plot1(CloseH(0)); //繪製當期半年線收盤價的連線
 ```
-
 相關的函數包含:
 
 - [OpenD](api?a=opend&b=sys), [OpenW](api?a=openw&b=sys), [OpenM](api?a=openm&b=sys), [OpenQ](api?a=openq&b=sys), [OpenH](api?a=openh&b=sys), [OpenY](api?a=openy&b=sys)
@@ -10624,13 +10232,11 @@ CloseM -  (系統函數)
 當使用頻率小於月線時，用CloseM可以找到某期的月收盤價。
 
 範例：
-
 ```
 plot1(CloseM(0)); //繪製當月收盤價的連線
 
 plot2(CloseM(1)); //繪製前一月收盤價的連線
 ```
-
 相關的函數包含:
 
 - [OpenD](api?a=opend&b=sys), [OpenW](api?a=openw&b=sys), [OpenM](api?a=openm&b=sys), [OpenQ](api?a=openq&b=sys), [OpenH](api?a=openh&b=sys), [OpenY](api?a=openy&b=sys)
@@ -10669,13 +10275,11 @@ CloseQ -  (系統函數)
 當使用頻率小於季線時，用CloseQ可以找到某期的季收盤價。
 
 範例：
-
 ```
 plot1(CloseQ(0)); //繪製當季收盤價的連線
 
 plot2(CloseQ(1)); //繪製前一季收盤價的連線
 ```
-
 相關的函數包含:
 
 - [OpenD](api?a=opend&b=sys), [OpenW](api?a=openw&b=sys), [OpenM](api?a=openm&b=sys), [OpenQ](api?a=openq&b=sys), [OpenH](api?a=openh&b=sys), [OpenY](api?a=openy&b=sys)
@@ -10714,13 +10318,11 @@ CloseW -  (系統函數)
 當使用頻率小於週線時，用CloseW可以找到某期的週收盤價。
 
 範例：
-
 ```
 plot1(CloseW(0)); //繪製當週收盤價的連線
 
 plot2(CloseW(1)); //繪製前一週收盤價的連線
 ```
-
 相關的函數包含:
 
 - [OpenD](api?a=opend&b=sys), [OpenW](api?a=openw&b=sys), [OpenM](api?a=openm&b=sys), [OpenQ](api?a=openq&b=sys), [OpenH](api?a=openh&b=sys), [OpenY](api?a=openy&b=sys)
@@ -10759,13 +10361,11 @@ CloseY -  (系統函數)
 當使用頻率小於年線時，用CloseY可以找到某期的年收盤價。
 
 範例：
-
 ```
 plot1(CloseY(0)); //繪製當年收盤價的連線
 
 plot2(CloseY(1)); //繪製前一年收盤價的連線
 ```
-
 相關的函數包含:
 
 - [OpenD](api?a=opend&b=sys), [OpenW](api?a=openw&b=sys), [OpenM](api?a=openm&b=sys), [OpenQ](api?a=openq&b=sys), [OpenH](api?a=openh&b=sys), [OpenY](api?a=openy&b=sys)
@@ -10808,11 +10408,9 @@ FastHighest函數為[Highest](api?a=highest&b=sys)函數的快速計算版本。
 在運算極值的時候，會用 For 迴圈往前抓到極值紀錄後，之後執行腳本就會用當下的序列資料與紀錄極值相比，若大於紀錄極值則更新輸出極值與輸出極值的相對K棒位置。因為不會每根 K 棒都用 For 迴圈往前抓極值，所以腳本運行會更加快速。
 
 範例：
-
 ```
 plot1(FastHighest(high,5));    //繪製5期最高價的最大值的連線
 ```
-
 ---
 
 ## FastLowest
@@ -10845,11 +10443,9 @@ FastLowest函數為[Lowest](api?a=lowest&b=sys)函數的快速計算版本。
 在運算極值的時候，會用 For 迴圈往前抓到極值紀錄後，之後執行腳本就會用當下的序列資料與紀錄極值相比，若大於紀錄極值則更新輸出極值與輸出極值的相對K棒位置。因為不會每根 K 棒都用 For 迴圈往前抓極值，所以腳本運行會更加快速。
 
 範例：
-
 ```
 plot1(FastLowest(low,5));    //繪製5期最低價的最小值的連線
 ```
-
 ---
 
 ## HighD
@@ -10878,13 +10474,11 @@ HighD -  (系統函數)
 當使用頻率小於日線時，用HighD可以找到某期的日最高價。
 
 範例：
-
 ```
 plot1(HighD(0)); //繪製當日最高價的連線
 
 plot2(HighD(1)); //繪製前一日最高價的連線
 ```
-
 相關的函數包含:
 
 - [OpenD](api?a=opend&b=sys), [OpenW](api?a=openw&b=sys), [OpenM](api?a=openm&b=sys), [OpenQ](api?a=openq&b=sys), [OpenH](api?a=openh&b=sys), [OpenY](api?a=openy&b=sys)
@@ -10923,11 +10517,9 @@ HighH -  (系統函數)
 當使用頻率小於半年線時，用HighH可以找到某期的半年最高價。
 
 範例：
-
 ```
 plot1(HighH(0)); //繪製當期半年線最高價的連線
 ```
-
 ---
 
 ## HighM
@@ -10956,13 +10548,11 @@ HighM -  (系統函數)
 當使用頻率小於月線時，用HighM可以找到某期的月最高價。
 
 範例：
-
 ```
 plot1(HighM(0)); //繪製當月最高價的連線
 
 plot2(HighM(1)); //繪製前一月最高價的連線
 ```
-
 相關的函數包含:
 
 - [OpenD](api?a=opend&b=sys), [OpenW](api?a=openw&b=sys), [OpenM](api?a=openm&b=sys), [OpenQ](api?a=openq&b=sys), [OpenH](api?a=openh&b=sys), [OpenY](api?a=openy&b=sys)
@@ -11001,13 +10591,11 @@ HighQ -  (系統函數)
 當使用頻率小於季線時，用HighQ可以找到某期的季最高價。
 
 範例：
-
 ```
 plot1(HighQ(0)); //繪製當季最高價的連線
 
 plot2(HighQ(1)); //繪製前一季最高價的連線
 ```
-
 相關的函數包含:
 
 - [OpenD](api?a=opend&b=sys), [OpenW](api?a=openw&b=sys), [OpenM](api?a=openm&b=sys), [OpenQ](api?a=openq&b=sys), [OpenH](api?a=openh&b=sys), [OpenY](api?a=openy&b=sys)
@@ -11046,13 +10634,11 @@ HighW -  (系統函數)
 當使用頻率小於週線時，用HighW可以找到某期的週最高價。
 
 範例：
-
 ```
 plot1(HighW(0)); //繪製當週最高價的連線
 
 plot2(HighW(1)); //繪製前一週最高價的連線
 ```
-
 相關的函數包含:
 
 - [OpenD](api?a=opend&b=sys), [OpenW](api?a=openw&b=sys), [OpenM](api?a=openm&b=sys), [OpenQ](api?a=openq&b=sys), [OpenH](api?a=openh&b=sys), [OpenY](api?a=openy&b=sys)
@@ -11091,13 +10677,11 @@ HighY -  (系統函數)
 當使用頻率小於年線時，用HighY可以找到某期的年最高價。
 
 範例：
-
 ```
 plot1(HighY(0)); //繪製當年最高價的連線
 
 plot2(HighY(1)); //繪製前一年最高價的連線
 ```
-
 相關的函數包含:
 
 - [OpenD](api?a=opend&b=sys), [OpenW](api?a=openw&b=sys), [OpenM](api?a=openm&b=sys), [OpenQ](api?a=openq&b=sys), [OpenH](api?a=openh&b=sys), [OpenY](api?a=openy&b=sys)
@@ -11138,11 +10722,9 @@ Highest -  (系統函數)
 Highest函數與[FastHighest](api?a=FastHighest&b=sys)函數的運算方式一致，都是用 [Extremes](api?a=Extremes&b=sys) 函數抓極大值。
 
 範例：
-
 ```
 plot1(Highest(high,5));    //繪製5期最高價的最大值的連線
 ```
-
 ---
 
 ## LowD
@@ -11171,13 +10753,11 @@ LowD -  (系統函數)
 當使用頻率小於日線時，用LowD可以找到某期的日最低價。
 
 範例：
-
 ```
 plot1(LowD(0)); //繪製當日最低價的連線
 
 plot2(LowD(1)); //繪製前一日最低價的連線
 ```
-
 相關的函數包含:
 
 - [OpenD](api?a=opend&b=sys), [OpenW](api?a=openw&b=sys), [OpenM](api?a=openm&b=sys), [OpenQ](api?a=openq&b=sys), [OpenH](api?a=openh&b=sys), [OpenY](api?a=openy&b=sys)
@@ -11216,11 +10796,9 @@ LowH -  (系統函數)
 當使用頻率小於半年線時，用LowH可以找到某期的半年最低價。
 
 範例：
-
 ```
 plot1(LowH(0)); //繪製當期半年線最低價的連線
 ```
-
 相關的函數包含:
 
 - [OpenD](api?a=opend&b=sys), [OpenW](api?a=openw&b=sys), [OpenM](api?a=openm&b=sys), [OpenQ](api?a=openq&b=sys), [OpenH](api?a=openh&b=sys), [OpenY](api?a=openy&b=sys)
@@ -11259,13 +10837,11 @@ LowM -  (系統函數)
 當使用頻率小於月線時，用LowM可以找到某期的月最低價。
 
 範例：
-
 ```
 plot1(LowM(0)); //繪製當月最低價的連線
 
 plot2(LowM(1)); //繪製前一月最低價的連線
 ```
-
 相關的函數包含:
 
 - [OpenD](api?a=opend&b=sys), [OpenW](api?a=openw&b=sys), [OpenM](api?a=openm&b=sys), [OpenQ](api?a=openq&b=sys), [OpenH](api?a=openh&b=sys), [OpenY](api?a=openy&b=sys)
@@ -11304,13 +10880,11 @@ LowQ -  (系統函數)
 當使用頻率小於季線時，用LowQ可以找到某期的季最低價。
 
 範例：
-
 ```
 plot1(LowQ(0)); //繪製當季最低價的連線
 
 plot2(LowQ(1)); //繪製前一季最低價的連線
 ```
-
 相關的函數包含:
 
 - [OpenD](api?a=opend&b=sys), [OpenW](api?a=openw&b=sys), [OpenM](api?a=openm&b=sys), [OpenQ](api?a=openq&b=sys), [OpenH](api?a=openh&b=sys), [OpenY](api?a=openy&b=sys)
@@ -11349,13 +10923,11 @@ LowW -  (系統函數)
 當使用頻率小於週線時，用LowW可以找到某期的週最低價。
 
 範例：
-
 ```
 plot1(LowW(0)); //繪製當週最低價的連線
 
 plot2(LowW(1)); //繪製前一週最低價的連線
 ```
-
 相關的函數包含:
 
 - [OpenD](api?a=opend&b=sys), [OpenW](api?a=openw&b=sys), [OpenM](api?a=openm&b=sys), [OpenQ](api?a=openq&b=sys), [OpenH](api?a=openh&b=sys), [OpenY](api?a=openy&b=sys)
@@ -11394,13 +10966,11 @@ LowY -  (系統函數)
 當使用頻率小於年線時，用LowY可以找到某期的年最低價。
 
 範例：
-
 ```
 plot1(LowY(0)); //繪製當年最低價的連線
 
 plot2(LowY(1)); //繪製前一年最低價的連線
 ```
-
 相關的函數包含:
 
 - [OpenD](api?a=opend&b=sys), [OpenW](api?a=openw&b=sys), [OpenM](api?a=openm&b=sys), [OpenQ](api?a=openq&b=sys), [OpenH](api?a=openh&b=sys), [OpenY](api?a=openy&b=sys)
@@ -11441,11 +11011,9 @@ Lowest -  (系統函數)
 Lowest函數與[FastLowest](api?a=FastLowest&b=sys)函數的運算方式一致，都是用 [Extremes](api?a=Extremes&b=sys) 函數抓極小值。
 
 範例：
-
 ```
 plot1(Lowest(low,5));    //繪製5期最低價的最小值的連線
 ```
-
 ---
 
 ## OpenD
@@ -11474,13 +11042,11 @@ OpenD -  (系統函數)
 當使用頻率小於日線時，用OpenD可以找到某期的日開盤價。
 
 範例：
-
 ```
 plot1(OpenD(0)); //繪製當日開盤價的連線
 
 plot2(OpenD(1)); //繪製前一日開盤價的連線
 ```
-
 相關的函數包含:
 
 - [OpenD](api?a=opend&b=sys), [OpenW](api?a=openw&b=sys), [OpenM](api?a=openm&b=sys), [OpenQ](api?a=openq&b=sys), [OpenH](api?a=openh&b=sys), [OpenY](api?a=openy&b=sys)
@@ -11519,11 +11085,9 @@ OpenH -  (系統函數)
 當使用頻率小於半年線時，用OpenH可以找到某期的半年開盤價。
 
 範例：
-
 ```
 plot1(OpenH(0)); //繪製當期半年線開盤價的連線
 ```
-
 相關的函數包含:
 
 - [OpenD](api?a=opend&b=sys), [OpenW](api?a=openw&b=sys), [OpenM](api?a=openm&b=sys), [OpenQ](api?a=openq&b=sys), [OpenH](api?a=openh&b=sys), [OpenY](api?a=openy&b=sys)
@@ -11562,13 +11126,11 @@ OpenM -  (系統函數)
 當使用頻率小於月線時，用OpenM可以找到某期的月開盤價。
 
 範例：
-
 ```
 plot1(OpenM(0)); //繪製當月開盤價的連線
 
 plot2(OpenM(1)); //繪製前一月開盤價的連線
 ```
-
 相關的函數包含:
 
 - [OpenD](api?a=opend&b=sys), [OpenW](api?a=openw&b=sys), [OpenM](api?a=openm&b=sys), [OpenQ](api?a=openq&b=sys), [OpenH](api?a=openh&b=sys), [OpenY](api?a=openy&b=sys)
@@ -11607,13 +11169,11 @@ OpenQ -  (系統函數)
 當使用頻率小於季線時，用OpenQ可以找到某期的季開盤價。
 
 範例：
-
 ```
 plot1(OpenQ(0)); //繪製當季開盤價的連線
 
 plot2(OpenQ(1)); //繪製前一季開盤價的連線
 ```
-
 相關的函數包含:
 
 - [OpenD](api?a=opend&b=sys), [OpenW](api?a=openw&b=sys), [OpenM](api?a=openm&b=sys), [OpenQ](api?a=openq&b=sys), [OpenH](api?a=openh&b=sys), [OpenY](api?a=openy&b=sys)
@@ -11652,13 +11212,11 @@ OpenW -  (系統函數)
 當使用頻率小於週線時，用OpenW可以找到某期的週開盤價。
 
 範例：
-
 ```
 plot1(OpenW(0)); //繪製當週開盤價的連線
 
 plot2(OpenW(1)); //繪製前一週開盤價的連線
 ```
-
 相關的函數包含:
 
 - [OpenD](api?a=opend&b=sys), [OpenW](api?a=openw&b=sys), [OpenM](api?a=openm&b=sys), [OpenQ](api?a=openq&b=sys), [OpenH](api?a=openh&b=sys), [OpenY](api?a=openy&b=sys)
@@ -11697,13 +11255,11 @@ OpenY -  (系統函數)
 當使用頻率小於年線時，用OpenY可以找到某期的年開盤價。
 
 範例：
-
 ```
 plot1(OpenY(0)); //繪製當年開盤價的連線
 
 plot2(OpenY(1)); //繪製前一年開盤價的連線
 ```
-
 相關的函數包含:
 
 - [OpenD](api?a=opend&b=sys), [OpenW](api?a=openw&b=sys), [OpenM](api?a=openm&b=sys), [OpenQ](api?a=openq&b=sys), [OpenH](api?a=openh&b=sys), [OpenY](api?a=openy&b=sys)
@@ -11736,13 +11292,11 @@ TrueHigh -  (系統函數)
 計算方法為比較當根K棒的高點與前根K棒的收盤價，取數值較大者。
 
 範例：
-
 ```
 plot1(TrueHigh);    //繪製當期真實區間高點的連線
 
 plot2(TrueHigh[1]); //繪製前一期真實區間高點的連線
 ```
-
 請參考 [TrueLow函數](api?a=truelow&b=sys)以及[TrueRange函數](api?a=truerange&b=sys)。
 
 ---
@@ -11767,13 +11321,11 @@ TrueLow -  (系統函數)
 計算方法為比較當根K棒的低點與前根K棒的收盤價，取數值較小者。
 
 範例：
-
 ```
 plot1(TrueLow);    //繪製當期真實區間低點的連線
 
 plot2(TrueLow[1]); //繪製前一期真實區間低點的連線
 ```
-
 請參考 [TrueHigh函數](api?a=truehigh&b=sys)以及[TrueRange函數](api?a=truerange&b=sys)。
 
 ---
@@ -11800,13 +11352,11 @@ TypicalPrice -  (系統函數)
 典型價 = (當期最高價 + 當期最低價 + 當期收盤價)/3
 
 範例：
-
 ```
 plot1(TypicalPrice);    //繪製當期典型價的連線
 
 plot2(TypicalPrice[1]); //繪製前一期典型價的連線
 ```
-
 ---
 
 ## WeightedClose
@@ -11833,13 +11383,11 @@ WeightedClose -  (系統函數)
 WeightedClose = (當期最高價 + 當期最低價 + 2\*當期收盤價)/4
 
 範例：
-
 ```
 plot1(WeightedClose);    //繪製當期加權平均收盤價的連線
 
 plot2(WeightedClose[1]); //繪製前一期加權平均收盤價的連線
 ```
-
 ---
 
 ## Average
@@ -11870,11 +11418,9 @@ Average -  (系統函數)
 以最新一筆資料為基準點，輸入要計算的期數，然後計算過去期數的序列平均值。
 
 範例：
-
 ```
 value1 = Average(Close,5); //計算5期收盤價的移動平均
 ```
-
 ---
 
 ## AvgDeviation
@@ -11903,11 +11449,9 @@ AvgDeviation -  (系統函數)
 以最新一筆資料為基準點，輸入要計算的期數，然後計算過去期數的平均差。
 
 範例：
-
 ```
 value1 = AvgDeviation(Close,5); //計算5期收盤價的平均差
 ```
-
 ---
 
 ## DwLimit
@@ -11928,11 +11472,9 @@ DwLimit -  (系統函數)
 說明：
 
 範例：
-
 ```
 value1 = DwLimit(CloseD(1)); //計算當期之跌停價
 ```
-
 ---
 
 ## EMA
@@ -11971,11 +11513,9 @@ XQ指數移動平均和一般指數移動平均（XAverage）的計算差異在�
 當期均價 = (2/(n+1))\*當期價格 + (n-1)/(n+1)\*前期均價
 
 範例：
-
 ```
 value1 = EMA(Close,5); //計算5期收盤價的XQ EMA
 ```
-
 ---
 
 ## Range
@@ -12000,13 +11540,11 @@ Range -  (系統函數)
 Range = (當期最高價 - 當期最低價)
 
 範例：
-
 ```
 plot1(Range);    //繪製當期K棒高低價差的連線
 
 plot2(Range[1]); //繪製前一期K棒高低價差的連線
 ```
-
 ---
 
 ## RateOfChange
@@ -12039,11 +11577,9 @@ RateOfChange -  (系統函數)
 RateOfChange = ( 當期價格 ／ N期前價格 - 1 ) \* 100
 
 範例：
-
 ```
 value1 = RateOfChange(Close,5); //計算5期收盤價的變化率
 ```
-
 ---
 
 ## SimpleHighestBar
@@ -12130,11 +11666,9 @@ Summation -  (系統函數)
 以最新一筆資料為基準點，輸入要計算的期數，然後計算過去期數的數值總和。
 
 範例：
-
 ```
 value1 = Summation(Close,5); //計算5期收盤價的總和
 ```
-
 ---
 
 ## TrueRange
@@ -12165,13 +11699,11 @@ TrueRange -  (系統函數)
 - 當期最高價至前期收盤價的幅度。
 
 範例：
-
 ```
 plot1(TrueRange);    //繪製當期K棒真實區間的連線
 
 plot2(TrueRange[1]); //繪製前一期K棒真實區間的連線
 ```
-
 ---
 
 ## UpLimit
@@ -12192,11 +11724,9 @@ UpLimit -  (系統函數)
 說明：
 
 範例：
-
 ```
 value1 = UpLimit(CloseD(1)); //計算當期之漲停價
 ```
-
 ---
 
 ## WMA
@@ -12229,11 +11759,9 @@ WMA -  (系統函數)
 WMAt=(Pt \* n + Pt-1 \* (n-1) + Pt-2 \* (n-2) + ... + Pt-n+1) / (n + (n-1) + (n-2) + ... + 1)
 
 範例：
-
 ```
 value1 = WMA(Close,5); //計算5期收盤價的加權移動平均
 ```
-
 ---
 
 ## XAverage
@@ -12266,11 +11794,9 @@ XAverage -  (系統函數)
 當期均價 = (2/(n+1))\*當期價格 + (n-1)/(n+1)\*前期均價
 
 範例：
-
 ```
 value1 = XAverage(Close,5); //計算5期收盤價的指數移動平均
 ```
-
 ---
 
 ## Extremes
@@ -12307,13 +11833,11 @@ Extremes -  (系統函數)
 計算成功時回傳值為1，結果會回傳在第4、5個參數。
 
 範例：
-
 ```
 value1 = extremes(high,5,1,value2,value3); //計算5期最高價的極大值
 
 plot1(value2);                             //繪製5期最高價的極大值的連線
 ```
-
 ---
 
 ## ExtremesArray
@@ -12348,7 +11872,6 @@ ExtremesArray -  (系統函數)
 計算成功時回傳值為1，結果會回傳在第4、5個參數。
 
 範例：
-
 ```
 Array: arrA[5](0); // 宣告arrA是一個有5個元素的陣列，初始值都是0
 
@@ -12358,7 +11881,6 @@ value1 = extremesarray(arrA,5,-1,value2,value3); //計算陣列arrA的極小值
 
 plot1(value2);                                   //繪製陣列arrA的極小值的連線
 ```
-
 ---
 
 ## FastHighestBar
@@ -12393,11 +11915,9 @@ FastHighestBar函數為[HighestBar](api?a=HighestBar&b=sys)函數的快速計算
 在運算極值的時候，會用 For 迴圈往前抓到極值紀錄後，之後執行腳本就會用當下的序列資料與紀錄極值相比，若大於紀錄極值則更新輸出極值與輸出極值的相對K棒位置。因為不會每根 K 棒都用 For 迴圈往前抓極值，所以腳本運行會更加快速。
 
 範例：
-
 ```
 plot1(FastHighestBar(high,5));    //繪製近5期最高的最高價相對位置的連線
 ```
-
 ---
 
 ## FastLowestBar
@@ -12432,11 +11952,9 @@ FastLowestBar函數為[LowestBar](api?a=LowestBar&b=sys)函數的快速計算版
 在運算極值的時候，會用 For 迴圈往前抓到極值紀錄後，之後執行腳本就會用當下的序列資料與紀錄極值相比，若大於紀錄極值則更新輸出極值與輸出極值的相對K棒位置。因為不會每根 K 棒都用 For 迴圈往前抓極值，所以腳本運行會更加快速。
 
 範例：
-
 ```
 plot1(FastLowestBar(low,5));    //繪製近5期最低的最低價相對位置的連線
 ```
-
 ---
 
 ## HighDays
@@ -12461,11 +11979,9 @@ HighDays -  (系統函數)
 說明：
 
 範例：
-
 ```
 plot1(HighDays(10)); //繪製近10期創新高次數的連線
 ```
-
 請參考[LowDays函數](api?a=lowdays&b=sys)。
 
 ---
@@ -12494,7 +12010,6 @@ HighestArray -  (系統函數)
 說明：
 
 範例：
-
 ```
 Array: arrA[5](0); // 宣告arrA是一個有5個元素的陣列，初始值都是0
 
@@ -12504,7 +12019,6 @@ value1 = HighestArray(arrA,5); //計算陣列arrA的極大值
 
 plot1(value1);                 //繪製陣列arrA的極大值的連線
 ```
-
 ---
 
 ## HighestBar
@@ -12535,11 +12049,9 @@ HighestBar -  (系統函數)
 如果有同樣兩個以上的極大值，則傳回離現在最近的那個。
 
 範例：
-
 ```
 plot1(HighestBar(high,5));    //繪製近5期最高的最高價相對位置的連線
 ```
-
 ---
 
 ## LowDays
@@ -12564,11 +12076,9 @@ LowDays -  (系統函數)
 說明：
 
 範例：
-
 ```
 plot1(LowDays(10)); //繪製近10期創新低次數的連線
 ```
-
 請參考[HighDays函數](api?a=highdays&b=sys)。
 
 ---
@@ -12597,7 +12107,6 @@ LowestArray -  (系統函數)
 說明：
 
 範例：
-
 ```
 Array: arrA[5](0); // 宣告arrA是一個有5個元素的陣列，初始值都是0
 
@@ -12607,7 +12116,6 @@ value1 = LowestArray(arrA,5);  //計算陣列arrA的極小值
 
 plot1(value1);                 //繪製陣列arrA的極小值的連線
 ```
-
 ---
 
 ## LowestBar
@@ -12638,11 +12146,9 @@ LowestBar -  (系統函數)
 如果有同樣兩個以上的極小值，則傳回離現在最近的那個。
 
 範例：
-
 ```
 plot1(LowestBar(low,5));    //繪製近5期最低的最低價相對位置的連線
 ```
-
 ---
 
 ## MoM
@@ -12665,11 +12171,9 @@ MoM -  (系統函數)
 說明：
 
 範例：
-
 ```
 plot1(MoM(close));    //繪製收盤價的月變化率連線
 ```
-
 ---
 
 ## NthExtremes
@@ -12708,13 +12212,11 @@ NthExtremes -  (系統函數)
 計算成功時回傳值為1，結果會回傳在第5、6個參數。
 
 範例：
-
 ```
 value1 = nthextremes(high,10,2,1,value2,value3); //計算10期內第二個最高價
 
 plot1(value2);                                   //繪製10期內第二個最高價的連線
 ```
-
 ---
 
 ## NthExtremesArray
@@ -12751,7 +12253,6 @@ NthExtremesArray -  (系統函數)
 計算成功時回傳值為1，結果會回傳在第5、6個參數。
 
 範例：
-
 ```
 Array: arrA[5](0); // 宣告arrA是一個有5個元素的陣列，初始值都是0
 
@@ -12761,7 +12262,6 @@ value1 = NthExtremesArray(arrA,5,3,-1,value2,value3); //計算陣列arrA的第�
 
 plot1(value2);                                   //繪製陣列arrA的第三個極小值的連線
 ```
-
 ---
 
 ## NthHighest
@@ -12792,13 +12292,11 @@ NthHighest -  (系統函數)
 以最新一筆資料為基準點，輸入要計算的期數，然後計算過去期數的第N個極大值。
 
 範例：
-
 ```
 value1 = NthHighest(2,high,5); //計算近5期次高的最高價
 
 plot1(value1);                 //繪製近5期次高的最高價的連線
 ```
-
 ---
 
 ## NthHighestArray
@@ -12827,7 +12325,6 @@ NthHighestArray -  (系統函數)
 說明：
 
 範例：
-
 ```
 Array: arrA[5](0); // 宣告arrA是一個有5個元素的陣列，初始值都是0
 
@@ -12837,7 +12334,6 @@ value1 = NthHighestArray(arrA,5,3); //計算陣列arrA的第三個極大值
 
 plot1(value1);                      //繪製陣列arrA的第三個極大值的連線
 ```
-
 ---
 
 ## NthHighestBar
@@ -12866,13 +12362,11 @@ NthHighestBar -  (系統函數)
 說明：
 
 範例：
-
 ```
 value1 = NthHighestBar(2,high,5); //計算近5期次高的最高價的相對位置
 
 plot1(value1);                    //繪製近5期次高的最高價相對位置的連線
 ```
-
 ---
 
 ## NthLowest
@@ -12903,13 +12397,11 @@ NthLowest -  (系統函數)
 以最新一筆資料為基準點，輸入要計算的期數，然後計算過去期數的第N個極小值。
 
 範例：
-
 ```
 value1 = NthLowest(2,low,5); //計算近5期次低的最低價
 
 plot1(value1);               //繪製近5期次低的最低價的連線
 ```
-
 ---
 
 ## NthLowestArray
@@ -12938,7 +12430,6 @@ NthLowestArray -  (系統函數)
 說明：
 
 範例：
-
 ```
 Array: arrA[5](0); // 宣告arrA是一個有5個元素的陣列，初始值都是0
 
@@ -12948,7 +12439,6 @@ value1 = NthLowestArray(arrA,5,3); //計算陣列arrA的第三個極小值
 
 plot1(value1);                      //繪製陣列arrA的第三個極小值的連線
 ```
-
 ---
 
 ## NthLowestBar
@@ -12977,13 +12467,11 @@ NthLowestBar -  (系統函數)
 說明：
 
 範例：
-
 ```
 value1 = NthLowestBar(2,low,5); //計算近5期次低的最低價的相對位置
 
 plot1(value1);                  //繪製近5期次低的最低價相對位置的連線
 ```
-
 ---
 
 ## OHLCPeriodsAgo
@@ -13024,13 +12512,11 @@ OHLCPeriodsAgo -  (系統函數)
 計算成功時回傳值為1，結果會回傳在第3~6個參數。
 
 範例：
-
 ```
 value1 = OHLCPeriodsAgo(2,1,value2,value3,value4,value5); //計算前期週線的開高低收價
 
 plot1(value4);                                            //繪製前期週線最低價的連線
 ```
-
 ---
 
 ## QoQ
@@ -13053,11 +12539,9 @@ QoQ -  (系統函數)
 說明：
 
 範例：
-
 ```
 plot1(QoQ(close));    //繪製收盤價的季變化率連線
 ```
-
 ---
 
 ## ReadTicks
@@ -13084,21 +12568,17 @@ ReadTicks -  (系統函數)
 ### **參數設定說明**
 
 **輸出儲存Tick資料的二維陣列**
-
 ```
 array: tick_array[100, 11](0);
 ```
-
 必須先宣告一個2維陣列來儲存Tick資料。
 
 第一維(列)是每次洗價的最大讀取筆數；第二維(行)用來儲存每一筆的成交相關資料，必須 >= 11
 
 **輸出腳本執行完畢的最後一筆Tick序號（`Seqno`）**
-
 ```
 var: intrabarpersist readtick_cookie(0);
 ```
-
 必須先宣告一個`intrabarpersist`的變數，給 **ReadTicks** 內部使用。
 
 ### **參數輸出內容說明**
@@ -13136,7 +12616,6 @@ var: intrabarpersist readtick_cookie(0);
 
     tick_array[..., 11] = 成交值加總（ 該筆成交的總金額(元)。若是 MultiTick，此為序列中所有 Tick 的成交值總和）
   ```
-
 - 請注意
   - 不完整序列
 
@@ -13182,11 +12661,9 @@ SimpleHighest -  (系統函數)
 系統另外提供[Highest](api?a=highest&b=sys)函數，也可以用來計算過去期數的最大值，兩者的差異請參考Highest函數的說明。
 
 範例：
-
 ```
 plot1(SimpleHighest(high,5));    //繪製5期最高價的最大值的連線
 ```
-
 ---
 
 ## SimpleLowest
@@ -13219,11 +12696,9 @@ SimpleLowest -  (系統函數)
 系統另外提供[Lowest](api?a=lowest&b=sys)函數，也可以用來計算過去期數的最大值，兩者的差異請參考Lowest函數的說明。
 
 範例：
-
 ```
 plot1(SimpleLowest(low,5));    //繪製5期最低價的最小值的連線
 ```
-
 ---
 
 ## YoY
@@ -13246,11 +12721,9 @@ YoY -  (系統函數)
 說明：
 
 範例：
-
 ```
 plot1(YoY(close));    //繪製收盤價的年變化率連線
 ```
-
 ---
 
 ## ACC
@@ -13273,13 +12746,11 @@ ACC加速量指標(Acceleration)。用來觀察行情價格變化的加速度幅
 ACC是將MTM運動量指標再做一次動量運算的指標。
 
 範例：
-
 ```
 value1 = ACC(10);       //計算收盤價10期的加速量指標
 
 plot1(value1, "ACC");
 ```
-
 ---
 
 ## ADI
@@ -13306,13 +12777,11 @@ ADI指標的原文是Accumulation Distribution Index，按原文直譯的名稱�
 若當日是下跌，便從上升累積力道中減去下降的力道。
 
 範例：
-
 ```
 value1 = ADI;           //計算累積分配指標
 
 plot1(value1, "A/DI");
 ```
-
 ---
 
 ## ADO
@@ -13345,13 +12814,11 @@ ADO＝( BP + SP ) ／ ( 2 \* ( 最高價 － 最低價 ) ) \* 100
 - SP = 收盤盤－最低價
 
 範例：
-
 ```
 value1 = ADO;              //計算聚散擺盪指標
 
 plot1(value1, "A/D-Osc");
 ```
-
 ---
 
 ## AR
@@ -13380,13 +12847,11 @@ AR值低時，表示人氣不足。
 AR ＝ (今日最高價－今日開盤價) N日內總合 ／ (今日開盤價－今日最低價) N日內總合
 
 範例：
-
 ```
 value1 = AR(26);       //計算26期的AR指標
 
 plot1(value1, "AR");
 ```
-
 ---
 
 ## ATR
@@ -13419,13 +12884,11 @@ ATR -  (系統函數)
 - 當期最高價至前期收盤價的幅度。
 
 範例：
-
 ```
 value1 = ATR(14);       //計算14期的ATR指標
 
 plot1(value1, "ATR");
 ```
-
 ---
 
 ## BR
@@ -13452,13 +12915,11 @@ BR買賣意願指標是一種被用來配合[AR](api?a=AR&b=sys)買賣人氣指�
 BR ＝ (今日最高價－昨日收盤價) N日內總合 ／ (昨日收盤價－今日最低價)絕對值的N日內總合
 
 範例：
-
 ```
 value1 = BR(26);       //計算26期的BR指標
 
 plot1(value1, "BR");
 ```
-
 ---
 
 ## Bias
@@ -13483,13 +12944,11 @@ Bias -  (系統函數)
 另外，乖離率用來觀察均線回歸的現象。當乖離率來到歷史的極大值或極小值附近時，可能會是趨勢的反轉點。
 
 範例：
-
 ```
 value1 = Bias(5);       //計算5期的乖離率
 
 plot1(value1, "Bias");
 ```
-
 ---
 
 ## BiasDiff
@@ -13518,13 +12977,11 @@ BiasDiff -  (系統函數)
 除了價格數列和均線間會出現均線回歸的現象外，長短期的均線也會反復出現發散、收斂的循環現象。乖離率差是用來觀察長短期均線相對關係。
 
 範例：
-
 ```
 value1 = BiasDiff(3,6);       //計算3期與6期的乖離率差
 
 plot1(value1, "BiasDiff");
 ```
-
 ---
 
 ## BollingerBand
@@ -13555,13 +13012,11 @@ BollingerBand -  (系統函數)
 包寧傑通道為John Bollinger在1980年代發明的指標。以價格均線為中心點，往上N個標準差為通道上限（壓力線）；往下減去N個標準差，為通道下限（支撐線）。
 
 範例：
-
 ```
 value1 = BollingerBand(Close,20,2);       //計算20期、2個標準差寬的包寧傑通道上限
 
 plot1(value1, "BollingerUpperBand");
 ```
-
 ---
 
 ## CCI
@@ -13586,13 +13041,11 @@ CCI順勢指標為Donald Lambert在1980年代發明的指標。CCI大多時間�
 若CCI值從一高點急速往下降時，可視為是賣出的訊號；同理若CCI值從一低點快速往上升時，可視之為買進的訊號。
 
 範例：
-
 ```
 value1 = CCI(14);       //計算14期的CCI
 
 plot1(value1, "CCI");
 ```
-
 註：CCI函數和[CommodityChannel](api?a=CommodityChannel&b=sys)函數相同。
 
 ---
@@ -13619,13 +13072,11 @@ CCI順勢指標為Donald Lambert在1980年代發明的指標。CCI大多時間�
 若CCI值從一高點急速往下降時，可視為是賣出的訊號；同理若CCI值從一低點快速往上升時，可視之為買進的訊號。
 
 範例：
-
 ```
 value1 = CommodityChannel(14);       //計算14期的CCI
 
 plot1(value1, "CCI");
 ```
-
 註：CommodityChannel函數和[CCI](api?a=CCI&b=sys)函數相同。
 
 ---
@@ -13658,13 +13109,11 @@ MACD是由Gerald Appel於1970年代所發明的指標。利用二條快速與慢
 DIF是快速線與慢速線的差值。
 
 範例：
-
 ```
 value1 = DIF(12,26);       //計算MACD中的DIF值
 
 plot1(value1, "DIF");
 ```
-
 ---
 
 ## DMO
@@ -13687,13 +13136,11 @@ DMO -  (系統函數)
 DMO指標（Directional Movement Oscillator）是利用DMI趨向指標指標中的正負DI線計算，以此二條線的差值做為新的指標線。
 
 範例：
-
 ```
 value1 = DMO(14);       //計算14期的DMO指標
 
 plot1(value1, "DMO");
 ```
-
 ---
 
 ## DPO
@@ -13716,13 +13163,11 @@ DPO -  (系統函數)
 非趨勢價格擺盪指標（Detrended Price Oscillator）是Walt Bressert所發明的指標。他研究商品的循環後發現，一個長期波動中包含了多個短期波動。因此，觀察短期波動的變化規律，可以估計長期波動高低點出現的時機。例如：二個短期循環底部，形成一個長期循環底部。因此，DPO指標刻意忽略較長期的波動，一方面可以減少週期干擾的混淆，也可以凸顯個別週期的波動。
 
 範例：
-
 ```
 value1 = DPO(10);       //計算10期的DPO指標
 
 plot1(value1, "DPO");
 ```
-
 ---
 
 ## D_Value
@@ -13753,13 +13198,11 @@ KD指標為美國交易員George Lane所創，原名為Stochastic Oscillator。
 D_Value即隨機指標中的慢速線（%D）。
 
 範例：
-
 ```
 value1 = D_Value(9,3);       //計算KD指標中的D值
 
 plot1(value1, "D");
 ```
-
 ---
 
 ## DirectionMovement
@@ -13794,7 +13237,6 @@ DMI趨向指標是威爾德（Wilder）所發明。主要的用途在於作趨�
 DMI指標包含了+DI、-DI及ADX三個數值。DirectionMovement函數回傳1時，代表計算成功。+DI、-DI及ADX的值是回傳在第2、3、4個參數。
 
 範例：
-
 ```
 value1 = DirectionMovement(14,value2,value3,value4);       //計算14期的DMI指標
 
@@ -13804,7 +13246,6 @@ plot2(value3, "-DI");
 
 plot3(value4, "ADX");
 ```
-
 ---
 
 ## EMP
@@ -13831,13 +13272,11 @@ Empty Line是移動平均線的一種變化，它的數值的計算方式是用3
 EMP = （3期收盤價平均 + 6期收盤價平均 + 12期收盤價平均 + 24期收盤價平均）／4
 
 範例：
-
 ```
 value1 = EMP;       //計算EMP指標
 
 plot1(value1, "EMP");
 ```
-
 ---
 
 ## ERC
@@ -13866,13 +13305,11 @@ ERC -  (系統函數)
 計算當期對N期前的變動幅度，再對此數值取指數移動平均。
 
 範例：
-
 ```
 value1 = ERC(12,12);       //計算12期的ERC指標
 
 plot1(value1, "ERC");
 ```
-
 ---
 
 ## HL_Osc
@@ -13895,13 +13332,11 @@ HL_Osc -  (系統函數)
 高低價擺盪指標（High Low Oscillator）是以當日高點至昨收這段價差佔真實區間的比例來判斷強弱勢。
 
 範例：
-
 ```
 value1 = HL_Osc;       //計算HL-Osc指標
 
 plot1(value1, "HL-Osc");
 ```
-
 ---
 
 ## KO成交量擺盪指標
@@ -13928,11 +13363,9 @@ KO成交量擺盪指標 -  (系統函數)
 說明：
 
 範例：
-
 ```
 value1 =callfunction("KO成交量擺盪指標", Length1, Length2);
 ```
-
 ---
 
 ## KST確認指標
@@ -13955,11 +13388,9 @@ KST確認指標 -  (系統函數)
 詳細說明請參考[交易的點點滴滴](https://xstrader.net/KST%E7%A2%BA%E8%AA%8D%E6%8C%87%E6%A8%99/)。
 
 範例：
-
 ```
 value1=callfunction("KST確認指標");
 ```
-
 ---
 
 ## K_Value
@@ -13990,13 +13421,11 @@ KD指標為美國交易員George Lane所創，原名為Stochastic Oscillator。
 K_Value即隨機指標中的快速線（%K）。
 
 範例：
-
 ```
 value1 = K_Value(9,3);       //計算KD指標中的K值
 
 plot1(value1, "K");
 ```
-
 ---
 
 ## KeltnerLB
@@ -14023,13 +13452,11 @@ KeltnerLB -  (系統函數)
 新版的肯特納通道是以20期的收盤價指數移動平均線為中心線，然後以2.5倍的20期真實範圍平均做通道寬度。我們提供的是較新版本的肯特納通道。
 
 範例：
-
 ```
 value1 = KeltnerLB(2.5);       //計算肯特納通道的下通道線
 
 plot1(value1, "KeltnerLowerBand");
 ```
-
 ---
 
 ## KeltnerMA
@@ -14056,13 +13483,11 @@ KeltnerMA -  (系統函數)
 新版的肯特納通道是以20期的收盤價指數移動平均線為中心線，然後以2.5倍的20期真實範圍平均做通道寬度。我們提供的是較新版本的肯特納通道。
 
 範例：
-
 ```
 value1 = KeltnerMA(20);       //計算肯特納通道的中心線
 
 plot1(value1, "KeltnerMid");
 ```
-
 ---
 
 ## KeltnerUB
@@ -14089,13 +13514,11 @@ KeltnerUB -  (系統函數)
 新版的肯特納通道是以20期的收盤價指數移動平均線為中心線，然後以2.5倍的20期真實範圍平均做通道寬度。我們提供的是較新版本的肯特納通道。
 
 範例：
-
 ```
 value1 = KeltnerUB(2.5);       //計算肯特納通道的上通道線
 
 plot1(value1, "KeltnerUpperBand");
 ```
-
 ---
 
 ## MACD
@@ -14136,7 +13559,6 @@ MACD是由Gerald Appel於1970年代所發明的指標。利用二條快速與慢
 MACD指標包含了DIF、MACD及OSC三個數值。MACD函數回傳1時，代表計算成功。DIF、MACD及OSC的值是回傳在第5、6、7個參數。
 
 範例：
-
 ```
 value1 = MACD(WeightedClose,12,26,9,value2,value3,value4);       //計算MACD
 
@@ -14146,7 +13568,6 @@ plot2(value3, "MACD");
 
 plot3(value4, "OSC");
 ```
-
 ---
 
 ## MAM
@@ -14177,13 +13598,11 @@ MAM -  (系統函數)
 計算公式：當期移動平均值，減去n期前的移動平均值。
 
 範例：
-
 ```
 value1 = MAM(10,10);       //計算MAM指標
 
 plot1(value1, "MAM");
 ```
-
 ---
 
 ## MA_Osc
@@ -14212,13 +13631,11 @@ MA_Osc -  (系統函數)
 MA_Osc是計算二條不同期數的簡單移動平均線差值而得。
 
 範例：
-
 ```
 value1 = MA_Osc(5,10);       //計算MA-Osc
 
 plot1(value1, "MA_Osc");
 ```
-
 ---
 
 ## MI
@@ -14255,13 +13672,11 @@ EMA2 = EMA1 的9日EMA
 MI = ( EMA1 ／ EMA2 ) 的N2日簡單加總
 
 範例：
-
 ```
 value1 = MI(9,25);       //計算收盤價10期的質量指標
 
 plot1(value1, "MI");
 ```
-
 ---
 
 ## MO
@@ -14290,13 +13705,11 @@ MO -  (系統函數)
 MO = ( 當期收盤價 ／ 前N期收盤價 ) \* 100
 
 範例：
-
 ```
 value1 = MO(10);       //計算收盤價10期的運動量指標
 
 plot1(value1, "MO");
 ```
-
 ---
 
 ## MTM
@@ -14323,13 +13736,11 @@ MTM -  (系統函數)
 MTM = 當期收盤價 - 前N期收盤價
 
 範例：
-
 ```
 value1 = MTM(10);       //計算收盤價10期的運動量指標
 
 plot1(value1, "MTM");
 ```
-
 與[Momentum函數](api?a=momentum&b=sys)相同。
 
 ---
@@ -14356,13 +13767,11 @@ MTM_MA -  (系統函數)
 MTM_MA = （當期收盤價 - 前N期收盤價）的N期平均
 
 範例：
-
 ```
 value1 = MTM_MA(10);       //計算收盤價10期的平均運動量指標
 
 plot1(value1, "MTM_MA");
 ```
-
 ---
 
 ## Momentum
@@ -14395,13 +13804,11 @@ Momentum -  (系統函數)
 Momentum = 當期價格 - 前N期價格
 
 範例：
-
 ```
 value1 = Momentum(Close,10);       //計算收盤價10期的運動量指標
 
 plot1(value1, "MTM");
 ```
-
 ---
 
 ## PSY
@@ -14428,13 +13835,11 @@ PSY -  (系統函數)
 PSY = 100 \* 上漲次數／總次數
 
 範例：
-
 ```
 value1 = PSY(12);       //計算12期的心理線指標
 
 plot1(value1, "PSY");
 ```
-
 ---
 
 ## PercentR
@@ -14457,13 +13862,11 @@ PercentR -  (系統函數)
 由Larry Williams所提出，將當前收盤價在指定期間內的區間最高價與最低價之間位置，以百分比表示。
 
 範例：
-
 ```
 value1 = PercentR(12) - 100;       //計算12期的威廉指標
 
 plot1(value1, "%R");
 ```
-
 ---
 
 ## Q指標
@@ -14519,13 +13922,11 @@ RC -  (系統函數)
 RC = （當期收盤價／前N期收盤價）／前N期收盤價
 
 範例：
-
 ```
 value1 = RC(12);       //計算12期的RC指標
 
 plot1(value1, "RC");
 ```
-
 ---
 
 ## RSI
@@ -14562,13 +13963,11 @@ RSI的計算基於資產的價格變動幅度，通常在一段時間內（例�
 投資者可以利用RSI指標來識別潛在的轉折點，例如在RSI進入超買或超賣區域時，可能預示著價格反轉的機會。
 
 範例：
-
 ```
 value1 = RSI(Close,6);       //計算6期的RSI指標
 
 plot1(value1, "RSI");
 ```
-
 ---
 
 ## RSV
@@ -14595,13 +13994,11 @@ RSV -  (系統函數)
 RSV=(收盤價－n日之最低價)／(n日內最高價－n日最低價)＊100
 
 範例：
-
 ```
 value1 = RSV(9);       //計算9期的RSV指標
 
 plot1(value1, "RSV");
 ```
-
 ---
 
 ## SAR
@@ -14632,13 +14029,11 @@ SAR停損點轉向指標，或稱為拋物線型指標，為一種設定停損�
 由威爾德（Wilder）發明的停損點轉向操作系統（SAR, Stop And Reverse）或者稱之為拋物線型指標（Parabolic Time/Price），是一種隨著時間的延續，用類似於拋物曲線的追趕方式，來追趕價位行情，以便設定出買賣操作時的停損點反轉值，使得一旦行情觸及停損反轉時，可以依照訊號進行買賣的動作。
 
 範例：
-
 ```
 value1 = SAR(0.02, 0.02, 0.2);       //計算SAR指標
 
 plot1(value1, "SAR");
 ```
-
 ---
 
 ## Stochastic
@@ -14677,7 +14072,6 @@ KD指標為美國交易員George Lane所創，原名為Stochastic Oscillator。
 Stochastic函數可計算KD指標的RSV、K及D三個數值。Stochastic函數回傳1時，代表計算成功。RSV、K及D的值是回傳在第4、5、6個參數。
 
 範例：
-
 ```
 value1 = Stochastic(9,3,3,value2,value3,value4);       //計算KD指標
 
@@ -14685,7 +14079,6 @@ plot1(value3, "K");
 
 plot2(value4, "D");
 ```
-
 ---
 
 ## TRIX
@@ -14714,13 +14107,11 @@ TRIX -  (系統函數)
 TRIX是在1980年代由Jack Hutson所發明的指標。TRIX指的是對股價X取TRIPLE （三次） 平滑的意思。將數值計算三次指數移動平均（EMA，也就是MACD式平滑法）之後的數列，再計算其變動率而得。
 
 範例：
-
 ```
 value1 = TRIX(Close, 9);       //計算9期TRIX指標
 
 plot1(value1, "TRIX");
 ```
-
 ---
 
 ## TechScore
@@ -14745,13 +14136,11 @@ TechScore -  (系統函數)
 多空判斷分數會介於0~14之間，12以上是超買區、3以下是超賣區。
 
 範例：
-
 ```
 value1 = TechScore;       //計算多空判斷分數
 
 plot1(value1, "多空指標");
 ```
-
 ---
 
 ## VA
@@ -14776,13 +14165,11 @@ VA指標的原文是Volume Accumulation／Distribution指標，原文的意思�
 VA屬於累積型的指標，指標值會因計算的起始點不同而有所差異。
 
 範例：
-
 ```
 value1 = VA;       //計算成交量累散佈指標
 
 plot1(value1, "VA");
 ```
-
 ---
 
 ## VAO
@@ -14805,13 +14192,11 @@ VAO -  (系統函數)
 VAO指標的原文是Volume Accumulation／Distribution Oscillator指標，按照原文的意思直譯為「成交量累積散佈擺盪」指標。累積指的自然是籌碼集中累積到少數人手上的現象，而散佈自然是指籌碼散佈分散到多數人手上的現象。這個指標與VA指標（即修正OBV指標）幾乎雷同，唯一的差別是VA指標要逐日累加，VAO不累加而已。
 
 範例：
-
 ```
 value1 = VAO;       //計算成交量累散佈擺盪指標
 
 plot1(value1, "VAO");
 ```
-
 ---
 
 ## VHF
@@ -14834,13 +14219,11 @@ VHF -  (系統函數)
 本指標由亞當．懷特（Adam White）所發明，用來確定價格的變動是處於水平變動（區間橫向整理期），或是垂直變動（固定趨勢的大幅漲跌期）的階段。然後投資人可依此選用趨勢指標或震盪指標，來決定買賣的時機。
 
 範例：
-
 ```
 value1 = VHF(42);       //計算42期的VHF指標
 
 plot1(value1, "VHF");
 ```
-
 ---
 
 ## VPT
@@ -14863,13 +14246,11 @@ VPT -  (系統函數)
 VPT（Volume Price Trend）量價趨勢指標，或被稱為PVT指標，也是一種類似於OBV的技術指標。而它所累算的是價格漲跌幅與成交量的乘積。
 
 範例：
-
 ```
 value1 = VPT;       //計算量價趨勢指標
 
 plot1(value1, "VPT");
 ```
-
 ---
 
 ## VR
@@ -14898,13 +14279,11 @@ VR指標的設計原意，是要利用量價關係的基本原理，來作為研
 不過，由於在股巿中，股價上漲時成交量的擴增比較沒有上限，可以擴增到數倍（甚或數十倍）之多；而股價下跌時成交量的下降反而比較有限，頂多只降個幾十個百分點（最多不會超過100%）。所以VR指標不會出現剛好以100為中心，上下波動幅度相同的情況。而是VR的高點會明顯大於100很多，低點則小於100的程度不大。
 
 範例：
-
 ```
 value1 = VR(26);       //計算26期的VR指標
 
 plot1(value1, "VR");
 ```
-
 ---
 
 ## VVA
@@ -14929,13 +14308,11 @@ OBV的變形累算方法，除了VA成交量累散佈指標以外，還有另外
 VVA屬於累積型的指標，指標值會因計算的起始點不同而有所差異。
 
 範例：
-
 ```
 value1 = VVA;       //計算VVA指標
 
 plot1(value1, "VVA");
 ```
-
 ---
 
 ## WAD
@@ -14958,13 +14335,11 @@ WAD -  (系統函數)
 由Larry Williams所發明的指標，屬於累積型的指標，指標值會因計算的起始點不同而有所差異。
 
 範例：
-
 ```
 value1 = WAD;              //計算威廉多空力度線
 
 plot1(value1, "WA/D");
 ```
-
 ---
 
 ## BarsLast
@@ -14989,7 +14364,6 @@ BarsLast -  (系統函數)
 回傳值為0表示條件成立當期，回傳值為1表示前1期條件成立，依此類推。
 
 範例：
-
 ```
 value1 = average(C,5);
 
@@ -15001,7 +14375,6 @@ value4 = low[value3];       //取得上次均線黃金交叉時的最低價做�
 
 plot1(value4);       //繪製支撐價的連線
 ```
-
 ---
 
 ## DaysToExpiration
@@ -15032,7 +14405,6 @@ DaysToExpiration -  (系統函數)
 回傳值為1，表示當天為結算日。回傳值小於1，表示該合約已到期。
 
 範例：
-
 ```
 value1 = DaysToExpiration(month(date),year(date));
 
@@ -15048,7 +14420,6 @@ end;
 
 plot1(value1); //繪製最新的台股指數類期貨到期天數的連線
 ```
-
 注意，此函數並無調整因放假而導致的到期日異動。
 
 ---
@@ -15112,11 +14483,9 @@ GetLastTradeDate -  (系統函數)
 函數回傳值的格式為8碼數字: **YYYYMMDD**。
 
 範例：
-
 ```
 value1 = GetLastTradeDate(7,2015); //取得台股指數類期貨2015年7月合約的到期日
 ```
-
 注意，此函數並無調整因放假而導致的到期日異動。
 
 ---
@@ -15147,11 +14516,9 @@ LastDayOfMonth -  (系統函數)
 例如：一月有31天、二月只有28天、四月有30天。
 
 範例：
-
 ```
 value1 = LastDayOfMonth(month(date)); //取得當月的天數
 ```
-
 ---
 
 ## NDaysAngle
@@ -15213,11 +14580,9 @@ NthDayofMonth -  (系統函數)
 NthDayOfMonth回傳的數值是YYYYMMDD的日期格式。
 
 範例：
-
 ```
 value1 = NthDayOfMonth(date,3,1)); //取得未來第3個星期一的日期
 ```
-
 ---
 
 ## UpTrend
@@ -15277,13 +14642,11 @@ angleprice -  (系統函數)
 用前N期到現在的角度，運算出趨勢線的價格。
 
 範例：
-
 ```
 value1 = angleprice(5,0);
 
 plot1(value1); //Value1為前五期的開盤價，因為第二個參數是0度，所以會等於前五期的開盤價。
 ```
-
 更多的資訊，請參考[常用語法匯總](https://www.xq.com.tw/xstrader/%E5%B8%B8%E7%94%A8%E7%9A%84%E8%AA%9E%E6%B3%95%E5%8C%AF%E7%B8%BD/)
 
 ---
@@ -15320,7 +14683,6 @@ formatMQY回傳的字串為：
 - 當其他頻率時，回傳格式為YYYYMMDD的字串；例如：20150103。
 
 範例：
-
 ```
 var: string1("");
 
@@ -15328,7 +14690,6 @@ string1 = formatMQY(date); //將日期轉換為MQY格式的字串
 
 print(date," ",string1);
 ```
-
 ---
 
 ## BSDelta
@@ -15367,13 +14728,11 @@ BSDelta -  (系統函數)
 BS選擇權定價模型為諾貝爾經濟學獎得主Robert Merton和Myron Scholes於1973所發表。依據下列六個參數決定選擇權的理論價：標的價格、履約價、到期天數、無風險利率、持有成本、波動率。其中只有履約價和到期天數是由合約所規定，其餘參數皆會隨市場狀況而變動。
 
 範例：
-
 ```
 value1 = BSDelta("C",8800,9000,20,2,0,25);       //計算波動率25%、20天後到期之台指選擇權9000的Call在指數為8800點的Delta值
 
 plot1(value1, "Delta");
 ```
-
 註：更多參數說明請參考[BlackScholes公式](api?a=BlackScholesModel&b=sys)。
 
 ---
@@ -15416,13 +14775,11 @@ Gamma為選擇權敏感度分析的參數之一，用來衡量Delta相對於標�
 函數回傳值為標的價格每變動1％，選擇權Delta變化的百分比。Gamma永遠為正值，選擇權在價平時Gamma值最大。例如，假設選擇權的Delta為0.56、Gamma為0.0015，則表示只要標的價格上漲1點，Delta會由0.56增加至0.5615（0.56+1\*0.0015=0.5615）
 
 範例：
-
 ```
 value1 = BSGamma("C",8800,9000,20,2,0,25);       //計算波動率25%、20天後到期之台指選擇權9000的Call在指數為8800點的Gamma值
 
 plot1(value1, "Gamma");
 ```
-
 註：更多參數說明請參考[BlackScholes公式](api?a=BlackScholesModel&b=sys)。
 
 ---
@@ -15463,13 +14820,11 @@ BSPrice -  (系統函數)
 BS選擇權定價模型為諾貝爾經濟學獎得主Robert Merton和Myron Scholes於1973所發表。依據下列六個參數決定選擇權的理論價：標的價格、履約價、到期天數、無風險利率、持有成本、波動率。其中只有履約價和到期天數是由合約所規定，其餘參數皆會隨市場狀況而變動。
 
 範例：
-
 ```
 value1 = BSPrice("C",8800,9000,20,2,0,25);       //計算波動率25%、20天後到期之台指選擇權9000的Call在指數為8800點的理論價
 
 plot1(value1, "理論價");
 ```
-
 註：更多參數說明請參考[BlackScholes公式](api?a=BlackScholesModel&b=sys)。
 
 ---
@@ -15512,13 +14867,11 @@ Theta為選擇權敏感度分析的參數之一，用來衡量時間變化對選
 函數回傳值為選擇權剩餘天數每減少一天，選擇權理論價的變化。Theta永遠為負值，表示選擇權的時間價值隨著到期日的接近而消失。如果選擇權的Theta為-2，在所有條件維持不變的情況下，明日選擇權的理論價會由今天的70下降為68（70-1\*2=68）。
 
 範例：
-
 ```
 value1 = BSTheta("C",8800,9000,20,2,0,25);       //計算波動率25%、20天後到期之台指選擇權9000的Call在指數為8800點的Theta值
 
 plot1(value1, "Theta");
 ```
-
 註：更多參數說明請參考[BlackScholes公式](api?a=BlackScholesModel&b=sys)。
 
 ---
@@ -15559,13 +14912,11 @@ BSVega -  (系統函數)
 BS選擇權定價模型為諾貝爾經濟學獎得主Robert Merton和Myron Scholes於1973所發表。依據下列六個參數決定選擇權的理論價：標的價格、履約價、到期天數、無風險利率、持有成本、波動率。其中只有履約價和到期天數是由合約所規定，其餘參數皆會隨市場狀況而變動。
 
 範例：
-
 ```
 value1 = BSPrice("C",8800,9000,20,2,0,25);       //計算波動率25%、20天後到期之台指選擇權9000的Call在指數為8800點的理論價
 
 plot1(value1, "理論價");
 ```
-
 註：更多參數說明請參考[BlackScholes公式](api?a=BlackScholesModel&b=sys)。
 
 ---
@@ -15592,13 +14943,11 @@ DaysToExpirationTF -  (系統函數)
 回傳值為1，表示當天為結算日。回傳值小於1，表示該合約已到期。
 
 範例：
-
 ```
 value1 = DaysToExpirationTF;
 
 plot1(value1); //繪製最新的台股指數類期貨到期天數的連線
 ```
-
 注意，此函數並無調整因放假而導致的到期日異動。
 
 ---
@@ -15629,13 +14978,11 @@ HVolatility -  (系統函數)
 歷史波動率代表的是價格過往的波動性高低。波動率是影響選擇權價格的重要因子，而歷史波動率會是一個很好的參考。
 
 範例：
-
 ```
 value1 = HVolatility(Close,20);       //計算20天的歷史波動率
 
 plot1(value1,"20天歷史波動率");
 ```
-
 ---
 
 ## IVolatility
@@ -15674,13 +15021,11 @@ IVolatility -  (系統函數)
 隱含波動率是經由選擇權市場價格反推而得的波動率。隱含波動率的水準顯示了選擇權價格的高低（貴或便宜），也代表了市場參與者對未來的預期。通常會搭配歷史波動率來判斷市場是否出現狂熱或恐慌的狀況。
 
 範例：
-
 ```
 value1 = IVolatility("C",8800,9000,20,2,0,40);       //計算8800買權的隱含波動率
 
 plot1(value1,"隱含波動率");
 ```
-
 ---
 
 ## IsXLOrder
@@ -15755,13 +15100,11 @@ NORMSDIST -  (系統函數)
 本函數利用多項式計算近似值，精確度到小數點以下六位。
 
 範例：
-
 ```
 value1 = NORMSDIST(1.33);       //1.33的標準常態累加分配函數
 
 plot1(value1);
 ```
-
 ---
 
 ## blackscholesmodel
@@ -15822,7 +15165,6 @@ BS選擇權定價模型為諾貝爾經濟學獎得主Robert Merton和Myron Schol
 這個函數可以依照使用者傳入的參數，計算選擇權的理論價、Delta、Gamma、Vega、Theta及Rho。
 
 範例：
-
 ```
 value1 = BlackScholesModel("C",8800,9000,20,2,0,25,value2,value3,value4,value5,value6,value7);       //計算波動率25%、20天後到期之台指選擇權9000的Call在指數為8800點的理論價
 
@@ -15838,7 +15180,6 @@ plot5(value6, "Theta");
 
 plot6(value7, "Rho");
 ```
-
 ---
 
 ## CoefficientR
@@ -15871,7 +15212,6 @@ CoefficientR -  (系統函數)
 回傳數值會介於-1到1之間。如果無法計算，會傳回-2。
 
 範例：
-
 ```
 value1 = GetField("外資買賣超金額");
 
@@ -15881,7 +15221,6 @@ value3 = coefficientr(value1,value2,20); //計算外資買賣超金額與大盤�
 
 plot1(value3);
 ```
-
 ---
 
 ## Correlation
@@ -15914,7 +15253,6 @@ Correlation -  (系統函數)
 回傳數值會介於-1到1之間。如果無法計算，會傳回-2。
 
 範例：
-
 ```
 value1 = GetField("外資買賣超金額");
 
@@ -15924,7 +15262,6 @@ value3 = Correlation(value1,value2,20); //計算外資買賣超金額與大盤�
 
 plot1(value3);
 ```
-
 ---
 
 ## Covariance
@@ -15955,7 +15292,6 @@ Covariance -  (系統函數)
 以最新一筆資料為基準點，輸入要計算的期數，然後計算過去期數的共變異數。
 
 範例：
-
 ```
 value1 = GetField("外資買賣超金額");
 
@@ -15965,7 +15301,6 @@ value3 = Covariance(value1,value2,20); //計算外資買賣超金額與大盤漲
 
 plot1(value3);
 ```
-
 ---
 
 ## RSquare
@@ -15996,7 +15331,6 @@ RSquare -  (系統函數)
 以最新一筆資料為基準點，輸入要計算的期數，然後計算過去期數的R平方值。
 
 範例：
-
 ```
 value1 = GetField("外資買賣超金額");
 
@@ -16006,7 +15340,6 @@ value3 = RSquare(value1,value2,20); //計算外資買賣超金額與大盤漲跌
 
 plot1(value3);
 ```
-
 ---
 
 ## StandardDev
@@ -16039,13 +15372,11 @@ StandardDev -  (系統函數)
 提供母體（Population）或樣本（Sample）二種計算方式。
 
 範例：
-
 ```
 value1 = StandardDev(close,20,2); //計算收盤價的標準差
 
 plot1(value1);
 ```
-
 ---
 
 ## VariancePS
@@ -16078,13 +15409,11 @@ VariancePS -  (系統函數)
 提供母體（Population）或樣本（Sample）二種計算方式。
 
 範例：
-
 ```
 value1 = VariancePS(close,20,2); //計算收盤價的變異數
 
 plot1(value1);
 ```
-
 ---
 
 ## Angle
@@ -16115,11 +15444,9 @@ Angle -  (系統函數)
 當回傳數值大於0時，代表趨勢向上；當回傳數值小於0時，代表趨勢向下。
 
 範例：
-
 ```
 value1 = Angle(date[3],date); //計算近四期走勢的角度
 ```
-
 ---
 
 ## LinearReg
@@ -16158,13 +15485,11 @@ LinearReg -  (系統函數)
 LinearReg函數回傳1時，代表計算成功。斜率、弧度、X軸截距及預測值是回傳在第4、5、6、7個參數。
 
 範例：
-
 ```
 value1 = linearreg(close,20,-1,value2,value3,value4,value5); //計算收盤價20期的線性迴歸
 
 plot1(value5);                                               //繪製明天的收盤價線性迴歸預測值連線
 ```
-
 ---
 
 ## LinearRegAngle
@@ -16193,11 +15518,9 @@ LinearRegAngle -  (系統函數)
 利用最小平方法計算線性回歸的角度。
 
 範例：
-
 ```
 value1 = LinearRegAngle(close,20); //計算收盤價20期的線性迴歸線角度
 ```
-
 ---
 
 ## LinearRegSlope
@@ -16226,11 +15549,9 @@ LinearRegSlope -  (系統函數)
 利用最小平方法計算線性回歸的斜率。
 
 範例：
-
 ```
 value1 = LinearRegSlope(close,20); //計算收盤價20期的線性迴歸線斜率
 ```
-
 ---
 
 ## SwingHigh
@@ -16267,11 +15588,9 @@ SwingHigh -  (系統函數)
 當無法找到對應的轉折高點時，回傳值為-1。
 
 範例：
-
 ```
 value1 = SwingHigh(High,20,3,3,2); //找出過去20期內，第2個轉折高點
 ```
-
 ---
 
 ## SwingHighBar
@@ -16308,11 +15627,9 @@ SwingHighBar -  (系統函數)
 當無法找到對應的轉折高點時，回傳值為-1。
 
 範例：
-
 ```
 value1 = SwingHighBar(High,20,3,3,2); //找出過去20期內，第2個轉折高點的相對位置
 ```
-
 ---
 
 ## SwingLow
@@ -16349,11 +15666,9 @@ SwingLow -  (系統函數)
 當無法找到對應的轉折低點時，回傳值為-1。
 
 範例：
-
 ```
 value1 = SwingLow(Low,20,3,3,1); //找出過去20期內，第1個轉折低點
 ```
-
 ---
 
 ## SwingLowBar
@@ -16390,11 +15705,9 @@ SwingLowBar -  (系統函數)
 當無法找到對應的轉折低點時，回傳值為-1。
 
 範例：
-
 ```
 value1 = SwingLowBar(Low,20,3,3,1); //找出過去20期內，第1個轉折低點的相對位置
 ```
-
 ---
 
 ## TSELSindex
@@ -16479,13 +15792,11 @@ TimeSeriesForecast -  (系統函數)
 利用最小平方法計算線性回歸的預測值。
 
 範例：
-
 ```
 value1 = TimeSeriesForecast(close,20,-1); //計算收盤價20期的線性迴歸
 
 plot1(value1);                            //繪製明天的收盤價線性迴歸預測值連線
 ```
-
 ---
 
 ## UpShadow
@@ -16506,13 +15817,11 @@ UpShadow -  (系統函數)
 說明：
 
 範例：
-
 ```
 value1 =UpShadow; //計算當期K棒之上影線佔整根K棒比例
 
 value2 =UpShadow[1]; //計算前一期K棒之上影線佔整根K棒比例
 ```
-
 ---
 
 ## BollingerBandWidth
@@ -16545,13 +15854,11 @@ BollingerBandWidth -  (系統函數)
 布林帶寬度指標（Bandwidth，BW），是由布林帶中軌及上、下軌衍生出的指標，利用股價波動範圍以判斷趨勢的強度與轉折；計算公式通常為：布林帶寬度指標值 = （布林帶上軌值 - 布林帶下軌值）÷ 布林帶中軌值。
 
 範例：
-
 ```
 value1 = BollingerBandWidth(Close,20,2,2);	//計算20期、上下通道寬度的標準差倍數為2
 
 plot1(value1, "BollingerBandWidth");
 ```
-
 ---
 
 ## PercentB
@@ -16584,13 +15891,11 @@ PercentB -  (系統函數)
 %b指標（Percent b，PB），是從布林值演化過來的，了解%B指標前，建議熟悉布林通道(BollingerBand)；%b指標以數值形式呈現收盤價在布林帶中的位置，計算公式通常為：%b 值 = （收盤價 - 布林帶下軌值） ÷ （布林帶上軌值 - 布林帶下軌值）。
 
 範例：
-
 ```
 value1 = PercentB(Close,20,2,2);	//計算20期、上下通道寬度的標準差倍數為2
 
 plot1(value1, "%b指標");
 ```
-
 ---
 
 ## TurnOverRate
@@ -16613,13 +15918,11 @@ TurnOverRate -  (系統函數)
 股票周轉率是在一段時間內的股票交易數量與股票發行總數之比。當週轉率高時，代表股票在投資人之間轉換頻率過高，也表示市場的流動性高；週轉率高也可能是因為市場中充斥太多投機者搶短線所造成的。
 
 範例：
-
 ```
 value1 = TurnOverRate(10);	//計算10期的周轉率
 
 plot1(value1, "周轉率");
 ```
-
 ---
 
 ## xfMin_CrossOver
@@ -16652,11 +15955,9 @@ xfMin_CrossOver -  (系統函數)
 如果出現黃金交叉傳回True，其他狀況傳回False。
 
 範例：
-
 ```
 condition1 = xfMin_CrossOver("30",Average(GetField("收盤價","30"),5),Average(GetField("收盤價","30") ,10)); //判斷30分鐘線5期均線和10期均線是否黃金交叉
 ```
-
 ---
 
 ## xfMin_CrossUnder
@@ -16689,11 +15990,9 @@ xfMin_CrossUnder -  (系統函數)
 如果出現死亡交叉傳回True，其他狀況傳回False。
 
 範例：
-
 ```
 condition1 = xfMin_CrossUnder("30",Average(GetField("close","30"),5),Average(GetField("close","30") ,10) ); //判斷30分鐘線5期均線和10期均線是否死亡交叉
 ```
-
 ---
 
 ## xfMin_DirectionMovement
@@ -16730,7 +16029,6 @@ xfMin_DirectionMovement -  (系統函數)
 xfMin_DirectionMovement是[xf_DirectionMovement](api?a=xf_DirectionMovement&b=sys) 函數的跨頻率加強版本，增加了指定分鐘頻率的參數，可以計算指定分鐘頻率的DMI值。
 
 範例：
-
 ```
 value1 = xfMin_DirectionMovement("30",14,value2,value3,value4);       //計算14期的30分鐘線DMI指標
 
@@ -16740,7 +16038,6 @@ plot2(value3, "30分週-DI");
 
 plot3(value4, "30分ADX");
 ```
-
 ---
 
 ## xfMin_EMA
@@ -16773,11 +16070,9 @@ xfMin_EMA -  (系統函數)
 xfMin_EMA是[xf_EMA](api?a=xf_EMA&b=sys)函數的跨頻率加強版本，增加了指定分鐘頻率的參數，可以計算指定分鐘頻率的EMA值。
 
 範例：
-
 ```
 value1 = xfMin_EMA("30", GetField("Close", "30"),5); //計算30分鐘線5期收盤價的XQ EMA
 ```
-
 ---
 
 ## xfMin_GetBoolean
@@ -16808,7 +16103,6 @@ xfMin_GetBoolean -  (系統函數)
 說明：
 
 在同一個頻率時，我們可以直接利用\*\*變數[3]\*\*取得前3期的變數值。當資料頻率不同時（跨頻率），我們就需要使用xfMin_GetValue或xfMin_GetBoolean來取得之前的變數值。若變數是數值時，要用xfMin_GetValue；若變數是布林值時，要用xfMin_GetBoolean。支援跨分鐘頻率。
-
 ```
 input:Length_Min(9,"跨分鐘頻率期數");
 
@@ -16818,7 +16112,6 @@ xfMin_stochastic("30", Length_Min, 3, 3, rsv_w, kk_w, dd_w);
 
 condition1 = xfMin_GetBoolean("30",xfMin_crossover("30", kk_w, dd_w),1);	//在15分鐘線抓30分鐘線KD黃金交叉
 ```
-
 相關函數：[xfMin_GetValue](api?a=xfMin_GetValue&b=sys)。
 
 ---
@@ -16849,7 +16142,6 @@ K棒編號 = xfMin_GetCurrentBar(頻率)
 傳回指定頻率（支援分鐘）的K棒序列編號，由1開始，第一筆K棒編號為1，第二筆K棒編號為2，依序遞增。
 
 可以使用這個函數來判斷目前腳本執行的時機點
-
 ```
 value1 = xfMin_GetCurrentBar(FreqType);
 
@@ -16863,7 +16155,6 @@ else
 
     xfMin_XAverage = lastXAverage + Factor * (Series - lastXAverage);
 ```
-
 上述範例利用xfMin_GetCurrentBar來判斷目前是否是第一筆K棒。如果是的話則回傳xfMin_XAverage的初始數值。
 
 ---
@@ -16894,13 +16185,11 @@ xfMin_GetDTValue -  (系統函數)
 說明：
 
 經由傳入的日期判斷指定頻率的期別是否有異動，支援指定分鐘頻率。
-
 ```
 value1 = xfMin_getdtvalue("30",date);
 
 if value1 <> value1[1] then plot1(1) else plot1(0);
 ```
-
 上述範例利用xfMin_GetDTValue來判斷目前是否為新的30分鐘。如果是的話則在圖表上顯示為1。
 
 ---
@@ -16933,7 +16222,6 @@ xfMin_GetValue -  (系統函數)
 說明：
 
 在同一個頻率時，我們可以直接利用\*\*變數[3]\*\*取得前3期的變數值。當資料頻率不同時（跨頻率），我們就需要使用xfMin_GetValue或xfMin_GetBoolean來取得之前的變數值。若變數是數值時，要用xfMin_GetValue；若變數是布林值時，要用xfMin_GetBoolean。支援跨分鐘頻率。
-
 ```
 value1 = xfMin_WeightedClose("30");            //計算30分鐘線的加權平均價
 
@@ -16943,7 +16231,6 @@ plot1(value2);
 
 plot2(value1[1]);                        //可以比較一下和value2的差異
 ```
-
 相關函數：[xfMin_GetBoolean](api?a=xfMin_GetBoolean&b=sys)。
 
 ---
@@ -16988,7 +16275,6 @@ xfMin_MACD -  (系統函數)
 xfMin_MACD是[xf_MACD](api?a=xf_MACD&b=sys) 函數的跨頻率加強版本，增加了指定分鐘頻率的參數，可以計算指定分鐘頻率的MACD值。
 
 範例：
-
 ```
 value1 = xfMin_MACD("30",xfMin_weightedclose("30"),12,26,9,value2,value3,value4);    //計算30分鐘線MACD
 
@@ -16998,7 +16284,6 @@ plot2(value3, "30分鐘MACD");
 
 plot3(value4, "30分鐘OSC");
 ```
-
 ---
 
 ## xfMin_PercentR
@@ -17029,13 +16314,11 @@ xfMin_PercentR -  (系統函數)
 xfMin_PercentR是[xf_PercentR](api?a=xf_PercentR&b=sys) 函數的跨頻率加強版本，增加了指定分鐘頻率的參數，可以計算指定分鐘頻率的PercentR值。
 
 範例：
-
 ```
 value1 = xfMin_PercentR("30", 14) - 100;       //計算30分鐘線威廉指標
 
 Plot1(value1, "30分鐘威廉指標");
 ```
-
 ---
 
 ## xfMin_RSI
@@ -17068,13 +16351,11 @@ xfMin_RSI -  (系統函數)
 xfMin_RSI是[xf_RSI](api?a=xf_RSI&b=sys) 函數的跨頻率加強版本，增加了指定分鐘頻率的參數，可以計算指定分鐘頻率的RSI值。
 
 範例：
-
 ```
 value1 = xfMin_RSI("30",GetField("Close","30"),6);       //計算6期的30分鐘線RSI指標
 
 plot1(value1, "30分RSI");
 ```
-
 ---
 
 ## xfMin_Stochastic
@@ -17115,7 +16396,6 @@ xfMin_Stochastic -  (系統函數)
 xfMin_Stochastic是[xf_Stochastic](api?a=xf_Stochastic&b=sys) 函數的跨頻率加強版本，增加了指定分鐘頻率的參數，可以計算指定分鐘頻率的Stochastic值。
 
 範例：
-
 ```
 value1 = xfMin_Stochastic("30",9,3,3,value2,value3,value4);       //計算30分鐘線KD指標
 
@@ -17123,7 +16403,6 @@ plot1(value3, "30分K");
 
 plot2(value4, "30分D");
 ```
-
 ---
 
 ## xfMin_WeightedClose
@@ -17152,11 +16431,9 @@ xfMin_WeightedClose -  (系統函數)
 xfMin_WeightedClose是[xf_WeightedClose](api?a=xf_WeightedClose&b=sys) 函數的跨頻率加強版本，增加了指定分鐘頻率的參數，可以計算指定分鐘頻率的WeightedClose值。
 
 範例：
-
 ```
 plot1(xfMin_WeightedClose("30"));    //繪製30分鐘線加權平均收盤價的連線
 ```
-
 ---
 
 ## xfMin_XAverage
@@ -17189,11 +16466,9 @@ xfMin_XAverage -  (系統函數)
 xfMin_XAverage是[xf_XAverage](api?a=xf_XAverage&b=sys) 函數的跨頻率加強版本，增加了指定分鐘頻率的參數，可以計算指定分鐘頻率的XAverage值。
 
 範例：
-
 ```
 value1 = xfMin_XAverage("30",GetField("Close","30"),5); //計算30分鐘線5期收盤價的指數移動平均
 ```
-
 ---
 
 ## xf_CrossOver
@@ -17224,11 +16499,9 @@ xf_CrossOver -  (系統函數)
 如果出現黃金交叉傳回True，其他狀況傳回False。
 
 範例：
-
 ```
 condition1 = xf_CrossOver("W",Average(GetField("收盤價","W"),5),Average(GetField("收盤價","W") ,10)); //判斷週線5期均線和10期均線是否黃金交叉
 ```
-
 ---
 
 ## xf_CrossUnder
@@ -17259,11 +16532,9 @@ xf_CrossUnder -  (系統函數)
 如果出現死亡交叉傳回True，其他狀況傳回False。
 
 範例：
-
 ```
 condition1 = xf_CrossUnder("W",Average(GetField("close","W"),5),Average(GetField("close","W") ,10) ); //判斷週線5期均線和10期均線是否死亡交叉
 ```
-
 ---
 
 ## xf_DirectionMovement
@@ -17298,7 +16569,6 @@ xf_DirectionMovement -  (系統函數)
 xf_DirectionMovement是[DirectionMovement](api?a=DirectionMovement&b=sys) 函數的跨頻率版本，增加了指定頻率的參數，可以計算指定頻率的DMI值。
 
 範例：
-
 ```
 value1 = xf_DirectionMovement("W",14,value2,value3,value4);       //計算14期的週DMI指標
 
@@ -17308,7 +16578,6 @@ plot2(value3, "週-DI");
 
 plot3(value4, "週ADX");
 ```
-
 ---
 
 ## xf_EMA
@@ -17339,11 +16608,9 @@ xf_EMA -  (系統函數)
 xf_EMA是[EMA](api?a=EMA&b=sys)函數的跨頻率版本，增加了指定頻率的參數，可以計算指定頻率的EMA值。
 
 範例：
-
 ```
 value1 = xf_EMA("W", Close,5); //計算週線5期收盤價的XQ EMA
 ```
-
 ---
 
 ## xf_GetBoolean
@@ -17372,7 +16639,6 @@ xf_GetBoolean -  (系統函數)
 說明：
 
 在同一個頻率時，我們可以直接利用\*\*變數[3]\*\*取得前3期的變數值。當資料頻率不同時（跨頻率），我們就需要使用xf_GetValue或xf_GetBoolean來取得之前的變數值。若變數是數值時，要用xf_GetValue；若變數是布林值時，要用xf_GetBoolean。
-
 ```
 input:Length_W(9,"跨頻率週期數");
 
@@ -17382,7 +16648,6 @@ xf_stochastic("W", Length_W, 3, 3, rsv_w, kk_w, dd_w);
 
 condition1 = xf_GetBoolean("W",xf_crossover("W", kk_w, dd_w),1);	//在日線抓周KD黃金交叉
 ```
-
 相關函數：[xf_GetValue](api?a=xf_GetValue&b=sys)。
 
 ---
@@ -17411,7 +16676,6 @@ K棒編號 = xf_GetCurrentBar(頻率)
 傳回指定頻率的K棒序列編號，由1開始，第一筆K棒編號為1，第二筆K棒編號為2，依序遞增。
 
 可以使用這個函數來判斷目前腳本執行的時機點
-
 ```
 value1 = xf_GetCurrentBar(FreqType);
 
@@ -17425,7 +16689,6 @@ else
 
     xf_XAverage = lastXAverage + Factor * (Series - lastXAverage);
 ```
-
 上述範例利用xf_GetCurrentBar來判斷目前是否是第一筆K棒。如果是的話則回傳xf_XAverage的初始數值。
 
 ---
@@ -17454,13 +16717,11 @@ xf_GetDTValue -  (系統函數)
 說明：
 
 經由傳入的日期判斷指定頻率的期別是否有異動
-
 ```
 value1 = xf_getdtvalue("W",date);
 
 if value1 <> value1[1] then plot1(1) else plot1(0);
 ```
-
 上述範例利用xf_GetDTValue來判斷目前是否為新的一週。如果是的話則在圖表上顯示為1。
 
 ---
@@ -17491,7 +16752,6 @@ xf_GetValue -  (系統函數)
 說明：
 
 在同一個頻率時，我們可以直接利用\*\*變數[3]\*\*取得前3期的變數值。當資料頻率不同時（跨頻率），我們就需要使用xf_GetValue或xf_GetBoolean來取得之前的變數值。若變數是數值時，要用xf_GetValue；若變數是布林值時，要用xf_GetBoolean。
-
 ```
 value1 = xf_WeightedClose("W");            //計算週線的加權平均價
 
@@ -17501,7 +16761,6 @@ plot1(value2);
 
 plot2(value1[1]);                        //可以比較一下和value2的差異
 ```
-
 相關函數：[xf_GetBoolean](api?a=xf_GetBoolean&b=sys)。
 
 ---
@@ -17544,7 +16803,6 @@ xf_MACD -  (系統函數)
 xf_MACD是[MACD](api?a=MACD&b=sys) 函數的跨頻率版本，增加了指定頻率的參數，可以計算指定頻率的MACD值。
 
 範例：
-
 ```
 value1 = xf_MACD("W",xf_weightedclose("W"),12,26,9,value2,value3,value4);       //計算週線MACD
 
@@ -17554,7 +16812,6 @@ plot2(value3, "週MACD");
 
 plot3(value4, "週OSC");
 ```
-
 ---
 
 ## xf_PercentR
@@ -17583,13 +16840,11 @@ xf_PercentR -  (系統函數)
 xf_PercentR是[PercentR](api?a=PercentR&b=sys) 函數的跨頻率版本，增加了指定頻率的參數，可以計算指定頻率的PercentR值。
 
 範例：
-
 ```
 value1 = xf_PercentR("W", 14) - 100;       //計算週線威廉指標
 
 Plot1(value1, "週威廉指標");
 ```
-
 ---
 
 ## xf_RSI
@@ -17620,13 +16875,11 @@ xf_RSI -  (系統函數)
 xf_RSI是[RSI](api?a=RSI&b=sys) 函數的跨頻率版本，增加了指定頻率的參數，可以計算指定頻率的RSI值。
 
 範例：
-
 ```
 value1 = xf_RSI("W",GetField("Close","W"),6);       //計算6期的週RSI指標
 
 plot1(value1, "週RSI");
 ```
-
 ---
 
 ## xf_Stochastic
@@ -17665,7 +16918,6 @@ xf_Stochastic -  (系統函數)
 xf_Stochastic是[Stochastic](api?a=Stochastic&b=sys) 函數的跨頻率版本，增加了指定頻率的參數，可以計算指定頻率的Stochastic值。
 
 範例：
-
 ```
 value1 = xf_Stochastic("W",9,3,3,value2,value3,value4);       //計算週KD指標
 
@@ -17673,7 +16925,6 @@ plot1(value3, "週K");
 
 plot2(value4, "週D");
 ```
-
 ---
 
 ## xf_WeightedClose
@@ -17700,11 +16951,9 @@ xf_WeightedClose -  (系統函數)
 xf_WeightedClose是[WeightedClose](api?a=WeightedClose&b=sys) 函數的跨頻率版本，增加了指定頻率的參數，可以計算指定頻率的WeightedClose值。
 
 範例：
-
 ```
 plot1(xf_WeightedClose("W"));    //繪製週線加權平均收盤價的連線
 ```
-
 ---
 
 ## xf_XAverage
@@ -17735,11 +16984,9 @@ xf_XAverage -  (系統函數)
 xf_XAverage是[XAverage](api?a=XAverage&b=sys) 函數的跨頻率版本，增加了指定頻率的參數，可以計算指定頻率的XAverage值。
 
 範例：
-
 ```
 value1 = xf_XAverage("W",GetField("Close","W"),5); //計算週線5期收盤價的指數移動平均
 ```
-
 ---
 
 ## xfmin_MTM
@@ -17770,13 +17017,11 @@ xfmin_MTM -  (系統函數)
 xfMin_MTM是[MTM](api?a=MTM&b=sys) 函數的跨頻率版本，增加了指定頻率的參數，可以計算指定頻率的MTM值。
 
 範例：
-
 ```
 value1 = xfMin_MTM("5", 10);       //value1 = 五分鐘MTM
 
 Plot1(value1, "5分鐘MTM");
 ```
-
 ---
 
 ## AverageIF
@@ -17805,11 +17050,9 @@ AverageIF -  (系統函數)
 說明：
 
 範例：
-
 ```
 value1 = averageif(open>close[1],rateofchange(close,1),5); //計算開高時漲跌幅5期平均
 ```
-
 ---
 
 ## CountIf
@@ -17838,11 +17081,9 @@ CountIf -  (系統函數)
 CountIF會計算特定期間內符合某些條件的次數。
 
 範例：
-
 ```
 value1 = CountIf(open>close[1],5); //計算過去5天開高的次數
 ```
-
 ---
 
 ## CountIfARow
@@ -17871,11 +17112,9 @@ CountIfARow -  (系統函數)
 以最新的資料為基準，往前計算連續符合條件的次數。
 
 範例：
-
 ```
 value1 = CountIfARow(close>close[1],5); //計算過去5天連續收紅的次數
 ```
-
 註：CountIfARow函數和[TrueCount](api?a=TrueCount&b=sys)函數相同。
 
 ---
@@ -17906,11 +17145,9 @@ CrossOver -  (系統函數)
 如果出現黃金交叉傳回True，其他狀況傳回False。
 
 範例：
-
 ```
 condition1 = CrossOver(Average(close,5),Average(close,10)); //判斷5期均線和10期均線是否黃金交叉
 ```
-
 ---
 
 ## CrossUnder
@@ -17939,11 +17176,9 @@ CrossUnder -  (系統函數)
 如果出現死亡交叉傳回True，其他狀況傳回False。
 
 範例：
-
 ```
 condition1 = CrossUnder(Average(close,5),Average(close,10)); //判斷5期均線和10期均線是否死亡交叉
 ```
-
 ---
 
 ## DateTime
@@ -17999,7 +17234,6 @@ Filter -  (系統函數)
 回傳FALSE，表示過濾後不成立的條件，意即原始條件為FALSE，或是距離原始條件成立的期數小於等於過濾期數。
 
 範例：
-
 ```
 //警示腳本
 
@@ -18009,7 +17243,6 @@ condition2 = filter(condition1,5);       //過濾未來5期內重複的創新高
 
 if condition2 then ret = 1;
 ```
-
 ---
 
 ## GetBarOffsetForYears
@@ -18063,11 +17296,9 @@ IFF -  (系統函數)
 把IF/Else的邏輯判斷用函數的形式來表示。
 
 範例：
-
 ```
 value1 = IFF(Close>Close[1],1,0); //當上漲時value1為1，其他狀況時value1為0
 ```
-
 ---
 
 ## SummationIf
@@ -18098,11 +17329,9 @@ SummationIf -  (系統函數)
 當某期資料符合某項判斷準則時，才將該期資料計入加總。
 
 範例：
-
 ```
 value1 = SummationIf(open>close[1],rateofchange(close,1),5); //計算近5期開高時的漲跌幅總和
 ```
-
 ---
 
 ## TrueAll
@@ -18131,11 +17360,9 @@ TrueAll -  (系統函數)
 當期間內所有條件皆成立時，回傳True；其他狀況則回傳False
 
 範例：
-
 ```
 condition1 = TrueAll(Close>Close[1],3); //判斷K棒是否連續三期上漲
 ```
-
 ---
 
 ## TrueAny
@@ -18164,11 +17391,9 @@ TrueAny -  (系統函數)
 當期間內有一筆以上條件成立時，回傳True；其他狀況則回傳False
 
 範例：
-
 ```
 condition1 = TrueAny(Close>Close[1],3); //判斷最近三期是否有任一期K棒上漲
 ```
-
 ---
 
 ## TrueCount
@@ -18197,11 +17422,9 @@ TrueCount -  (系統函數)
 以最新的資料為基準，往前計算連續符合條件的次數。
 
 範例：
-
 ```
 value1 = TrueCount(close>close[1],5); //計算過去5天連續收紅的次數
 ```
-
 註：TrueCount函數和[CountIfARow](api?a=CountIfARow&b=sys)函數相同。
 
 ---
@@ -18253,13 +17476,11 @@ DiffBidAskVolumeXL -  (系統函數)
 DiffBidAskVolumeXL為近15分鐘特大單買賣超張數的函數。
 
 範例：
-
 ```
 value1 = DiffBidAskVolumeXL;
 
 plot1(value1); //value1為近15分鐘特大單買賣超張數
 ```
-
 ---
 
 ## DiffTradeVolumeAtAskBid
